@@ -1,0 +1,3 @@
+-- LOGGATO COME ADMIN
+use applicazione_bancaria;
+db.createUser({user: 'project_admin', pwd: 'pass', roles: [{role: 'readWrite', db: 'applicazione_bancaria'}]})
