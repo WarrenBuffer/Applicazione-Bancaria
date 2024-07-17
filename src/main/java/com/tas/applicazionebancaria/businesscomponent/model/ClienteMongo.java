@@ -1,5 +1,6 @@
 package com.tas.applicazionebancaria.businesscomponent.model;
 
+<<<<<<< Updated upstream
 import java.io.Serializable;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,10 +8,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.persistence.Id;
 import lombok.Data;
 
+@Document
+@Data
+public class ClienteMongo implements Serializable {
+	private static final long serialVersionUID = 4581204978132293292L;
+
+=======
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import jakarta.persistence.Id;
+import lombok.Data;
+
 @Data
 @Document
-public class ClienteMongo implements Serializable{
-	private static final long serialVersionUID = -6090801054487536188L;
+public class ClienteMongo {
+>>>>>>> Stashed changes
 	@Id
 	private long codCliente;
 	private String nomeCliente;
