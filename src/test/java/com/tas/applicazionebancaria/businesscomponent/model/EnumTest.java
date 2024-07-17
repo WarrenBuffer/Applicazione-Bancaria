@@ -11,7 +11,7 @@ class EnumTest {
 		c.setCodConto(0);
 		c.setEmailCliente("email");
 		c.setSaldo(0);
-		c.setTipoConto(Enum.CORRENTE);
+		c.setTipoConto(TipoConto.CORRENTE);
 		System.out.println(c);
 	}
 

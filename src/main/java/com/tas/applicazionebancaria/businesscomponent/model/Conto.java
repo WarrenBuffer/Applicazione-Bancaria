@@ -24,13 +24,13 @@ public class Conto implements Serializable{
 	private String emailCliente;
 	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
-	private Enum tipoConto;
+	private TipoConto tipoConto;
 	@Column(nullable=false)
 	private double saldo;
 	@Column(nullable=false)
 	private long codCliente;
 	
 }
-enum Enum{
+enum TipoConto{
 	CORRENTE, RISPARMIO;
 }
