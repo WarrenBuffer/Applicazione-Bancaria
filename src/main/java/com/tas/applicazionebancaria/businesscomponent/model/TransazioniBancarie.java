@@ -31,7 +31,7 @@ public class TransazioniBancarie implements Serializable {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private tipoTransazione tipoTransazione;
+	private tipoTransazioneBancaria tipoTransazione;
 
 	@Column(nullable = false)
 	private long codContoOrigine;
@@ -40,6 +40,6 @@ public class TransazioniBancarie implements Serializable {
 	private long codContoDestinazione;
 }
 
-enum tipoTransazione {
+enum tipoTransazioneBancaria {
 	ACCREDITO, ADDEBITO;
 }
