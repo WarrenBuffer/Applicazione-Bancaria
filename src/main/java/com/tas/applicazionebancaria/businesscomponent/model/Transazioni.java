@@ -23,17 +23,17 @@ public class Transazioni implements Serializable{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long codTransazione;
 	
-	@Column(name="importo", nullable=false)
+	@Column(nullable=false)
 	private double importo; 
 	
-	@Column(name="dataTransazione", nullable=false)
+	@Column(nullable=false)
 	private Date dataTransazione;
 	
-	@Column(name="tipoTransazione", nullable=false)
+	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
 	private TipoTransazione tipoTransazione;
 	
-	@Column(name="codConto", nullable=false)
+	@Column(nullable=false)
 	private long codConto;
 }
 
