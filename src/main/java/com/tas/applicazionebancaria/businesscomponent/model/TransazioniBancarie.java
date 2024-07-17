@@ -10,9 +10,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-
+/** Transazioni tra piu conti 
+ * 
+ */
 @Entity
 @Table(name = "transazioni_bancarie")
 @Data
@@ -34,9 +38,13 @@ public class TransazioniBancarie implements Serializable {
 	private tipoTransazioneBancaria tipoTransazione;
 
 	@Column(nullable = false)
+	@ManyToOne
+	@JoinColumn(name="codConto")
 	private long codContoOrigine;
 
 	@Column(nullable = false)
+	@ManyToOne
+	@JoinColumn(name="codConto")
 	private long codContoDestinazione;
 }
 

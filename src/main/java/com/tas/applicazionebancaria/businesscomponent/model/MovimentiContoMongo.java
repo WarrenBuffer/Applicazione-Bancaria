@@ -24,7 +24,7 @@ public class MovimentiContoMongo implements Serializable{
 	
 	private double importo;
 	private Date dataOperazione;
-	private String tipoOperazione;
+	private String tipoOperazione; //TODO forse qua è giusto, forse è sbagliato il tipo dell'attributo
 	private int codContoOrigine;
 	private int codContoDestinazione;
 }

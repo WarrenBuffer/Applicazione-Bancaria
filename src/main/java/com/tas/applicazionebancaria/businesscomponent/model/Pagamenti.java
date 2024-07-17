@@ -10,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -33,8 +35,12 @@ public class Pagamenti implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private metodoPagamento metodoPagamento;
 
+
 	@Column(nullable = false)
-	private long codCliente;
+	@ManyToOne
+	@JoinColumn(name = "codCliente")
+	private Cliente codCliente;
+	
 }
 
 enum metodoPagamento {

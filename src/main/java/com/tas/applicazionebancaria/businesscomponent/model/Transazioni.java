@@ -10,13 +10,20 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/** Transazioni per un solo conto (deposito, prelievo)
+ * 
+ */
 @Data
 @Entity
 @Table
-public class Transazioni implements Serializable{
+
+//Transazioni per un solo conto
+public class Transazioni implements Serializable{ 
 	private static final long serialVersionUID = 8816334464026097444L;
 	
 	@Id
@@ -32,12 +39,14 @@ public class Transazioni implements Serializable{
 	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
 	private TipoTransazione tipoTransazione;
-	
-	@Column(nullable=false)
+
+	@Column(nullable = false)
+	@ManyToOne
+	@JoinColumn(name="codConto")
 	private long codConto;
 }
 
 enum TipoTransazione{
-	Accredito, Addebito;
+	ACCREDITO, ADDEBITO;
 }
 
