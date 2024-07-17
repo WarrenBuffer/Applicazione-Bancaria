@@ -22,7 +22,7 @@ public class TransazioniMongo implements Serializable {
 	
 	private Date dataTransazione;
 	
-	private tipoTransazione tipoTransazione;
+	private TipoTransazione tipoTransazione;
 	
 	private int codiceConto;
 }

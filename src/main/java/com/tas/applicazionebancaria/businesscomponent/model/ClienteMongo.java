@@ -4,10 +4,12 @@ import java.io.Serializable;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
 
-@Document
+@Entity
+@Document(collection = "cliente")
 @Data
 public class ClienteMongo implements Serializable {
 	private static final long serialVersionUID = 4581204978132293292L;
