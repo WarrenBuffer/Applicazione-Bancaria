@@ -1,0 +1,48 @@
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn"></head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container">
+	<header class="page-header">
+		<h3>Inserisci i dati per il login</h3>
+	</header>
+	<form th:action="@{#}" method="post" class="form-horizontal">
+		
+		<!-- EMAIL -->
+		<div class="form-group">
+			<label class="col-md-1 control-label">Email</label>
+			<div class="col-md-4 inputGroupContainer">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-envelope"></i>
+					</span>
+					<input type="text" name="emailCLiente" id="emailCliente" placeholder="Email..." class="form-control">
+				</div>
+			</div>
+		</div>
+		<!-- PASSWORD -->
+		<div class="form-group">
+			<label class="col-md-1 control-label">Password</label>
+			<div class="col-md-4 inputGroupContainer">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-lock"></i>
+					</span>
+					<input type="password" name="passwordCliente" id="passwordCliente" placeholder="Password..." class="form-control">
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-4 col-md-offset-1">
+				<button type="submit" class="btn btn-info">
+					Login&nbsp;&nbsp;<span class="glyphicon glyphicon-log-in"></span>
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+
+</body>
+</html>
