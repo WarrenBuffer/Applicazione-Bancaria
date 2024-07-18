@@ -56,7 +56,8 @@ public class SecurityConfig {
 		http
 				// Configura le autorizzazioni delle richieste
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/admin/**").authenticated())
+						auth -> auth.requestMatchers("/admin/**").authenticated()
+						.anyRequest().permitAll())
 
 				.formLogin(form -> form.loginPage("/loginAdmin").permitAll())
 

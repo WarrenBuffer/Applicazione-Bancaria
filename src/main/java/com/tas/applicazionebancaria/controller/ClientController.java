@@ -175,16 +175,20 @@ public class ClientController {
 				session.setAttribute("email_log", c.get().getEmailCliente());
 				return new ModelAndView("redirect:/home");
 			} else {
-				//aggiorna i campi per i tentativi errati
-				loginAttemptService.loginFailed(email);
 				ModelAndView mv = new ModelAndView();
-				mv.addObject("error", "Credenziali errate!");
+				//aggiorna i campi per i tentativi errati
+				if(loginAttemptService.isBlocked(email)) {
+					mv.addObject("error", "Numero di tentativi finiti! Contatta l'amministratore");
+				} else {
+					loginAttemptService.loginFailed(email);
+					mv.addObject("error", "Password errata!");
+				}
 				mv.setViewName("login");
 				return mv;
 			}
 		} else {
 			ModelAndView mv = new ModelAndView();
-			mv.addObject("error", "Credenziali errate!");
+			mv.addObject("error", "Utente non trovato!");
 			mv.setViewName("login");
 			return mv;
 		}

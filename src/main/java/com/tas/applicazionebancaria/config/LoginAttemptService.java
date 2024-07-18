@@ -44,7 +44,7 @@ public class LoginAttemptService implements Costanti {
 		}
 
 		/************** URI CLIENTE ****************/
-		if (request.getRequestURI().equals("/login")) {
+		if (request.getRequestURI().equals("/clientLogin")) {
 
 			// verifico che non sia già bloccato
 			if (cr.getStatoBloccatoByEmail(email) == true) {
@@ -60,6 +60,10 @@ public class LoginAttemptService implements Costanti {
 				cr.setBloccatoTrueByEmail(email);
 			}
 		}
+	}
+	
+	public boolean isBlocked(final String email) {
+		return cr.getStatoBloccatoByEmail(email);
 	}
 
 	/****** IMPLEMENTAZIONE CON BLOCCO INDIRIZZO IP *****/
