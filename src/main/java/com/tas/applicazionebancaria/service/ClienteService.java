@@ -9,5 +9,6 @@ public interface ClienteService {
 	Cliente saveCliente(Cliente cliente);
 	List<Cliente> findAll();
 	Optional<Cliente> findById(long id);
+	Optional<Cliente> findByEmail(String email);
 	void deleteCliente(Cliente cliente);
 }

@@ -9,5 +9,6 @@ public interface ClienteMongoService {
 	ClienteMongo saveClienteMongo(ClienteMongo clienteMongo);
 	List<ClienteMongo> findAll();
 	Optional<ClienteMongo> findById(long id);
+	Optional<ClienteMongo> findByEmail(String email);
 	void deleteClienteMongo(ClienteMongo clienteMongo);
 }

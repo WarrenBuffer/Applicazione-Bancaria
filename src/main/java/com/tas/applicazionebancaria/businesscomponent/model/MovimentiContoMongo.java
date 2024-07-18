@@ -5,12 +5,10 @@ import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity
 @Document(collection = "operazioni_bancarie")
 
 // --- classe mongo equilvalente alla classe MovimentiConto MySQL

@@ -9,5 +9,6 @@ public interface AmministratoreService {
 	Amministratore saveAmministratore(Amministratore amministratore);
 	List<Amministratore> findAll();
 	Optional<Amministratore> findById(long id);
+	Optional<Amministratore> findByEmail(String email);
 	void deleteAmministratore(Amministratore amministratore);
 }

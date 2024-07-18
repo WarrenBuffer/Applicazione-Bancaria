@@ -34,4 +34,9 @@ public class AmministratoreServiceImpl implements AmministratoreService {
 	public void deleteAmministratore(Amministratore amministratore) {
 		ar.delete(amministratore);
 	}
+
+	@Override
+	public Optional<Amministratore> findByEmail(String email) {
+		return ar.findByEmail(email);
+	}
 }

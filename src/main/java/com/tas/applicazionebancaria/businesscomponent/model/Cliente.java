@@ -22,16 +22,16 @@ import lombok.Data;
 public class Cliente implements Serializable {
 	private static final long serialVersionUID = 4581204978132293292L;
 
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Id
 	private long codCliente;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private String nomeCliente;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private String cognomeCliente;
-	@Column(nullable=false, unique = true)
+	@Column(nullable = false, unique = true)
 	private String emailCliente;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private String passwordCliente;
 	@Column(nullable=false)
 	private int tentativiErrati=0;
@@ -53,6 +53,5 @@ public class Cliente implements Serializable {
 	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
 	@JsonIgnore
 	private Set<Pagamenti> pagamenti=new HashSet<Pagamenti>();
-	
 	
 }

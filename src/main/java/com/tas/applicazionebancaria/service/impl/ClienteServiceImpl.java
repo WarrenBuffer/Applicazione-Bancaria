@@ -34,5 +34,10 @@ public class ClienteServiceImpl implements ClienteService{
 	public void deleteCliente(Cliente cliente) {
 		cr.delete(cliente);
 	}
+
+	@Override
+	public Optional<Cliente> findByEmail(String email) {
+		return cr.findByEmail(email);
+	}
 	
 }

@@ -33,4 +33,9 @@ public class ClienteMongoServiceImpl implements ClienteMongoService{
 	public void deleteClienteMongo(ClienteMongo clienteMongo) {
 		cmr.delete(clienteMongo);
 	}
+
+	@Override
+	public Optional<ClienteMongo> findByEmail(String email) {
+		return cmr.findByEmailCliente(email);
+	}
 }
