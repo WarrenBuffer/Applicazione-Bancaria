@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
+import com.tas.applicazionebancaria.config.LoginAttemptService;
 import com.tas.applicazionebancaria.service.ClienteMongoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.utils.JWT;
@@ -34,6 +35,9 @@ public class ClientController {
 
 	@Autowired
 	ClienteMongoService clienteMongoService;
+	
+	@Autowired
+	LoginAttemptService loginAttemptService;
 
 	/*-----------------------------------------UTILITIES-----------------------------------------*/
 
@@ -171,6 +175,8 @@ public class ClientController {
 				session.setAttribute("email_log", c.get().getEmailCliente());
 				return new ModelAndView("redirect:/home");
 			} else {
+				//aggiorna i campi per i tentativi errati
+				loginAttemptService.loginFailed(email);
 				ModelAndView mv = new ModelAndView();
 				mv.addObject("error", "Credenziali errate!");
 				mv.setViewName("login");

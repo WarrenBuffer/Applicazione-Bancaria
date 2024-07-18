@@ -26,7 +26,7 @@ public class LoginAttemptService implements Costanti {
 	public void loginFailed(final String email) {
 
 		/************** URI ADMIN ****************/
-		if (request.getRequestURI() == "/loginAdmin") {
+		if (request.getRequestURI().equals("/loginAdmin")) {
 
 			// verifico che non sia già bloccato
 			if (ar.getStatoBloccatoByEmail(email) == true) {
@@ -41,11 +41,10 @@ public class LoginAttemptService implements Costanti {
 			if (ar.getTentativiErratiByEmail(email) > MAX_TENTATIVI) {
 				ar.setBloccatoTrueByEmail(email);
 			}
-
 		}
 
 		/************** URI CLIENTE ****************/
-		if (request.getRequestURI() == "/login") {
+		if (request.getRequestURI().equals("/login")) {
 
 			// verifico che non sia già bloccato
 			if (cr.getStatoBloccatoByEmail(email) == true) {
