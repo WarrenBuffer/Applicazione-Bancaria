@@ -1,11 +1,16 @@
 <html xmlns:th="http://thymeleaf.org">
 <head th:replace="fragments/cdn :: cdn"></head>
 <body>
-<div th:include="fragments/nav :: navbar"></div>
+<div th:insert="fragments/nav :: navbar"></div>
 <div class="container">
 	<header class="page-header">
 		<h3>Inserisci i dati per la registrazione</h3>
 	</header>
+	
+	<div style="color: red;" th:if="${checkUser}">
+		<div th:text="${checkUser}"></div>
+	</div>
+	
 	<form th:action="@{/registrazione}" th:object="${cliente}" method="post" class="form-horizontal">
 		<!-- NOME -->
 		<div class="form-group">
@@ -15,7 +20,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-user"></i>
 					</span>
-					<input type="text" name="nome" id="nome" placeholder="Nome..." class="form-control" th:field="*{nomeCliente}">
+					<input type="text" name="nome" id="nome" placeholder="Nome..." class="form-control" th:field="*{nomeCliente}" required>
 				</div>
 			</div>
 		</div>
@@ -27,7 +32,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-user"></i>
 					</span>
-					<input type="text" name="cognome" id="cognome" placeholder="Cognome..." class="form-control" th:field="*{cognomeCliente}">
+					<input type="text" name="cognome" id="cognome" placeholder="Cognome..." class="form-control" th:field="*{cognomeCliente}" required>
 				</div>
 			</div>
 		</div>
@@ -39,7 +44,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-envelope"></i>
 					</span>
-					<input type="text" name="email" id="email" placeholder="Email..." class="form-control" th:field="*{emailCliente}">
+					<input type="text" name="email" id="email" placeholder="Email..." class="form-control" th:field="*{emailCliente}" required>
 				</div>
 			</div>
 		</div>
@@ -49,9 +54,9 @@
 			<div class="col-md-4 inputGroupContainer">
 				<div class="input-group">
 					<span class="input-group-addon">
-						<i class="glyphicon glyphicon-key"></i>
+						<i class="glyphicon glyphicon-lock"></i>
 					</span>
-					<input type="password" name="password" id="password" placeholder="Password..." class="form-control" th:field="*{passwordCliente}">
+					<input type="password" name="password" id="password" placeholder="Password..." class="form-control" th:field="*{passwordCliente}" required>
 				</div>
 			</div>
 		</div>
@@ -65,6 +70,6 @@
 		</div>
 	</form>
 </div>
-<footer th:include="fragments/footer :: footer"></footer>
+<footer th:insert="fragments/footer :: footer"></footer>
 </body>
 </html>

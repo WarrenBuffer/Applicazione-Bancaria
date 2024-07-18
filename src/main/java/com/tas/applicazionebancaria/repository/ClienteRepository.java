@@ -18,10 +18,10 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 			+ "SET\r\n"
 			+ " tentativi_errati = tentativi_errati + 1 \r\n"
 			+ "WHERE\r\n"
-			+ " emailAdmin = ?1;", nativeQuery = true)
+			+ " email_cliente = ?1;", nativeQuery = true)
 	void incrementaTentativoErratoByEmail(String email);
 	
-	@Query(value = "Select tentativi_errati from cliente where emailCliente = ?1", nativeQuery = true)
+	@Query(value = "Select tentativi_errati from cliente where email_cliente = ?1", nativeQuery = true)
 	int getTentativiErratiByEmail(String email);
 	
 	@Query(value = "UPDATE\r\n"
@@ -29,7 +29,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 			+ "SET\r\n"
 			+ " account_bloccato = true \r\n"
 			+ "WHERE\r\n"
-			+ " emailAdmin = ?1;", nativeQuery = true)
+			+ " email_cliente = ?1;", nativeQuery = true)
 	void setBloccatoFalseByEmail(String email);
 	
 	@Query(value = "UPDATE\r\n"
@@ -37,9 +37,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 			+ "SET\r\n"
 			+ " account_bloccato = false \r\n"
 			+ "WHERE\r\n"
-			+ " emailAdmin = ?1;", nativeQuery = true)
+			+ " email_cliente = ?1;", nativeQuery = true)
 	void setBloccatoTrueByEmail(String email);
 	
-	@Query(value = "Select account_bloccato from cliente where emailCliente = ?1", nativeQuery = true)
+	@Query(value = "Select account_bloccato from cliente where email_cliente = ?1", nativeQuery = true)
 	boolean getStatoBloccatoByEmail(String email);
 }

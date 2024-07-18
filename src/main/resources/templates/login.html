@@ -1,11 +1,16 @@
 <html xmlns:th="http://thymeleaf.org">
 <head th:replace="fragments/cdn :: cdn"></head>
 <body>
-<div th:include="fragments/nav :: navbar"></div>
+<div th:insert="fragments/nav :: navbar"></div>
 <div class="container">
 	<header class="page-header">
 		<h3>Inserisci i dati per il login</h3>
 	</header>
+	
+	<div style="color: red;" th:if="${error}">
+		<div th:text="${error}"></div>
+	</div>
+	
 	<form th:action="@{/login}" method="post" class="form-horizontal">
 		
 		<!-- EMAIL -->
@@ -16,7 +21,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-envelope"></i>
 					</span>
-					<input type="text" name="email" id="email" placeholder="Email..." class="form-control">
+					<input type="text" name="email" id="email" placeholder="Email..." class="form-control" required>
 				</div>
 			</div>
 		</div>
@@ -28,7 +33,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-lock"></i>
 					</span>
-					<input type="password" name="password" id="password" placeholder="Password..." class="form-control">
+					<input type="password" name="password" id="password" placeholder="Password..." class="form-control" required>
 				</div>
 			</div>
 		</div>
@@ -42,7 +47,6 @@
 		</div>
 	</form>
 </div>
-<footer th:include="fragments/footer :: footer"></footer>
-
+<footer th:insert="fragments/footer :: footer"></footer>
 </body>
 </html>
