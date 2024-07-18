@@ -39,8 +39,4 @@ public class ClienteServiceImpl implements ClienteService{
 	public Optional<Cliente> findByEmail(String email) {
 		return cr.findByEmail(email);
 	}
-<<<<<<< Updated upstream
-	
-=======
->>>>>>> Stashed changes
 }
