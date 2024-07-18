@@ -44,7 +44,3 @@ public class Transazioni implements Serializable{
 	private Conto codConto;
 }
 
-enum TipoTransazione{
-	ACCREDITO, ADDEBITO;
-}
-
