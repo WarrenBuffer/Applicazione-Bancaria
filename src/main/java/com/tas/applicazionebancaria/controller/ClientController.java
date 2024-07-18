@@ -21,6 +21,8 @@ import com.tas.applicazionebancaria.service.ClienteMongoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.utils.JWT;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,19 +54,28 @@ public class ClientController {
 	}
 
 	private static String validateInputs(Cliente cliente) {
+		System.out.println("sono dentro la validazione");
 		if (!cliente.getNomeCliente().matches("^[a-zA-Z ,.'-]{2,30}$") || cliente.getNomeCliente().trim().isEmpty()
-				|| cliente.getNomeCliente() == null)
+				|| cliente.getNomeCliente() == null) {
 			return "Il campo nome non può essere vuoto e deve contenere solo lettere";
+		}
+			
 		if (!cliente.getCognomeCliente().matches("^[a-zA-Z ,.'-]{2,30}$")
-				|| cliente.getCognomeCliente().trim().isEmpty() || cliente.getCognomeCliente() == null)
+				|| cliente.getCognomeCliente().trim().isEmpty() || cliente.getCognomeCliente() == null) {
 			return "Il campo cognome non può essere vuoto e deve contenere solo lettere";
+		}
+			
 		if (!cliente.getEmailCliente().matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
-				|| cliente.getEmailCliente().trim().isEmpty() || cliente.getEmailCliente() == null)
+				|| cliente.getEmailCliente().trim().isEmpty() || cliente.getEmailCliente() == null) {
 			return "Il campo email non può essere vuoto e deve essere un indirizzo email valido";
+		}
+			
 		if (!cliente.getPasswordCliente()
 				.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?=])[a-zA-Z0-9@#&%^$?=]{7,15}$")
-				|| cliente.getPasswordCliente().trim().isEmpty() || cliente.getPasswordCliente() == null)
+				|| cliente.getPasswordCliente().trim().isEmpty() || cliente.getPasswordCliente() == null) {
 			return "Il campo password non può essere vuoto e deve rispettare i criteri di complessità";
+		}
+			
 
 		return "ok";
 	}
@@ -102,8 +113,8 @@ public class ClientController {
 	/*-----------------------------------------REGISTRAZIONE-----------------------------------------*/
 
 	@GetMapping(value = "/registrazione")
-	public ModelAndView registrazione(@CookieValue("token") String token, HttpServletRequest request) {
-		if (JWT.validate(token) != null) {
+	public ModelAndView registrazione(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		if (token!=null) {
 			return new ModelAndView("redirect:/home");
 		}
 		ModelAndView mv = new ModelAndView();
@@ -118,6 +129,7 @@ public class ClientController {
 		List<Cliente> list = clienteService.findAll();
 		for (Cliente a : list) {
 			if (a.getEmailCliente().equals(cliente.getEmailCliente())) {
+				System.out.println("Email confronto" + a.getEmailCliente());
 				mv.addObject("checkUser", "Utente già registrato");
 				return mv;
 			}
@@ -126,7 +138,6 @@ public class ClientController {
 		String cognome = checkEscapeHTML(cliente.getCognomeCliente());
 		String password = checkEscapeHTML(cliente.getPasswordCliente());
 		String email = checkEscapeHTML(cliente.getEmailCliente());
-
 		if (validateInputs(cliente).equals("ok")) {
 			cliente.setPasswordCliente(BCryptEncoder.encode(password));
 			cliente.setNomeCliente(nome);
@@ -151,8 +162,8 @@ public class ClientController {
 	/*-----------------------------------------LOGIN-----------------------------------------*/
 
 	@GetMapping(value = "/login")
-	public ModelAndView login(@CookieValue("token") String token, HttpServletRequest request) {
-		if (JWT.validate(token) != null) {
+	public ModelAndView login(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		if (token != null) {
 			return new ModelAndView("redirect:/home");
 		}
 		ModelAndView mv = new ModelAndView();
@@ -164,6 +175,7 @@ public class ClientController {
 	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
 			HttpServletResponse response, HttpServletRequest request) {
 		Optional<Cliente> c = clienteService.findByEmail(email);
+		System.out.println(c.get().toString());
 		if (c.isPresent()) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			if (encoder.matches(password, c.get().getPasswordCliente())) {
@@ -192,5 +204,21 @@ public class ClientController {
 			mv.setViewName("login");
 			return mv;
 		}
+	}
+	
+	/*-----------------------------------------HOME-----------------------------------------*/
+	
+	@GetMapping("/home")
+	public ModelAndView home(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+		}
+		Jws<Claims> claims = JWT.validate(token);
+		System.out.println(claims.getBody().get("nome"));
+		mv.setViewName("home");
+		return mv;
 	}
 }

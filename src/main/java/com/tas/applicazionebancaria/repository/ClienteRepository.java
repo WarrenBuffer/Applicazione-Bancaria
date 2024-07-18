@@ -10,7 +10,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 
 @Repository("ClienteRepository")
 public interface ClienteRepository extends JpaRepository<Cliente, Long>{
-	@Query(value = "Select * from cliente where emailCliente = ?1", nativeQuery = true)
+	@Query(value = "Select * from cliente where email_cliente = ?1", nativeQuery = true)
 	Optional<Cliente> findByEmail(String email);
 	
 	@Query(value = "UPDATE\r\n"
