@@ -32,15 +32,19 @@ public class AdminController {
 	ClienteService clienteService;
 	@Autowired
 	ContoService contoService;
-	
+
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
-		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$")) return false;
-		if (!cognome.matches("^[a-zA-Z ,.'-]{2,30}$")) return false;
-		if (!email.matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) return false;
-		if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?=])[a-zA-Z0-9@#&%^$?=]{7,15}$")) return false;
+		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$"))
+			return false;
+		if (!cognome.matches("^[a-zA-Z ,.'-]{2,30}$"))
+			return false;
+		if (!email.matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
+			return false;
+		if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?=])[a-zA-Z0-9@#&%^$?=]{7,15}$"))
+			return false;
 		return true;
 	}
-	
+
 	@GetMapping("/clienti")
 	public ServerResponse getClienti(@CookieValue(name = "token", required = true) String jwt) {
 		try {
@@ -48,58 +52,62 @@ public class AdminController {
 		} catch (Exception exc) {
 			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
 		}
-		
+
 		List<Cliente> clienti = clienteService.findAll();
 		return new ServerResponse(0, clienti);
 	}
-	
+
 	@PostMapping("/clienti")
-	public ServerResponse addCliente(@CookieValue(name = "token", required = true) String jwt, @RequestBody Cliente cliente) {
+	public ServerResponse addCliente(@CookieValue(name = "token", required = true) String jwt,
+			@RequestBody Cliente cliente) {
 		try {
 			JWT.validate(jwt);
 		} catch (Exception exc) {
 			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
 		}
-		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(), cliente.getPasswordCliente()))
+		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
+				cliente.getPasswordCliente()))
 			return new ServerResponse(1, "Validazione fallita, riprova a inserire i dati.");
-		
+
 		if (clienteService.findByEmail(cliente.getEmailCliente()).isPresent())
 			return new ServerResponse(1, "Cliente con email " + cliente.getEmailCliente() + " esiste.");
-		
+
 		clienteService.saveCliente(cliente);
 		return new ServerResponse(0, "Cliente aggiunto con successo.");
 	}
-	
+
 	@GetMapping("/clienti/{id}")
-	public ServerResponse getClienteById(@CookieValue(name = "token", required = true) String jwt, @PathVariable long id) {
+	public ServerResponse getClienteById(@CookieValue(name = "token", required = true) String jwt,
+			@PathVariable long id) {
 		try {
 			JWT.validate(jwt);
 		} catch (Exception exc) {
 			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
 		}
-		
+
 		Optional<Cliente> cliente = clienteService.findById(id);
 		if (cliente.isEmpty())
 			return new ServerResponse(1, "Il cliente con id " + id + " non esiste.");
-		
+
 		return new ServerResponse(0, cliente.get());
 	}
-	
+
 	@DeleteMapping("/conti/{id}")
-	public ServerResponse deleteContoById(@CookieValue(name = "token", required = true) String jwt, @PathVariable long id) {
+	public ServerResponse deleteContoById(@CookieValue(name = "token", required = true) String jwt,
+			@PathVariable long id) {
 		try {
 			JWT.validate(jwt);
 		} catch (Exception exc) {
 			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
 		}
-		
+
 		Optional<Conto> conto = contoService.findById(id);
 		if (conto.isEmpty())
 			return new ServerResponse(1, "Il conto con id " + id + " non esiste.");
-		
+
 		contoService.deleteConto(conto.get());
 		return new ServerResponse(0, "Conto " + id + " eliminato con successo.");
 	}
-	
+
 	// TODO: statistiche, bisogna decidere quali statistiche fare
 }
