@@ -6,7 +6,7 @@
 	<header class="page-header">
 		<h3>Inserisci i dati per il login</h3>
 	</header>
-	<form th:action="@{#}" method="post" class="form-horizontal">
+	<form th:action="@{/login}" method="post" class="form-horizontal">
 		
 		<!-- EMAIL -->
 		<div class="form-group">
@@ -16,7 +16,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-envelope"></i>
 					</span>
-					<input type="text" name="emailCLiente" id="emailCliente" placeholder="Email..." class="form-control">
+					<input type="text" name="email" id="email" placeholder="Email..." class="form-control">
 				</div>
 			</div>
 		</div>
@@ -28,7 +28,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-lock"></i>
 					</span>
-					<input type="password" name="passwordCliente" id="passwordCliente" placeholder="Password..." class="form-control">
+					<input type="password" name="password" id="password" placeholder="Password..." class="form-control">
 				</div>
 			</div>
 		</div>

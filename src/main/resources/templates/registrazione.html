@@ -6,7 +6,7 @@
 	<header class="page-header">
 		<h3>Inserisci i dati per la registrazione</h3>
 	</header>
-	<form th:action="@{#}" th:object="${cliente}" method="post" class="form-horizontal">
+	<form th:action="@{/registrazione}" th:object="${cliente}" method="post" class="form-horizontal">
 		<!-- NOME -->
 		<div class="form-group">
 			<label class="col-md-1 control-label">Nome</label>
@@ -15,7 +15,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-user"></i>
 					</span>
-					<input type="text" name="nomeCliente" id="nomeCliente" placeholder="Nome..." class="form-control" th:field="*{nomeCliente}">
+					<input type="text" name="nome" id="nome" placeholder="Nome..." class="form-control" th:field="*{nomeCliente}">
 				</div>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-user"></i>
 					</span>
-					<input type="text" name="cognomeCliente" id="cognomeCliente" placeholder="Cognome..." class="form-control" th:field="*{cognomeCliente}">
+					<input type="text" name="cognome" id="cognome" placeholder="Cognome..." class="form-control" th:field="*{cognomeCliente}">
 				</div>
 			</div>
 		</div>
@@ -39,7 +39,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-envelope"></i>
 					</span>
-					<input type="text" name="emailCliente" id="emailCliente" placeholder="Email..." class="form-control" th:field="*{emailCliente}">
+					<input type="text" name="email" id="email" placeholder="Email..." class="form-control" th:field="*{emailCliente}">
 				</div>
 			</div>
 		</div>
@@ -51,7 +51,7 @@
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-key"></i>
 					</span>
-					<input type="password" name="passwordCliente" id="passwordCLiente" placeholder="Password..." class="form-control" th:field="*{passwordCliente}">
+					<input type="password" name="password" id="password" placeholder="Password..." class="form-control" th:field="*{passwordCliente}">
 				</div>
 			</div>
 		</div>

@@ -9,8 +9,6 @@ import java.util.UUID;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
