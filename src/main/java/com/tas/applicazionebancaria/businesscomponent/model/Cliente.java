@@ -38,19 +38,19 @@ public class Cliente implements Serializable {
 	@Column(nullable=false)
 	private boolean accountBloccato=false;
 	
-	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "cliente")
+	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
 	@JsonIgnore
 	private Set<Conto> conti=new HashSet<Conto>(); 
 	
-	@OneToMany(cascade =CascadeType.ALL, mappedBy = "cliente")
+	@OneToMany(cascade =CascadeType.ALL, mappedBy = "codCliente")
 	@JsonIgnore
-	private Set<CarteDiCredito> carte=new HashSet<CarteDiCredito>();
+	private Set<CarteDiCredito> carte = new HashSet<CarteDiCredito>();
 	
-	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "cliente")
+	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
 	@JsonIgnore
 	private Set<Prestiti> prestiti=new HashSet<Prestiti>();
 	
-	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "cliente")
+	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
 	@JsonIgnore
 	private Set<Pagamenti> pagamenti=new HashSet<Pagamenti>();
 	

@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+
 @Entity
 @Table
 @Data
@@ -36,12 +37,11 @@ public class Conto implements Serializable{
 	@Column(nullable=false)
 	private double saldo;
 
-	@Column(nullable = false)
 	@ManyToOne
 	@JoinColumn(name = "codCliente")
 	private Cliente codCliente;
 
-	@OneToMany(cascade =CascadeType.ALL, mappedBy = "codConto")
+	@OneToMany(cascade =CascadeType.ALL, mappedBy = "contoOrigine")
 	@JsonIgnore
 	private Set<TransazioniBancarie> transazioniBancarie=new HashSet<TransazioniBancarie>();
 	@OneToMany(cascade =CascadeType.ALL, mappedBy = "codConto")

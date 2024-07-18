@@ -21,7 +21,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table
-
 //Transazioni per un solo conto
 public class Transazioni implements Serializable{ 
 	private static final long serialVersionUID = 8816334464026097444L;
@@ -40,10 +39,9 @@ public class Transazioni implements Serializable{
 	@Enumerated(EnumType.STRING)
 	private TipoTransazione tipoTransazione;
 
-	@Column(nullable = false)
 	@ManyToOne
 	@JoinColumn(name="codConto")
-	private long codConto;
+	private Conto codConto;
 }
 
 enum TipoTransazione{

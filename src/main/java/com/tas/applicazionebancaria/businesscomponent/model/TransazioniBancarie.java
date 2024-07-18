@@ -37,15 +37,13 @@ public class TransazioniBancarie implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private tipoTransazioneBancaria tipoTransazione;
 
-	@Column(nullable = false)
 	@ManyToOne
-	@JoinColumn(name="codConto")
-	private long codContoOrigine;
+	@JoinColumn(name="codContoOrigine")
+	private Conto contoOrigine;
 
-	@Column(nullable = false)
 	@ManyToOne
-	@JoinColumn(name="codConto")
-	private long codContoDestinazione;
+	@JoinColumn(name="codContoDestinazione")
+	private Conto contoDestinazione;
 }
 
 enum tipoTransazioneBancaria {

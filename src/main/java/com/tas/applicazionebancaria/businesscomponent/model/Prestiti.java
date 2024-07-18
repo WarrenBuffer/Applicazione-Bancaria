@@ -31,8 +31,6 @@ public class Prestiti implements Serializable{
 	@Column(name="duratainmesi", nullable=false)
 	private int durataInMesi;
 	
-
-	@Column(nullable = false)
 	@ManyToOne
 	@JoinColumn(name = "codCliente")
 	private Cliente codCliente;

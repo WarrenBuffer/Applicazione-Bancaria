@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.MovimentiContoMongo;
 
-@Repository("MovimentiContoRepository")
+@Repository("MovimentiContoMongoRepository")
 public interface MovimentiContoMongoRepository extends MongoRepository<MovimentiContoMongo, String> {
 	
 }
