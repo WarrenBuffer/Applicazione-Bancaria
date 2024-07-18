@@ -18,7 +18,7 @@ class JWTTest {
 		admin.setNomeAdmin("Giorgio");
 		admin.setCognomeAdmin("Verdi");
 		admin.setEmailAdmin("giorgio.verdi@gmail.com");
-		String token = JWT.generate(admin);
+		String token = JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin());
 		Jws<Claims> claims = JWT.validate(token);
 		assertEquals(claims.getBody().get("nome"), "Giorgio");
 		assertEquals(claims.getBody().get("cognome"), "Verdi");

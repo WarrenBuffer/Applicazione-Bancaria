@@ -18,13 +18,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JWT implements Costanti {
 	
-	public static String generate(Amministratore admin) {
+	public static String generate(String nome, String cognome, String email) {
 		Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(SECRET), SignatureAlgorithm.HS256.getJcaName());
 		Instant now = Instant.now();
 		String jwtToken = Jwts.builder()
-				.claim("nome", admin.getNomeAdmin())
-				.claim("cognome", admin.getCognomeAdmin())
-				.setSubject(admin.getEmailAdmin())
+				.claim("nome", nome)
+				.claim("cognome", cognome)
+				.setSubject(email)
 				.setId(UUID.randomUUID().toString())
 				.setIssuedAt(Date.from(now))
 				.setExpiration(Date.from(now.plus(24l, ChronoUnit.HOURS)))
