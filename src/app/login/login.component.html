@@ -1,0 +1,16 @@
+<app-navbar />
+<p-card header="Login">
+    <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+        <div class="flex flex-column sm:flex-row gap-2">
+            <input pInputText formControlName="email" placeholder="Email..." />
+            <p-message *ngIf="form.controls.email.invalid && form.controls.email.dirty" severity="error" text="L'email deve essere valida" />
+        </div>
+        <div class="flex flex-column sm:flex-row gap-2 mt-2">
+            <input type="password" formControlName="password" pInputText  name="password" placeholder="Password..."/>
+            <p-message *ngIf="form.controls.password.invalid && form.controls.password.dirty" severity="error" text="Min: 8. Max: 32. a-zA-Z0-9@#&%^$?=" />
+        </div>
+        <div class="mt-2">
+            <p-button type="submit" severity="primary" [disabled]="!form.valid" [raised]="true" size="small" label="Login" />
+        </div>
+    </form>
+</p-card>
