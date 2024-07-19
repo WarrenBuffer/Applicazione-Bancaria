@@ -15,7 +15,7 @@ import com.tas.applicazionebancaria.service.StatisticheService;
 
 @Service
 public class StatisticheServiceImpl implements StatisticheService {
-	@Autowired
+	@Autowired(required = false)
 	StatisticheRepository sr;
 	@Autowired
 	ClienteRepository cr;

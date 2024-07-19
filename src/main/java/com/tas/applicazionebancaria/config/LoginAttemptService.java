@@ -27,13 +27,14 @@ public class LoginAttemptService implements Costanti {
 
 		/************** URI ADMIN ****************/
 		if (request.getRequestURI().equals("/loginAdmin")) {
+			System.out.println("login admin");
 
 			// verifico che non sia già bloccato
 			if (ar.getStatoBloccatoByEmail(email) == true) {
 				return;
 			}
 			// se non è bloccato ma ha i tentativi non ancora a 5 esatti li incremento
-			if (ar.getStatoBloccatoByEmail(email) == false && ar.getTentativiErratiByEmail(email) < MAX_TENTATIVI) {
+			if (ar.getStatoBloccatoByEmail(email) == false && ar.getTentativiErratiByEmail(email) <= MAX_TENTATIVI) {
 				ar.incrementaTentativoErratoByEmail(email);
 			}
 
@@ -44,14 +45,15 @@ public class LoginAttemptService implements Costanti {
 		}
 
 		/************** URI CLIENTE ****************/
-		if (request.getRequestURI().equals("/clientLogin")) {
+		if (request.getRequestURI().equals("/login")) {
 
+			System.out.println("login client");
 			// verifico che non sia già bloccato
 			if (cr.getStatoBloccatoByEmail(email) == true) {
 				return;
 			}
 			// se non è bloccato ma ha i tentativi non ancora a 5 esatti li incremento
-			if (cr.getStatoBloccatoByEmail(email) == false && cr.getTentativiErratiByEmail(email) < MAX_TENTATIVI) {
+			if (cr.getStatoBloccatoByEmail(email) == false && cr.getTentativiErratiByEmail(email) <= MAX_TENTATIVI) {
 				cr.incrementaTentativoErratoByEmail(email);
 			}
 

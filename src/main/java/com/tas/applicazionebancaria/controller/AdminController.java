@@ -46,7 +46,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/clienti")
-	public ServerResponse getClienti(@CookieValue(name = "token", required = true) String jwt) {
+	public ServerResponse getClienti(@CookieValue(name = "token", required = false) String jwt) {
 		try {
 			JWT.validate(jwt);
 		} catch (Exception exc) {
@@ -58,7 +58,7 @@ public class AdminController {
 	}
 
 	@PostMapping("/clienti")
-	public ServerResponse addCliente(@CookieValue(name = "token", required = true) String jwt,
+	public ServerResponse addCliente(@CookieValue(name = "token", required = false) String jwt,
 			@RequestBody Cliente cliente) {
 		try {
 			JWT.validate(jwt);
@@ -77,7 +77,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/clienti/{id}")
-	public ServerResponse getClienteById(@CookieValue(name = "token", required = true) String jwt,
+	public ServerResponse getClienteById(@CookieValue(name = "token", required = false) String jwt,
 			@PathVariable long id) {
 		try {
 			JWT.validate(jwt);
@@ -93,7 +93,7 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/conti/{id}")
-	public ServerResponse deleteContoById(@CookieValue(name = "token", required = true) String jwt,
+	public ServerResponse deleteContoById(@CookieValue(name = "token", required = false) String jwt,
 			@PathVariable long id) {
 		try {
 			JWT.validate(jwt);

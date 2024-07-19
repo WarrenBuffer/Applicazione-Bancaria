@@ -37,7 +37,7 @@ public class ClientController {
 
 	@Autowired
 	ClienteMongoService clienteMongoService;
-	
+
 	@Autowired
 	LoginAttemptService loginAttemptService;
 
@@ -59,23 +59,22 @@ public class ClientController {
 				|| cliente.getNomeCliente() == null) {
 			return "Il campo nome non può essere vuoto e deve contenere solo lettere";
 		}
-			
+
 		if (!cliente.getCognomeCliente().matches("^[a-zA-Z ,.'-]{2,30}$")
 				|| cliente.getCognomeCliente().trim().isEmpty() || cliente.getCognomeCliente() == null) {
 			return "Il campo cognome non può essere vuoto e deve contenere solo lettere";
 		}
-			
+
 		if (!cliente.getEmailCliente().matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
 				|| cliente.getEmailCliente().trim().isEmpty() || cliente.getEmailCliente() == null) {
 			return "Il campo email non può essere vuoto e deve essere un indirizzo email valido";
 		}
-			
+
 		if (!cliente.getPasswordCliente()
-				.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?=])[a-zA-Z0-9@#&%^$?=]{7,15}$")
+				.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?!=])[a-zA-Z0-9@#&%^$?!=]{7,15}$")
 				|| cliente.getPasswordCliente().trim().isEmpty() || cliente.getPasswordCliente() == null) {
 			return "Il campo password non può essere vuoto e deve rispettare i criteri di complessità";
 		}
-			
 
 		return "ok";
 	}
@@ -113,8 +112,9 @@ public class ClientController {
 	/*-----------------------------------------REGISTRAZIONE-----------------------------------------*/
 
 	@GetMapping(value = "/registrazione")
-	public ModelAndView registrazione(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
-		if (token!=null) {
+	public ModelAndView registrazione(@CookieValue(name = "token", required = false) String token,
+			HttpServletRequest request) {
+		if (token != null) {
 			return new ModelAndView("redirect:/home");
 		}
 		ModelAndView mv = new ModelAndView();
@@ -131,6 +131,7 @@ public class ClientController {
 			if (a.getEmailCliente().equals(cliente.getEmailCliente())) {
 				System.out.println("Email confronto" + a.getEmailCliente());
 				mv.addObject("checkUser", "Utente già registrato");
+				mv.setViewName("registrazione");
 				return mv;
 			}
 		}
@@ -139,6 +140,7 @@ public class ClientController {
 		String password = checkEscapeHTML(cliente.getPasswordCliente());
 		String email = checkEscapeHTML(cliente.getEmailCliente());
 		if (validateInputs(cliente).equals("ok")) {
+			//System.out.println("validi");
 			cliente.setPasswordCliente(BCryptEncoder.encode(password));
 			cliente.setNomeCliente(nome);
 			cliente.setCognomeCliente(cognome);
@@ -152,17 +154,20 @@ public class ClientController {
 
 			clienteService.saveCliente(cliente);
 			clienteMongoService.saveClienteMongo(clienteMongo);
-			return new ModelAndView("redirect:/login");
+			mv.setViewName("login");
+			return mv;
 		} else {
-			return new ModelAndView("redirect:/registrazione");
+			// System.out.println("non vanno bene");
+			mv.addObject("validInputs", "Campi non validi");
+			mv.setViewName("registrazione");
+			return mv;
 		}
-
 	}
 
 	/*-----------------------------------------LOGIN-----------------------------------------*/
 
 	@GetMapping(value = "/login")
-	public ModelAndView login(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+	public ModelAndView login(@CookieValue(name = "token", required = false) String token, HttpServletRequest request) {
 		if (token != null) {
 			return new ModelAndView("redirect:/home");
 		}
@@ -172,10 +177,11 @@ public class ClientController {
 	}
 
 	@PostMapping(value = "/login")
-	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
-			HttpServletResponse response, HttpServletRequest request) {
+	public ModelAndView controlloLogin(@RequestParam("email") String email,
+			@RequestParam("password") String password, HttpServletResponse response,
+			HttpServletRequest request) {
 		Optional<Cliente> c = clienteService.findByEmail(email);
-		System.out.println(c.get().toString());
+		//(System.out.println(c.get().toString());
 		if (c.isPresent()) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			if (encoder.matches(password, c.get().getPasswordCliente())) {
@@ -188,8 +194,9 @@ public class ClientController {
 				return new ModelAndView("redirect:/home");
 			} else {
 				ModelAndView mv = new ModelAndView();
-				//aggiorna i campi per i tentativi errati
-				if(loginAttemptService.isBlocked(email)) {
+				// aggiorna i campi per i tentativi errati
+				if (loginAttemptService.isBlocked(email)) {
+					System.out.println("is blocked?");
 					mv.addObject("error", "Numero di tentativi finiti! Contatta l'amministratore");
 				} else {
 					loginAttemptService.loginFailed(email);
@@ -205,15 +212,15 @@ public class ClientController {
 			return mv;
 		}
 	}
-	
+
 	/*-----------------------------------------HOME-----------------------------------------*/
-	
+
 	@GetMapping("/home")
-	public ModelAndView home(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+	public ModelAndView home(@CookieValue(name = "token", required = false) String token, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-		try {	
+		try {
 			JWT.validate(token);
-		}catch(Exception exc) {
+		} catch (Exception exc) {
 			return new ModelAndView("redirect:/registrazione");
 		}
 		Jws<Claims> claims = JWT.validate(token);
