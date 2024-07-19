@@ -26,6 +26,7 @@ import com.tas.applicazionebancaria.config.LoginAttemptService;
 import com.tas.applicazionebancaria.service.ClienteMongoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
+import com.tas.applicazionebancaria.service.EmailService;
 import com.tas.applicazionebancaria.service.MovimentiContoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
 import com.tas.applicazionebancaria.utils.JWT;
@@ -58,6 +59,9 @@ public class ClientController {
 	
 	@Autowired
 	LoginAttemptService loginAttemptService;
+	
+	@Autowired
+	EmailService emailService;
 
 	/*-----------------------------------------UTILITIES-----------------------------------------*/
 
@@ -187,8 +191,7 @@ public class ClientController {
 
 			clienteService.saveCliente(cliente);
 			clienteMongoService.saveClienteMongo(clienteMongo);
-			
-
+			emailService.sendEmail(cliente.getEmailCliente(), "BENVENUTO IN APPLICAZIONE BANCARIA", "PROVA");
 			
 			return new ModelAndView("redirect:/login");
 
