@@ -34,4 +34,9 @@ public class PrestitiServiceImpl implements PrestitiService{
 	public void deletePrestiti(Prestiti prestiti) {
 		pr.delete(prestiti);
 	}
+
+	@Override
+	public double findTotPrestitiByCodCliente(long id) {
+		return pr.findTotPrestitiByCodCliente(id);
+	}
 }

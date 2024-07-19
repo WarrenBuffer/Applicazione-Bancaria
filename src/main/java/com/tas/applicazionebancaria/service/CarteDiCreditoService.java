@@ -10,4 +10,5 @@ public interface CarteDiCreditoService {
 	List<CarteDiCredito> findAll();
 	Optional<CarteDiCredito> findById(long id);
 	void deleteCarteDiCredito(CarteDiCredito carteDiCredito);
+	long findNumCarteByCodCliente(long id);
 }

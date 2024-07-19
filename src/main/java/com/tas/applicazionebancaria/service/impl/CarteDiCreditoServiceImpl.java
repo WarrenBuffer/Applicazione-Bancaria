@@ -34,4 +34,9 @@ public class CarteDiCreditoServiceImpl implements CarteDiCreditoService{
 	public void deleteCarteDiCredito(CarteDiCredito carteDiCredito) {
 		ccr.delete(carteDiCredito);
 	}
+
+	@Override
+	public long findNumCarteByCodCliente(long id) {
+		return ccr.findNumCarteByCodCliente(id);
+	}
 }

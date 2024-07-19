@@ -1,5 +1,6 @@
 package com.tas.applicazionebancaria.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +34,20 @@ public class TransazioniBancarieServiceImpl implements TransazioniBancarieServic
 	@Override
 	public void deleteTransazioniBancarie(TransazioniBancarie transazioniBancarie) {
 		tbr.delete(transazioniBancarie);
+	}
+
+	@Override
+	public Date findUltimaTransazione() {
+		return tbr.findUltimaTransazione();
+	}
+
+	@Override
+	public long findNumTransazioni() {
+		return tbr.findNumTransazioni();
+	}
+
+	@Override
+	public double findSommaImporti() {
+		return tbr.findSommaImporti();
 	}
 }

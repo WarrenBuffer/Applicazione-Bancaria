@@ -39,4 +39,14 @@ public class ClienteServiceImpl implements ClienteService{
 	public Optional<Cliente> findByEmail(String email) {
 		return cr.findByEmail(email);
 	}
+
+	@Override
+	public List<Cliente> findClienteSaldoPiuAlto() {
+		return cr.findClienteSaldoPiuAlto();
+	}
+
+	@Override
+	public long count() {
+		return cr.count();
+	}
 }

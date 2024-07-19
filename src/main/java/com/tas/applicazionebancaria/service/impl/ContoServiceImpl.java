@@ -34,5 +34,20 @@ public class ContoServiceImpl implements ContoService {
 	public void deleteConto(Conto conto) {
 		cr.delete(conto);
 	}
+
+	@Override
+	public double findSaldoMedio() {
+		return cr.findSaldoMedio();
+	}
+
+	@Override
+	public long findNumContiByCodCliente(long id) {
+		return cr.findNumContiByCodCliente(id);
+	}
+
+	@Override
+	public List<Conto> findConti0() {
+		return cr.findConti0();
+	}
 	
 }

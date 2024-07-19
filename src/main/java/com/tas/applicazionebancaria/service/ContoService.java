@@ -10,4 +10,7 @@ public interface ContoService {
 	List<Conto> findAll();
 	Optional<Conto> findById(long id);
 	void deleteConto(Conto conto);
+	double findSaldoMedio();
+	long findNumContiByCodCliente(long id);
+	List<Conto> findConti0();
 }

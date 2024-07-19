@@ -34,5 +34,20 @@ public class TransazioniMongoServiceImpl implements TransazioniMongoService{
 	public void deleteTransazioniMongo(TransazioniMongo transazioniMongo) {
 		tmr.delete(transazioniMongo);
 	}
+
+	@Override
+	public List<TransazioniMongo> findTransazioniPerTipo() {
+		return tmr.findTransazioniPerTipo();
+	}
+
+	@Override
+	public List<TransazioniMongo> transazioniMediePerCliente() {
+		return tmr.transazioniMediePerCliente();
+	}
+
+	@Override
+	public List<TransazioniMongo> importoTransazioniPerMese() {
+		return tmr.importoTransazioniPerMese();
+	}
 	
 }

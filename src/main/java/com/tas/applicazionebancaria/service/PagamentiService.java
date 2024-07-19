@@ -10,4 +10,5 @@ public interface PagamentiService {
 	List<Pagamenti> findAll();
 	Optional<Pagamenti> findById(long id);
 	void deletePagamenti(Pagamenti pagamenti);
+	double findTotPagamentiByCodCliente(long id);
 }

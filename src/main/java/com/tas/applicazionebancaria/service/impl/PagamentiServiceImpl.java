@@ -34,4 +34,9 @@ public class PagamentiServiceImpl implements PagamentiService {
 	public void deletePagamenti(Pagamenti pagamenti) {
 		pr.delete(pagamenti);
 	}
+
+	@Override
+	public double findTotPagamentiByCodCliente(long id) {
+		return pr.findTotPagamentiByCodCliente(id);
+	}
 }
