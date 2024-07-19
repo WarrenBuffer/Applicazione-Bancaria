@@ -21,8 +21,6 @@ import com.tas.applicazionebancaria.service.ClienteMongoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.utils.JWT;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -117,6 +115,7 @@ public class ClientController {
 		if (token != null) {
 			return new ModelAndView("redirect:/home");
 		}
+		
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("registrazione");
 		mv.addObject("cliente", new Cliente());
@@ -124,9 +123,10 @@ public class ClientController {
 	}
 
 	@PostMapping(value = "/registrazione")
-	public ModelAndView registrazione(Cliente cliente) {
+	public ModelAndView registrazione(Cliente cliente, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		List<Cliente> list = clienteService.findAll();
+		System.out.println(" Post registrazione");
 		for (Cliente a : list) {
 			if (a.getEmailCliente().equals(cliente.getEmailCliente())) {
 				System.out.println("Email confronto" + a.getEmailCliente());
@@ -181,7 +181,10 @@ public class ClientController {
 			@RequestParam("password") String password, HttpServletResponse response,
 			HttpServletRequest request) {
 		Optional<Cliente> c = clienteService.findByEmail(email);
+<<<<<<< Updated upstream
 		//(System.out.println(c.get().toString());
+=======
+>>>>>>> Stashed changes
 		if (c.isPresent()) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			if (encoder.matches(password, c.get().getPasswordCliente())) {
@@ -223,9 +226,8 @@ public class ClientController {
 		} catch (Exception exc) {
 			return new ModelAndView("redirect:/registrazione");
 		}
-		Jws<Claims> claims = JWT.validate(token);
-		System.out.println(claims.getBody().get("nome"));
 		mv.setViewName("home");
 		return mv;
 	}
+	
 }

@@ -28,12 +28,12 @@ public class MovimentiConto implements Serializable {
 	private Date dataMovimento;
 
 	@Column(nullable = false)
-	private tipoMovimento tipoMovimento;
+	private TipoMovimento tipoMovimento;
 
 	@Column(nullable = false)
 	private long codConto;
 }
 
-enum tipoMovimento {
+enum TipoMovimento {
 	ACCREDITO, ADDEBITO;
 }
