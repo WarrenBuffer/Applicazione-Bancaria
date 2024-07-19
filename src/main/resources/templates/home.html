@@ -38,8 +38,8 @@
 			                   <div class="modal-body">
 			                   <div class="form-group ">
 			                   		<label th:if="${listaConti!=null}" class="col-md-3 control-label">Scegli un conto</label>
-										<select th:each="conto : ${listaConti}" name="codConto">
-										  <option th:value="${conto.codConto}" th:text="${conto.codConto} + ' - ' + ${conto.tipoConto}"></option>
+										<select >
+										  <option th:each="conto : ${listaConti}" th:value="${conto.codConto}" th:text="${conto.codConto} + ' - ' + ${conto.tipoConto}"></option>
 										</select>
 			                   </div>
 			                   
@@ -50,7 +50,7 @@
 			                                <span class="input-group-addon">
 			                                    <i class="glyphicon glyphicon-euro"></i>
 			                                </span>
-			                                <input type="number" class="form-control" name="importo">
+			                                <input type="number" class="form-control" name="importo" min="1">
 			                            </div>
 			                        </div>
                     			</div>
@@ -63,6 +63,7 @@
 			        </div>
    		 		</div>
 		</div>
+		
 </div>
 <footer th:include="fragments/footer :: footer"></footer>
 </body>

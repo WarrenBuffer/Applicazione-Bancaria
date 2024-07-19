@@ -13,7 +13,8 @@
 		</div>
 		<div class="collapse navbar-collapse" id="menu">
 			
-			<div sec:authorize="isAuthenticated()">
+			<div th:if="${session.email_log}">
+			<div>
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
@@ -23,21 +24,20 @@
 							</span>
 						</a>
 						<ul class="dropdown-menu">
-							<li><i class="glyphicon glyphicon-piggy-bank">&nbsp;</i><a href="/visualizaconti">I tuoi conti</a></li>
-							<li><i class="glyphicon glyphicon-credit-card">&nbsp;</i><a href="/visualizzacarte">Le tue carte</a></li>
-							<li><i class="glyphicon glyphicon-transfer">&nbsp;</i><a href="/pagamento">Effettua un pagamento</a></li>
+							<li><a href="/visualizzaconti">I tuoi conti</a></li>
+							<li><a href="/visualizzacarte">Le tue carte</a></li>
+							<li><a href="/pagamento">Effettua un pagamento</a></li>
 						</ul>
 					</li>
 					<li>
-						<a href="/logout">
-							<span class="glyphicon glyphicon-log-out">&nbsp;</span>
-							Logout
-						</a>
+						<a href="#" data-toggle="modal" data-target="#logoutModal"><span class="glyphicon glyphicon-log-out">&nbsp;</span>Logout</a>
 					</li>
 				</ul>
 			</div>
+			</div>
 			
-			<div sec:authorize="!isAuthenticated()">
+			<div th:unless="${session.email_log}">
+			<div>
 				<ul class="nav navbar-nav navbar-right">
 					<li>
 						<a href="/registrazione">
@@ -51,6 +51,29 @@
 					</li>
 				</ul>
 			</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+			        <div class="modal-dialog modal-md">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                        <span aria-hidden="true">&times;</span>
+			                    </button>
+			                    <h4 class="modal-title" id="logoutModalLabel">Logout</h4>
+			                </div>
+			                <form th:action="@{/logout}" method="post" class="form-horizontal">
+			                  	<div class="modal-body">
+			                  		<p>Vuoi effettuare il logout?</p>
+			                	</div>
+			                	<div class="modal-footer">
+			                    	<button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+			                    	<button type="submit" class="btn btn-warning">Conferma</button>
+			                	</div>
+			            	</form>
+			        </div>
+   		 		</div>
 		</div>
 	</div>
 </nav>

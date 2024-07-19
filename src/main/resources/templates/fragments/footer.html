@@ -8,6 +8,7 @@
 	</ul>
 </nav>
 
+<div th:unless="${session.email_log}">
 <nav>
 	<h3>Navigazione</h3>
 	<ul>
@@ -16,17 +17,20 @@
 		<li><i class="glyphicon glyphicon-log-in">&nbsp;</i><a href="/login">Login</a></li>
 	</ul>
 </nav>
+</div>
 
+<div th:if="${session.email_log}">
 <nav>
 	<h3>Navigazione</h3>
 	<ul>
 		<li><i class="glyphicon glyphicon-wrench">&nbsp;</i><a href="/api/clienti">Sezione amministratore</a></li>
-		<li><i class="glyphicon glyphicon-piggy-bank">&nbsp;</i><a href="/visualizaconti">I tuoi conti</a></li>
+		<li><i class="glyphicon glyphicon-piggy-bank">&nbsp;</i><a href="/visualizzaconti">I tuoi conti</a></li>
 		<li><i class="glyphicon glyphicon-credit-card">&nbsp;</i><a href="/visualizzacarte">Le tue carte</a></li>
 		<li><i class="glyphicon glyphicon-transfer">&nbsp;</i><a href="/pagamento">Effettua un pagamento</a></li>
 		<li><i class="glyphicon glyphicon-log-out">&nbsp;</i><a href="/logout">Logout</a></li>
 	</ul>
 </nav>
+</div>
 
-<p class="copyright">2024 Applicazione bancaria<sup>&copy;&nbsp;</sup>All rights reserved</p>
+<p class="copyright">2024 Applicazione bancaria<sup>&copy;&nbsp;</sup>All tights reserved</p>
 </div>

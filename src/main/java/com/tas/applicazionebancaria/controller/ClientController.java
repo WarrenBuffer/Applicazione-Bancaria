@@ -247,6 +247,21 @@ public class ClientController {
 		}
 	}
 	
+	/*-----------------------------------------LOGOUT-----------------------------------------*/
+	
+	@PostMapping(value = "/logout")
+	public ModelAndView effettuaLogout(HttpServletRequest request, HttpServletResponse response) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				cookie.setMaxAge(0);
+				response.addCookie(cookie);
+			}
+		}
+		request.getSession().invalidate();
+		return new ModelAndView("redirect:/login");
+	}
+	
 	/*-----------------------------------------HOME UTENTE-----------------------------------------*/
 	
 
@@ -289,10 +304,12 @@ public class ClientController {
 //			throw new TokenException(exc);
 		}
 		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 			List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
 			if(listaConti!=null && !listaConti.isEmpty()) {
 				mv.addObject("listaConti", listaConti);
+				
 				mv.setViewName("visualizzaconti");
 				return mv;
 			}else {
@@ -311,6 +328,8 @@ public class ClientController {
 //			throw new TokenException(exc);
 		}
 		
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
 		mv.addObject("conto", new Conto());
 		mv.setViewName("creaconto");
 		return mv;
