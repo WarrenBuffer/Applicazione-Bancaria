@@ -7,83 +7,46 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-<<<<<<< Updated upstream
 			<div>
 				<a class="navbar-brand" href="/">Applicazione Bancaria</a>
-=======
-			<div sec:authorize="!hasRole('ADMIN')">
-				<a class="navbar-brand" href="/home">Piattaforma Pagamenti</a>
-			</div>
-			<div sec:authorize="hasRole('ADMIN')">
-				<a class="navbar-brand" href="/admin">Home page</a>
->>>>>>> Stashed changes
 			</div>
 		</div>
 		<div class="collapse navbar-collapse" id="menu">
-			<ul th:if="${utente_log?.getUsername()} != null" class="nav navbar-nav">
-				<li><a href="/acquisti">Acquista</a></li>
-				<li><a href="/carrello">Carrello</a></li>
-			</ul>
-		
-			<ul th:if="${utente_log?.getUsername()} != null" class="nav navbar-nav navbar-right">
-				<li>
-					<a href="/carrello">
-						<span class="glyphicon glyphicon-shopping-cart">&nbsp;</span>
-						<span class="badge">
-							<th:block th:text="${carrello?.getArticoli()} ? ${carrello?.getArticoli()} : 0"></th:block>
-						</span>
-					</a>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-						<span class="glyphicon glyphicon-user">&nbsp;</span>
-						<span class="badge">
-							<th:block th:text="${utente_log?.getUsername()} ? ${utente_log?.getUsername()} : ''"></th:block>
-						</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a href="/modUtente">Modifica account</a></li>
-						<li><a href="/ordini">Riepilogo ordini</a></li>
-						<li><a style="color: red;" href="/eliminaUtente">Elimina account</a></li>
-					</ul>
-				</li>
-				<li>
-					<a href="/logout">
-						<span class="glyphicon glyphicon-user">&nbsp;</span>
-						Logout
-					</a>
-				</li>
-			</ul>
 			
-			<div>
-				<ul th:if="${utente_log?.getUsername()} == null" class="nav navbar-nav navbar-right">
+			<div sec:authorize="isAuthenticated()">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+							<span class="glyphicon glyphicon-user">&nbsp;</span>
+							<span class="badge">
+								<th:block th:text="${nome} ? ${nome} : ''"></th:block>
+							</span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><i class="glyphicon glyphicon-piggy-bank">&nbsp;</i><a href="/visualizaconti">I tuoi conti</a></li>
+							<li><i class="glyphicon glyphicon-credit-card">&nbsp;</i><a href="/visualizzacarte">Le tue carte</a></li>
+							<li><i class="glyphicon glyphicon-transfer">&nbsp;</i><a href="/pagamento">Effettua un pagamento</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="/logout">
+							<span class="glyphicon glyphicon-log-out">&nbsp;</span>
+							Logout
+						</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div sec:authorize="!isAuthenticated()">
+				<ul class="nav navbar-nav navbar-right">
 					<li>
 						<a href="/registrazione">
-							<span class="glyphicon glyphicon-user">&nbsp;</span>Registrati
+							<span class="glyphicon glyphicon-pencil">&nbsp;</span>Registrati
 						</a>
 					</li>
 					<li>
 						<a href="/login">
 							<span class="glyphicon glyphicon-log-in">&nbsp;</span>Log-in
-						</a>
-					</li>
-				</ul>
-			</div>
-			<div sec:authorize="hasRole('ADMIN')">
-				<ul class="nav navbar-nav navbar-right">
-					<li>
-						<a href="/admin/gestioneArticoli">
-							<span class="glyphicon glyphicon-briefcase">&nbsp;</span>Gestione articoli
-						</a>
-					</li>
-					<li>
-						<a href="/admin/gestioneOrdini">
-							<span class="glyphicon glyphicon-list">&nbsp;</span>Gestione ordini
-						</a>
-					</li>
-					<li>
-						<a href="/logoutAdmin">
-							<span class="glyphicon glyphicon-log-in">&nbsp;</span>Logout
 						</a>
 					</li>
 				</ul>

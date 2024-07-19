@@ -8,7 +8,7 @@
 	</ul>
 </nav>
 
-<nav sec:authorize="!isAuthenticated()">
+<nav>
 	<h3>Navigazione</h3>
 	<ul>
 		<li><i class="glyphicon glyphicon-wrench">&nbsp;</i><a href="/api/clienti">Sezione amministratore</a></li>
@@ -17,36 +17,16 @@
 	</ul>
 </nav>
 
-<nav sec:authorize="isAuthenticated()">
+<nav>
 	<h3>Navigazione</h3>
 	<ul>
-		<li><a href="/api/clienti">Sezione amministratore</a></li>
+		<li><i class="glyphicon glyphicon-wrench">&nbsp;</i><a href="/api/clienti">Sezione amministratore</a></li>
+		<li><i class="glyphicon glyphicon-piggy-bank">&nbsp;</i><a href="/visualizaconti">I tuoi conti</a></li>
+		<li><i class="glyphicon glyphicon-credit-card">&nbsp;</i><a href="/visualizzacarte">Le tue carte</a></li>
+		<li><i class="glyphicon glyphicon-transfer">&nbsp;</i><a href="/pagamento">Effettua un pagamento</a></li>
+		<li><i class="glyphicon glyphicon-log-out">&nbsp;</i><a href="/logout">Logout</a></li>
 	</ul>
 </nav>
 
-<!-- <nav>
-	<h3>Contatti</h3>
-	<ul>
-		<li><a href="#">Contatti</a></li>
-		<li><a href="#">Aiuto</a></li>
-		<li><a href="#">Info</a></li>
-		<li><a href="#">Site map</a></li>
-	</ul>
-</nav>
-
-<section>
-	<h3>Network</h3>
-	<ul>
-		<li><a href="#">Facebook</a></li>
-		<li><a href="#">Instagram</a></li>
-		<li><a href="#">X</a></li>
-		<li><a href="#">Pinterest</a></li>
-	</ul>
-</section> -->
-
-<<<<<<< Updated upstream
 <p class="copyright">2024 Applicazione bancaria<sup>&copy;&nbsp;</sup>All rights reserved</p>
-=======
-<p class="copyright">2024 Piattaforma Pagamenti<sup>&copy;</sup></p>
->>>>>>> Stashed changes
 </div>
