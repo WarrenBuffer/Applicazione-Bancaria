@@ -8,7 +8,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.CarteDiCredito;
 
 @Repository("CarteDiCreditoRepository")
 public interface CarteDiCreditoRepository extends JpaRepository<CarteDiCredito, Long> {
-	@Query(value = "select count(*) from carte_di_credito where cod_cliente = ?1")
+	@Query(value = "select count(*) from carte_di_credito where cod_cliente = ?1", nativeQuery = true)
 	long findNumCarteByCodCliente(long id);
 	
 }

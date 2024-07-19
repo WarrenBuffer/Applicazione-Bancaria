@@ -47,6 +47,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 	@Query(value = "Select account_bloccato from cliente where email_cliente = ?1", nativeQuery = true)
 	boolean getStatoBloccatoByEmail(String email);
 	
-	@Query(value = "select cl.cod_cliente, cl.nome_cliente, cl.cognome_cliente, cl.email_cliente, cl.account_bloccato, cl.tentativi_errati, co.saldo from cliente cl, conto co where cl.cod_cliente = co.cod_cliente group by cl.cod_cliente, co.saldo having max(saldo)")
+	@Query(value = "select cl.cod_cliente, cl.nome_cliente, cl.cognome_cliente, cl.email_cliente, cl.account_bloccato, cl.tentativi_errati, co.saldo from cliente cl, conto co where cl.cod_cliente = co.cod_cliente group by cl.cod_cliente, co.saldo having max(saldo)", nativeQuery = true)
 	List<Cliente> findClienteSaldoPiuAlto();
 }
