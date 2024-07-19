@@ -19,6 +19,8 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>{
 	
 
 	@Query(value = "update cliente set tentativi_errati = tentativi_errati + 1 where email_cliente = ?1", nativeQuery = true)
+	@Modifying
+	@Transactional
 	void incrementaTentativoErratoByEmail(String email);
 	
 	@Query(value = "Select tentativi_errati from cliente where email_cliente = ?1", nativeQuery = true)

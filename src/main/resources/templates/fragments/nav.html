@@ -7,11 +7,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<div sec:authorize="!hasRole('ADMIN')">
-				<a class="navbar-brand" href="/">Negozio On-line</a>
-			</div>
-			<div sec:authorize="hasRole('ADMIN')">
-				<a class="navbar-brand" href="/admin">Home page</a>
+			<div>
+				<a class="navbar-brand" href="/">Applicazione Bancaria</a>
 			</div>
 		</div>
 		<div class="collapse navbar-collapse" id="menu">
@@ -50,11 +47,11 @@
 				</li>
 			</ul>
 			
-			<div sec:authorize="!hasRole('ADMIN')">
+			<div>
 				<ul th:if="${utente_log?.getUsername()} == null" class="nav navbar-nav navbar-right">
 					<li>
 						<a href="/registrazione">
-							<span class="glyphicon glyphicon-user">&nbsp;</span>Sign-up
+							<span class="glyphicon glyphicon-user">&nbsp;</span>Registrati
 						</a>
 					</li>
 					<li>

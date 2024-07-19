@@ -11,7 +11,7 @@
 		<div th:text="${checkUser}"></div>
 	</div>
 	
-	<form th:action="@{/registrazione}" th:object="${cliente}" method="post" class="form-horizontal">
+	<form th:action="@{/registrazione}" th:object="${cliente}" method="post" class="form-horizontal" id="clienteForm">
 		<!-- NOME -->
 		<div class="form-group">
 			<label class="col-md-1 control-label">Nome</label>
@@ -23,6 +23,7 @@
 					<input type="text" name="nome" id="nome" placeholder="Nome..." class="form-control" th:field="*{nomeCliente}" required>
 				</div>
 			</div>
+			<div class="col-md-7 error" id="infoNome"></div>
 		</div>
 		<!-- COGNOME -->
 		<div class="form-group">
@@ -35,6 +36,7 @@
 					<input type="text" name="cognome" id="cognome" placeholder="Cognome..." class="form-control" th:field="*{cognomeCliente}" required>
 				</div>
 			</div>
+			<div class="col-md-7 error" id="infoCognome"></div>
 		</div>
 		<!-- EMAIL -->
 		<div class="form-group">
@@ -47,6 +49,7 @@
 					<input type="text" name="email" id="email" placeholder="Email..." class="form-control" th:field="*{emailCliente}" required>
 				</div>
 			</div>
+			<div class="col-md-7 error" id="infoEmail"></div>
 		</div>
 		<!-- PASSWORD -->
 		<div class="form-group">
@@ -59,11 +62,12 @@
 					<input type="password" name="password" id="password" placeholder="Password..." class="form-control" th:field="*{passwordCliente}" required>
 				</div>
 			</div>
+			<div class="col-md-7 error" id="infoPassword"></div>
 		</div>
 		<div th:if="${validInputs}" class="alert alert-danger" th:text="${validInputs}" style="margin-top: 10px;"></div>
 		<div class="row">
 			<div class="col-md-4 col-md-offset-1">
-				<button type="submit" class="btn btn-warning">
+				<button type="submit" class="btn btn-info">
 					Registrati&nbsp;&nbsp;<span class="glyphicon glyphicon-send"></span>
 				</button>
 			</div>

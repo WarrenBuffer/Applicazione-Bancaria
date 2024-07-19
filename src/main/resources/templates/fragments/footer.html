@@ -1,20 +1,30 @@
 <div th:fragment="footer" xmlns:th="http://w3c.org/1999/xhtml" xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity6">
 <nav>
-	<h3>Navigazione</h3>
-	<ul sec:authorize="!hasRole('ADMIN')">
-		<li><a href="/">Home page</a></li>
-		<li><a href="/acquisti">Acquisti</a></li>
-		<li><a href="/carrello">Riepilogo</a></li>
-		<li><a href="/admin">Sezione amministratore</a></li>
-	</ul>
-	<ul sec:authorize="hasRole('ADMIN')">
-		<li><a href="/admin">Home page</a></li>
-		<li><a href="/admin/gestioneArticoli">Gestione articoli</a></li>
-		<li><a href="/admin/gestioneOrdini">Gestione ordini</a></li>
+	<h3>Contatti</h3>
+	<ul>
+		<li><i class="glyphicon glyphicon-globe">&nbsp;</i><a href="https://www.tasgroup.eu/it/">Scopri Tas Group</a></li>
+		<li><i class="glyphicon glyphicon-briefcase">&nbsp;</i><a href="https://www.linkedin.com/company/tasgroup">LinkedIn</a></li>
+		<li><i class="glyphicon glyphicon-bullhorn">&nbsp;</i><a href="https://www.tasgroup.eu/it/lavora-con-noi/">Lavora con noi</a></li>
 	</ul>
 </nav>
 
-<nav>
+<nav sec:authorize="!isAuthenticated()">
+	<h3>Navigazione</h3>
+	<ul>
+		<li><i class="glyphicon glyphicon-wrench">&nbsp;</i><a href="/api/clienti">Sezione amministratore</a></li>
+		<li><i class="glyphicon glyphicon-pencil">&nbsp;</i><a href="/registrazione">Registrati</a></li>
+		<li><i class="glyphicon glyphicon-log-in">&nbsp;</i><a href="/login">Login</a></li>
+	</ul>
+</nav>
+
+<nav sec:authorize="isAuthenticated()">
+	<h3>Navigazione</h3>
+	<ul>
+		<li><a href="/api/clienti">Sezione amministratore</a></li>
+	</ul>
+</nav>
+
+<!-- <nav>
 	<h3>Contatti</h3>
 	<ul>
 		<li><a href="#">Contatti</a></li>
@@ -32,7 +42,7 @@
 		<li><a href="#">X</a></li>
 		<li><a href="#">Pinterest</a></li>
 	</ul>
-</section>
+</section> -->
 
-<p class="copyright">2024 Negozio On-line<sup>&copy;</sup></p>
+<p class="copyright">2024 Applicazione bancaria<sup>&copy;&nbsp;</sup>All rights reserved</p>
 </div>

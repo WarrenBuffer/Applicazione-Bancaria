@@ -65,7 +65,7 @@ public class ClientController {
 			return "Il campo cognome non può essere vuoto e deve contenere solo lettere";
 		}
 
-		if (!cliente.getEmailCliente().matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+		if (!cliente.getEmailCliente().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
 				|| cliente.getEmailCliente().trim().isEmpty() || cliente.getEmailCliente() == null) {
 			return "Il campo email non può essere vuoto e deve essere un indirizzo email valido";
 		}
