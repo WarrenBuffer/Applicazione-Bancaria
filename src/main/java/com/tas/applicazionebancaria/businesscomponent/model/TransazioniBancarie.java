@@ -3,6 +3,8 @@ package com.tas.applicazionebancaria.businesscomponent.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,7 +37,7 @@ public class TransazioniBancarie implements Serializable {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private tipoTransazioneBancaria tipoTransazione;
+	private TipoTransazione tipoTransazione;
 
 	@ManyToOne
 	@JoinColumn(name="codContoOrigine")
@@ -44,8 +46,4 @@ public class TransazioniBancarie implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="codContoDestinazione")
 	private Conto contoDestinazione;
-}
-
-enum tipoTransazioneBancaria {
-	ACCREDITO, ADDEBITO;
 }

@@ -3,6 +3,8 @@ package com.tas.applicazionebancaria.businesscomponent.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

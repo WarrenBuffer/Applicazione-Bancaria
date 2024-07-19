@@ -3,6 +3,8 @@ package com.tas.applicazionebancaria.businesscomponent.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,13 +35,11 @@ public class RichiestePrestito implements Serializable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private statoEnum stato;
+	private StatoPrestito stato;
 	
 	@ManyToOne
 	@JoinColumn(name = "codCliente")
 	private Cliente codCliente;
 }
 
-enum statoEnum {
-	IN_ATTESA, APPROVATO, RIFIUTATO
-}
+

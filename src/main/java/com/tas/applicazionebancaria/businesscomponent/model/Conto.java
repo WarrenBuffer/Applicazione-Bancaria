@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,7 +30,7 @@ public class Conto implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id
 	private long codConto;
-	@Column(nullable=false, unique = true)
+	@Column(nullable=false)
 	private String emailCliente;
 	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
@@ -48,7 +49,4 @@ public class Conto implements Serializable{
 	@JsonIgnore
 	private Set<Transazioni> transazioni=new HashSet<Transazioni>();
 	
-}
-enum TipoConto{
-	CORRENTE, RISPARMIO;
 }

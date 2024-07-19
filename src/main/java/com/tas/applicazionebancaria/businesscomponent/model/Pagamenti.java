@@ -3,6 +3,8 @@ package com.tas.applicazionebancaria.businesscomponent.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.MetodoPagamento;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,13 +35,11 @@ public class Pagamenti implements Serializable {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private metodoPagamento metodoPagamento;
+	private MetodoPagamento metodoPagamento;
 
 	@ManyToOne
 	@JoinColumn(name = "codCliente")
 	private Cliente codCliente;
 }
 
-enum metodoPagamento {
-	BONIFICO, CARTA_CREDITO, CONTANTI;
-}
+

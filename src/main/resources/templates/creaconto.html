@@ -1,0 +1,39 @@
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn"></head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container">
+	<header class="page-header">
+		<h3>Inserisci i dati per la creazione di un Conto</h3>
+	</header>
+	<form th:action="@{/confermaconto}" method="post" th:object="${conto}" class="form-horizontal">
+		
+		<!-- TIPO CONTO -->
+		<div class="form-group">
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="tipoConto" id="tipoConto1" th:field="*{tipoConto}" value="RISPARMIO">
+			  <label class="form-check-label" for="flexRadioDefault1">
+			    Risparmio
+			  </label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="tipoConto" id="tipoConto2" th:field="*{tipoConto}" value="CORRENTE" checked>
+			  <label class="form-check-label" for="flexRadioDefault2">
+			    Corrente
+			  </label>
+		</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-4 col-md-offset-1">
+				<button type="submit" class="btn btn-info">
+					Conferma&nbsp;&nbsp;<span class="glyphicon glyphicon-send"></span>
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+
+</body>
+</html>

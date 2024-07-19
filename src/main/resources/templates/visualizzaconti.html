@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container">
+	<div class="jumbotron" style="margin-top: 50px;">
+		<h1>Visualizza Conti</h1>
+		
+		<div th:if="${listaConti != null}">
+		<table class="table table-hover">
+	<thead>
+		<tr>
+			<th style="width:200px;">Cod Conto</th>
+			<th style="width:200px;">Saldo (€)</th>
+			<th style="width:200px;">Cod Cliente</th>
+			<th style="width:200px;">Email</th>
+			<th style="width:200px;">Tipo di Conto</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr th:each="conto : ${listaConti}" style="vertical-align: middle;">
+			<td style="vertical-align: middle;" th:text="${conto.codConto}">
+			</td>
+			<td style="vertical-align: middle;" th:text="${#numbers.formatDecimal(conto.saldo,1,2,'COMMA')}">
+			</td>
+			<td style="vertical-align: middle;" th:text="${conto.codCliente.codCliente}">
+			</td>
+			<td style="vertical-align: middle;" th:text="${conto.emailCliente}">
+			</td>
+			<td style="vertical-align: middle;" th:text="${conto.tipoConto}">
+			</td>
+		</tr>
+	</tbody>	
+</table>
+</div>
+
+<p th:if="${listaConti==null}">Nessun conto da visualizzare!</p>
+
+
+<a class="btn btn-primary" role="button" href="/creaconto" style="width: 250px;">
+			Crea un nuovo conto!&nbsp; <span class="glyphicon glyphicon-euro"></span>
+		</a>
+	
+		
+		
+	</div>
+
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

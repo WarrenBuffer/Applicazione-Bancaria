@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container">
+
+	<div class="jumbotron" style="margin-top: 50px;">
+	
+		<h1>Piattaforma Pagamenti Online</h1>
+	
+		<p style="margin-top: 40px;">Non sei ancora un nostro cliente?&nbsp;&nbsp;<a th:href="@{/registrazione}">Registrati</a></p>
+		<p>Altrimenti&nbsp;&nbsp;<a th:href="@{/login}">Login</a></p>
+	</div>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

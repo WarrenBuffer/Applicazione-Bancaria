@@ -3,6 +3,8 @@ package com.tas.applicazionebancaria.businesscomponent.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMovimento;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,3 @@ public class MovimentiConto implements Serializable {
 	private long codConto;
 }
 
-enum TipoMovimento {
-	ACCREDITO, ADDEBITO;
-}

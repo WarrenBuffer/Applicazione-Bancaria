@@ -13,4 +13,7 @@ public interface ContoService {
 	double findSaldoMedio();
 	long findNumContiByCodCliente(long id);
 	List<Conto> findConti0();
+
+	List<Conto> findByIdCliente(long id);
+
 }

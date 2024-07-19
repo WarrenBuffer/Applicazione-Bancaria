@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
+
 import jakarta.persistence.Id;
 import lombok.Data;
 

@@ -35,7 +35,7 @@ public class ContoServiceImpl implements ContoService {
 		cr.delete(conto);
 	}
 
-	@Override
+
 	public double findSaldoMedio() {
 		return cr.findSaldoMedio();
 	}
@@ -48,6 +48,12 @@ public class ContoServiceImpl implements ContoService {
 	@Override
 	public List<Conto> findConti0() {
 		return cr.findConti0();
+	}
+	
+	@Override
+	public List<Conto> findByIdCliente(long id) {
+		return cr.findByIdCliente(id);
+
 	}
 	
 }
