@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.tas.applicazionebancaria.repository.AmministratoreRepository;
@@ -22,8 +23,9 @@ public class SecurityConfig {
 	private ClienteRepository clienteRepository;
 	private AmministratoreRepository amministratoreRepository;
 
-	public SecurityConfig(ClienteRepository clienteRepository) {
+	public SecurityConfig(ClienteRepository clienteRepository, AmministratoreRepository amministratoreRepository) {
 		this.clienteRepository = clienteRepository;
+		this.amministratoreRepository = amministratoreRepository;
 	}
 
 	@Bean
@@ -35,7 +37,7 @@ public class SecurityConfig {
 		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
-	
+
 	@Bean
 	DaoAuthenticationProvider adminAuthenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -56,18 +58,21 @@ public class SecurityConfig {
 		http
 				// Configura le autorizzazioni delle richieste
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/admin/**").authenticated()
-						.anyRequest().permitAll())
+						auth -> auth.requestMatchers("/admin/**").authenticated().anyRequest().permitAll())
 
-				.formLogin(form -> form.loginPage("/loginAdmin").permitAll())
+				.formLogin(form -> form.loginPage("/loginAdmin").permitAll()
+						.successHandler(myAuthenticationSuccessHandler()))
 
 				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logoutAdmin"))
 						.logoutSuccessUrl("/admin/"))
 				// Configura l'autenticazione di base HTTP
 				.httpBasic(withDefaults());
-
 		// Costruisce e ritorna l'oggetto HttpSecurity configurato
 		return http.build();
 	}
 
+	@Bean
+	AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
+		return new AdminUrlAuthenticationSuccessHandler();
+	}
 }

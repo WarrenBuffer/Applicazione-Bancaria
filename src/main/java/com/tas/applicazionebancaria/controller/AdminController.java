@@ -61,10 +61,42 @@ public class AdminController {
 			return false;
 		if (!email.matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
 			return false;
-		if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?=])[a-zA-Z0-9@#&%^$?=]{7,15}$"))
+		if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?!=])[a-zA-Z0-9@#&%^$?!=]{7,15}$"))
 			return false;
 		return true;
 	}
+
+	/*
+	 * @GetMapping(value = "/loginAdmin") public ModelAndView
+	 * login(@CookieValue(name = "token", required = false) String token,
+	 * HttpServletRequest request) { if (token != null) { return new
+	 * ModelAndView("redirect:/home"); } ModelAndView mv = new ModelAndView();
+	 * mv.setViewName("login"); return mv; }
+	 */
+
+	/*
+	@PostMapping(value = "/loginAdmin")
+	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
+			HttpServletResponse response, HttpServletRequest request) {
+		Optional<Amministratore> a = adminService.findByEmail(email);
+		// (System.out.println(c.get().toString());
+		if (a.isPresent()) {
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			if (encoder.matches(password, a.get().getPasswordAdmin())) {
+				return new ModelAndView("redirect:/home");
+			} else {
+				ModelAndView mv = new ModelAndView();
+				mv.setViewName("login");
+				return mv;
+			}
+		} else {
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("error", "Utente non trovato!");
+			mv.setViewName("login");
+			return mv;
+		}
+	}
+	*/
 
 	@GetMapping("/clienti")
 	public ServerResponse getClienti(@CookieValue(name = "token", required = false) String jwt) {

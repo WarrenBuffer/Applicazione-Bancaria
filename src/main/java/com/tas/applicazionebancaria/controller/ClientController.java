@@ -72,7 +72,7 @@ public class ClientController {
 	}
 
 	private static String validateInputs(Cliente cliente) {
-		System.out.println("sono dentro la validazione");
+		//System.out.println("sono dentro la validazione");
 		if (!cliente.getNomeCliente().matches("^[a-zA-Z ,.'-]{2,30}$") || cliente.getNomeCliente().trim().isEmpty()
 				|| cliente.getNomeCliente() == null) {
 			return "Il campo nome non può essere vuoto e deve contenere solo lettere";
@@ -173,7 +173,7 @@ public class ClientController {
 		String password = checkEscapeHTML(cliente.getPasswordCliente());
 		String email = checkEscapeHTML(cliente.getEmailCliente());
 		if (validateInputs(cliente).equals("ok")) {
-			//System.out.println("validi");
+			// System.out.println("validi");
 			cliente.setPasswordCliente(BCryptEncoder.encode(password));
 			cliente.setNomeCliente(nome);
 			cliente.setCognomeCliente(cognome);
@@ -213,11 +213,9 @@ public class ClientController {
 	}
 
 	@PostMapping(value = "/login")
-	public ModelAndView controlloLogin(@RequestParam("email") String email,
-			@RequestParam("password") String password, HttpServletResponse response,
-			HttpServletRequest request) {
+	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
+			HttpServletResponse response, HttpServletRequest request) {
 		Optional<Cliente> c = clienteService.findByEmail(email);
-
 		if (c.isPresent()) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			if (encoder.matches(password, c.get().getPasswordCliente())) {
@@ -232,7 +230,7 @@ public class ClientController {
 				ModelAndView mv = new ModelAndView();
 				// aggiorna i campi per i tentativi errati
 				if (loginAttemptService.isBlocked(email)) {
-					System.out.println("is blocked?");
+					// System.out.println("is blocked?");
 					mv.addObject("error", "Numero di tentativi finiti! Contatta l'amministratore");
 				} else {
 					loginAttemptService.loginFailed(email);
