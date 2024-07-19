@@ -100,11 +100,6 @@ public class AdminController {
 
 	@GetMapping("/clienti")
 	public ServerResponse getClienti(@CookieValue(name = "token", required = false) String jwt) {
-		try {
-			JWT.validate(jwt);
-		} catch (Exception exc) {
-			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
-		}
 
 		List<Cliente> clienti = clienteService.findAll();
 		return new ServerResponse(0, clienti);
@@ -113,11 +108,6 @@ public class AdminController {
 	@PostMapping("/clienti")
 	public ServerResponse addCliente(@CookieValue(name = "token", required = false) String jwt,
 			@RequestBody Cliente cliente) {
-		try {
-			JWT.validate(jwt);
-		} catch (Exception exc) {
-			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
-		}
 		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
 				cliente.getPasswordCliente()))
 			return new ServerResponse(1, "Validazione fallita, riprova a inserire i dati.");
@@ -132,11 +122,6 @@ public class AdminController {
 	@GetMapping("/clienti/{id}")
 	public ServerResponse getClienteById(@CookieValue(name = "token", required = false) String jwt,
 			@PathVariable long id) {
-		try {
-			JWT.validate(jwt);
-		} catch (Exception exc) {
-			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
-		}
 
 		Optional<Cliente> cliente = clienteService.findById(id);
 		if (cliente.isEmpty())
@@ -148,11 +133,6 @@ public class AdminController {
 	@DeleteMapping("/conti/{id}")
 	public ServerResponse deleteContoById(@CookieValue(name = "token", required = false) String jwt,
 			@PathVariable long id) {
-		try {
-			JWT.validate(jwt);
-		} catch (Exception exc) {
-			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
-		}
 
 		Optional<Conto> conto = contoService.findById(id);
 		if (conto.isEmpty())
@@ -164,12 +144,6 @@ public class AdminController {
 
 	@GetMapping("/statistiche")
 	public ServerResponse getStatistiche(@CookieValue(name = "token", required = true) String jwt) {
-		try {
-			JWT.validate(jwt);
-		} catch (Exception exc) {
-			return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
-		}
-		
 		Statistiche stat = new Statistiche();
 		stat.setNumeroClienti(clienteService.count());
 		stat.setSaldoPiuAlto(clienteService.findClienteSaldoPiuAlto());
@@ -224,4 +198,5 @@ public class AdminController {
 		}
 		return totPagamentiPerCliente;
 	}
+	
 }
