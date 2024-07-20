@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, UrlTree } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -8,20 +8,22 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 export class AuthGuardService {
   private token: string | null = null;
 
-  constructor(@Inject(DOCUMENT) private document: Document) {     
+  constructor(@Inject(DOCUMENT) private document: Document, private _router: Router) {     
     
   }
 
-  canActivate(route: ActivatedRouteSnapshot): boolean {
-    let canActivate = false;
+  canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
     this.token = this.document.defaultView?.sessionStorage ? sessionStorage.getItem('token') : null;
 
-    route.url.forEach(path => {
-        const url = path.path;
-        if (url === '' ) canActivate = true;
-        else if (url === 'home') canActivate = this.token !== null;
-    }); 
-    
-    return canActivate;
+    for (let i = 0; i < route.url.length; ++i) {
+      const path = route.url[i].path;
+      switch (path) {
+        case 'login': return this.token !== null ? this._router.createUrlTree(['/home']) : true;
+        case 'home': return this.token !== null ? true : this._router.createUrlTree(['/']);
+        default: return false;
+      }
+    }
+
+    return this._router.createUrlTree(['/']);
 }
 }
