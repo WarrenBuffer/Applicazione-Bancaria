@@ -1,4 +1,4 @@
-package com.tas.applicazionebancaria.controller;
+package com.tas.applicazionebancaria.restcontroller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +26,11 @@ import com.tas.applicazionebancaria.service.PrestitiService;
 import com.tas.applicazionebancaria.service.TransazioniBancarieService;
 import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
-import com.tas.applicazionebancaria.utils.JWT;
 import com.tas.applicazionebancaria.utils.ServerResponse;
 import com.tas.applicazionebancaria.utils.Statistiche;
 
 @RequestMapping(value = "/api")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class AdminController {
 	@Autowired
@@ -66,47 +64,14 @@ public class AdminController {
 		return true;
 	}
 
-	/*
-	 * @GetMapping(value = "/loginAdmin") public ModelAndView
-	 * login(@CookieValue(name = "token", required = false) String token,
-	 * HttpServletRequest request) { if (token != null) { return new
-	 * ModelAndView("redirect:/home"); } ModelAndView mv = new ModelAndView();
-	 * mv.setViewName("login"); return mv; }
-	 */
-
-	/*
-	@PostMapping(value = "/loginAdmin")
-	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
-			HttpServletResponse response, HttpServletRequest request) {
-		Optional<Amministratore> a = adminService.findByEmail(email);
-		// (System.out.println(c.get().toString());
-		if (a.isPresent()) {
-			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			if (encoder.matches(password, a.get().getPasswordAdmin())) {
-				return new ModelAndView("redirect:/home");
-			} else {
-				ModelAndView mv = new ModelAndView();
-				mv.setViewName("login");
-				return mv;
-			}
-		} else {
-			ModelAndView mv = new ModelAndView();
-			mv.addObject("error", "Utente non trovato!");
-			mv.setViewName("login");
-			return mv;
-		}
-	}
-	*/
-
 	@GetMapping("/clienti")
-	public ServerResponse getClienti(@CookieValue(name = "token", required = false) String jwt) {
-
+	public ServerResponse getClienti() {
 		List<Cliente> clienti = clienteService.findAll();
 		return new ServerResponse(0, clienti);
 	}
 
 	@PostMapping("/clienti")
-	public ServerResponse addCliente(@CookieValue(name = "token", required = false) String jwt,
+	public ServerResponse addCliente(
 			@RequestBody Cliente cliente) {
 		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
 				cliente.getPasswordCliente()))
@@ -120,9 +85,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/clienti/{id}")
-	public ServerResponse getClienteById(@CookieValue(name = "token", required = false) String jwt,
-			@PathVariable long id) {
-
+	public ServerResponse getClienteById(@PathVariable long id) {
 		Optional<Cliente> cliente = clienteService.findById(id);
 		if (cliente.isEmpty())
 			return new ServerResponse(1, "Il cliente con id " + id + " non esiste.");
@@ -131,9 +94,7 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/conti/{id}")
-	public ServerResponse deleteContoById(@CookieValue(name = "token", required = false) String jwt,
-			@PathVariable long id) {
-
+	public ServerResponse deleteContoById(@PathVariable long id) {
 		Optional<Conto> conto = contoService.findById(id);
 		if (conto.isEmpty())
 			return new ServerResponse(1, "Il conto con id " + id + " non esiste.");
@@ -143,7 +104,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/statistiche")
-	public ServerResponse getStatistiche(@CookieValue(name = "token", required = true) String jwt) {
+	public ServerResponse getStatistiche() {
 		Statistiche stat = new Statistiche();
 		stat.setNumeroClienti(clienteService.count());
 		stat.setSaldoPiuAlto(clienteService.findClienteSaldoPiuAlto());

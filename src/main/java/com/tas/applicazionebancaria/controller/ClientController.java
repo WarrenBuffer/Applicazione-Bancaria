@@ -22,13 +22,15 @@ import com.tas.applicazionebancaria.businesscomponent.model.Transazioni;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMovimento;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
-import com.tas.applicazionebancaria.config.LoginAttemptService;
 import com.tas.applicazionebancaria.service.ClienteMongoService;
 import com.tas.applicazionebancaria.service.ClienteService;
+
 import com.tas.applicazionebancaria.service.ContoService;
-import com.tas.applicazionebancaria.service.EmailService;
 import com.tas.applicazionebancaria.service.MovimentiContoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
+
+import com.tas.applicazionebancaria.utils.AccountBlocker;
+import com.tas.applicazionebancaria.utils.EmailService;
 import com.tas.applicazionebancaria.utils.JWT;
 
 import io.jsonwebtoken.Claims;
@@ -41,12 +43,14 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @SessionScope
 public class ClientController {
-
+	@Autowired
+	AccountBlocker accountBlocker;
 	@Autowired
 	ClienteService clienteService;
 
 	@Autowired
 	ClienteMongoService clienteMongoService;
+
 
 	@Autowired
 	ContoService contoService;
@@ -56,10 +60,7 @@ public class ClientController {
 	
 	@Autowired
 	TransazioniService transazioniService;
-	
-	@Autowired
-	LoginAttemptService loginAttemptService;
-	
+		
 	@Autowired
 	EmailService emailService;
 
@@ -172,6 +173,7 @@ public class ClientController {
 				return mv;
 			}
 		}
+		
 		String nome = checkEscapeHTML(cliente.getNomeCliente());
 		String cognome = checkEscapeHTML(cliente.getCognomeCliente());
 		String password = checkEscapeHTML(cliente.getPasswordCliente());
@@ -219,32 +221,37 @@ public class ClientController {
 	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
 			HttpServletResponse response, HttpServletRequest request) {
 		Optional<Cliente> c = clienteService.findByEmail(email);
-		if (c.isPresent()) {
-			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			if (encoder.matches(password, c.get().getPasswordCliente())) {
-				String token = JWT.generate(c.get().getNomeCliente(), c.get().getCognomeCliente(),
-						c.get().getEmailCliente());
-				Cookie cookie = new Cookie("token", token);
-				response.addCookie(cookie);
-				HttpSession session = request.getSession();
-				session.setAttribute("email_log", c.get().getEmailCliente());
-				return new ModelAndView("redirect:/home");
-			} else {
-				ModelAndView mv = new ModelAndView();
-				// aggiorna i campi per i tentativi errati
-				if (loginAttemptService.isBlocked(email)) {
-					// System.out.println("is blocked?");
-					mv.addObject("error", "Numero di tentativi finiti! Contatta l'amministratore");
-				} else {
-					loginAttemptService.loginFailed(email);
-					mv.addObject("error", "Password errata!");
-				}
-				mv.setViewName("login");
-				return mv;
-			}
-		} else {
+		//(System.out.println(c.get().toString());
+		
+		if (c.isEmpty()) {
 			ModelAndView mv = new ModelAndView();
 			mv.addObject("error", "Utente non trovato!");
+			mv.setViewName("login");
+			return mv;
+		}
+		
+		Cliente cliente = c.get();
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		if (encoder.matches(password, cliente.getPasswordCliente())) {
+			String token = JWT.generate(cliente.getNomeCliente(), cliente.getCognomeCliente(),
+					cliente.getEmailCliente());
+			Cookie cookie = new Cookie("token", token);
+			response.addCookie(cookie);
+			HttpSession session = request.getSession();
+			session.setAttribute("email_log", cliente.getEmailCliente());
+			return new ModelAndView("redirect:/home");
+		} else {
+			ModelAndView mv = new ModelAndView();
+			
+			
+			// aggiorna i campi per i tentativi errati
+			if (cliente.isAccountBloccato()) {
+				System.out.println("is blocked?");
+				mv.addObject("error", "Numero di tentativi finiti! Contatta l'amministratore");
+			} else {
+				accountBlocker.invalidClient(cliente.getEmailCliente());
+				mv.addObject("error", "Password errata!");
+			}
 			mv.setViewName("login");
 			return mv;
 		}
