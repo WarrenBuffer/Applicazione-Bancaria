@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
+import com.tas.applicazionebancaria.config.BCryptEncoder;
 import com.tas.applicazionebancaria.service.AmministratoreService;
 import com.tas.applicazionebancaria.service.CarteDiCreditoService;
 import com.tas.applicazionebancaria.service.ClienteService;
@@ -53,6 +54,7 @@ public class AdminController {
 	TransazioniMongoService tmService;
 	
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
+		if (nome == null || cognome == null || email == null || password == null) return false;
 		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$"))
 			return false;
 		if (!cognome.matches("^[a-zA-Z ,.'-]{2,30}$"))
@@ -73,13 +75,15 @@ public class AdminController {
 	@PostMapping("/clienti")
 	public ServerResponse addCliente(
 			@RequestBody Cliente cliente) {
+		System.out.println(cliente);
 		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
 				cliente.getPasswordCliente()))
 			return new ServerResponse(1, "Validazione fallita, riprova a inserire i dati.");
 
 		if (clienteService.findByEmail(cliente.getEmailCliente()).isPresent())
 			return new ServerResponse(1, "Cliente con email " + cliente.getEmailCliente() + " esiste.");
-
+		
+		cliente.setPasswordCliente(BCryptEncoder.encode(cliente.getPasswordCliente()));
 		clienteService.saveCliente(cliente);
 		return new ServerResponse(0, "Cliente aggiunto con successo.");
 	}
@@ -117,10 +121,11 @@ public class AdminController {
 		stat.setPrestitiPerCliente(findTotPrestitiPerCliente());
 		stat.setPagamentiPerCliente(findTotPagamentiPerCliente());
 		stat.setTransazioniPerTipo(tmService.findTransazioniPerTipo());
+		System.out.println("Sono Qui 2");
 		stat.setTransazioniMediePerCliente(tmService.transazioniMediePerCliente());
+		System.out.println("Sono Qui 3");
 		stat.setImportoTransazioniPerMese(tmService.importoTransazioniPerMese());
 		stat.setContiSaldo0(contoService.findConti0());
-		
 		return new ServerResponse(0, stat);
 	}
 	

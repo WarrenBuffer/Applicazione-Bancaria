@@ -14,8 +14,8 @@ public interface TransazioniBancarieRepository extends JpaRepository<Transazioni
 	Date findUltimaTransazione(); 
 	
 	@Query(value = "select count(*) from transazioni_bancarie", nativeQuery = true)
-	long findNumTransazioni();
+	Long findNumTransazioni();
 	
-	@Query(value = "select sum(importo) from transazioni_bancarie", nativeQuery = true)
-	double findSommaImporti();
+	@Query(value = "select coalesce(sum(importo),0) from transazioni_bancarie", nativeQuery = true)
+	Double findSommaImporti();
 }

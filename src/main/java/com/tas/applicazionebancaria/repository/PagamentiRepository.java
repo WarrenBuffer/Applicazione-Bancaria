@@ -8,6 +8,6 @@ import com.tas.applicazionebancaria.businesscomponent.model.Pagamenti;
 
 @Repository("PagamentiRepository")
 public interface PagamentiRepository extends JpaRepository<Pagamenti, Long>{
-	@Query(value = "select sum(importo) from pagamenti where cod_cliente = ?1", nativeQuery = true)
-	double findTotPagamentiByCodCliente(long id);
+	@Query(value = "select coalesce(sum(importo), 0) from pagamenti where cod_cliente = ?1", nativeQuery = true)
+	Double findTotPagamentiByCodCliente(long id);
 }

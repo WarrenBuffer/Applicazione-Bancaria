@@ -13,10 +13,10 @@ import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 public interface ContoRepository extends JpaRepository<Conto, Long>{
 
 	@Query(value = "select avg(saldo) from conto", nativeQuery = true)
-	double findSaldoMedio();
+	Double findSaldoMedio();
 	
 	@Query(value = "select count(*) from conto where cod_cliente = ?1", nativeQuery = true)
-	long findNumContiByCodCliente(long id);
+	Long findNumContiByCodCliente(long id);
 	
 	@Query(value = "select * from conto where saldo <= 0", nativeQuery = true)
 	List<Conto> findConti0();
