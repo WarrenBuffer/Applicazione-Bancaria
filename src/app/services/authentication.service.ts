@@ -4,6 +4,7 @@ import { ServerResponse } from '../model/server-response';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class AuthenticationService {
     withCredentials: true
   };
 
-  constructor(private _http: HttpClient, private _router: Router,  private messageService: MessageService, private cookieService: CookieService) { }
+  constructor(private _http: HttpClient, private _router: Router, private toastService: ToastService, private cookieService: CookieService) { }
 
   getCookieByName(name: string): string {
     return this.cookieService.get(name);
@@ -30,14 +31,14 @@ export class AuthenticationService {
     },this.httpOptions).subscribe({
         next: v => {
           if (v.code !== 0) {
-            this.showError(v.message);
+            this.toastService.showError(v.message);
           } else {
             this._router.navigate(['/home'])
-            this.showSuccess("Logged successfully.")
+            this.toastService.showSuccess(v.message);
           }
         },
         error: err => {
-          this.showError(err.message);
+          this.toastService.showError("Errore interno del server\n" + err.message);
         }
       });
   }
@@ -46,23 +47,15 @@ export class AuthenticationService {
     this._http.get<ServerResponse>(`${this.basePath}/logoutAdmin`,this.httpOptions).subscribe({
         next: v => {
           if (v.code !== 0) {
-            this.showError(v.message);
+            this.toastService.showError(v.message);
           } else {
             this._router.navigate(['/'])
-            this.showSuccess(v.message)
+            this.toastService.showSuccess(v.message);
           }
         },
         error: err => {
-          this.showError(err.message);
+          this.toastService.showError("Errore interno del server\n" + err.message);
         }
       });
-  }
-
-  showError(message: string) {
-    this.messageService.add({key: 'br', severity:'error', summary: 'Error', detail: message});
-  }
-
-  showSuccess(message: string) {
-    this.messageService.add({key: 'br', severity:'success', summary: 'Success', detail: message});
   }
 }

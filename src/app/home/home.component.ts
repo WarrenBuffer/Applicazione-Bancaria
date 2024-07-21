@@ -9,11 +9,15 @@ import { Cliente } from '../model/cliente';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-
-  constructor(private apiService: ApiService) {}
-
-  clientList() {
-    this.apiService.clientList();
+  clientList!: Cliente[];
+  
+  constructor(private apiService: ApiService) {
+    this.apiService.clientList().subscribe({
+      next: v => {
+        this.clientList = v.message;
+        console.log(this.clientList);
+      }
+    })
   }
 
   addClient() {

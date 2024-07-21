@@ -1,8 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { Cliente } from '../model/cliente';
+import { AuthenticationService } from './authentication.service';
+import { catchError, Observable, of } from 'rxjs';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +18,16 @@ export class ApiService {
     withCredentials: true
   };
 
-  constructor(private _http: HttpClient, private _router: Router,  private messageService: MessageService) { }
+  constructor(private _http: HttpClient, private _router: Router,  private toastService: ToastService, private authService: AuthenticationService) { }
 
-  clientList() {
-    this._http.get(`${this.basePath}/clienti`, this.httpOptions).subscribe({
-      next: v => console.log(v),
-      error: err => console.log(err)
-    })
+  clientList(): Observable<any> {
+    return this._http.get(`${this.basePath}/clienti`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      })
+    )
   }
 
   addClient(cliente: Cliente) {

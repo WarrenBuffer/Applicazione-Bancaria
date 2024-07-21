@@ -23,10 +23,10 @@ import { ChipModule } from 'primeng/chip';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { FindClientComponent } from './find-client/find-client.component';
-import { ClientListComponent } from './client-list/client-list.component';
 import { AddClientComponent } from './add-client/add-client.component';
 import { DeleteContoComponent } from './delete-conto/delete-conto.component';
 import { StatsComponent } from './stats/stats.component';
+import { TableModule } from 'primeng/table';
 
 
 @NgModule({
@@ -36,7 +36,6 @@ import { StatsComponent } from './stats/stats.component';
     NavbarComponent,
     HomeComponent,
     FindClientComponent,
-    ClientListComponent,
     AddClientComponent,
     DeleteContoComponent,
     StatsComponent
@@ -57,7 +56,8 @@ import { StatsComponent } from './stats/stats.component';
     ProgressSpinnerModule,
     ChipModule,
     TagModule,
-    TooltipModule
+    TooltipModule,
+    TableModule
   ],
   providers: [
     provideClientHydration(),

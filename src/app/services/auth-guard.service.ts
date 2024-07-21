@@ -20,7 +20,6 @@ export class AuthGuardService {
       switch (path) {
         case 'login': return this.token !== '' ? this._router.createUrlTree(['/home']) : true;
         case 'home': return this.token !== '' ? true : this._router.createUrlTree(['/']);
-        case 'clientList': return this.token !== '' ? true : this._router.createUrlTree(['/']);
         case 'findClient': return this.token !== '' ? true : this._router.createUrlTree(['/']);
         case 'addClient': return this.token !== '' ? true : this._router.createUrlTree(['/']);
         case 'deleteConto': return this.token !== '' ? true : this._router.createUrlTree(['/']);
