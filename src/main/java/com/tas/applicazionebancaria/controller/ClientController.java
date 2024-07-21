@@ -1,8 +1,10 @@
 package com.tas.applicazionebancaria.controller;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,19 +16,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.tas.applicazionebancaria.businesscomponent.model.CarteDiCredito;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.MovimentiConto;
 import com.tas.applicazionebancaria.businesscomponent.model.Transazioni;
+import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMovimento;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
+
+//import com.tas.applicazionebancaria.config.LoginAttemptService;
+import com.tas.applicazionebancaria.service.CarteDiCreditoService;
 import com.tas.applicazionebancaria.service.ClienteMongoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 
 import com.tas.applicazionebancaria.service.ContoService;
 import com.tas.applicazionebancaria.service.MovimentiContoService;
+import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
 
 import com.tas.applicazionebancaria.utils.AccountBlocker;
@@ -63,6 +71,16 @@ public class ClientController {
 		
 	@Autowired
 	EmailService emailService;
+	
+	@Autowired
+	TransazioniMongoService transazioniMongoService;
+	
+	@Autowired
+	CarteDiCreditoService carteDiCreditoService;
+	
+	@Autowired
+	//LoginAttemptService loginAttemptService;
+
 
 	/*-----------------------------------------UTILITIES-----------------------------------------*/
 
@@ -179,21 +197,26 @@ public class ClientController {
 		String password = checkEscapeHTML(cliente.getPasswordCliente());
 		String email = checkEscapeHTML(cliente.getEmailCliente());
 		if (validateInputs(cliente).equals("ok")) {
-			// System.out.println("validi");
 			cliente.setPasswordCliente(BCryptEncoder.encode(password));
 			cliente.setNomeCliente(nome);
 			cliente.setCognomeCliente(cognome);
 			cliente.setEmailCliente(email);
 
-			ClienteMongo clienteMongo = new ClienteMongo();
-			clienteMongo.setNomeCliente(nome);
-			clienteMongo.setCognomeCliente(cognome);
-			clienteMongo.setPasswordCliente(BCryptEncoder.encode(password));
-			clienteMongo.setEmailCliente(email);
 
 			clienteService.saveCliente(cliente);
-			clienteMongoService.saveClienteMongo(clienteMongo);
 			emailService.sendEmail(cliente.getEmailCliente(), "BENVENUTO IN APPLICAZIONE BANCARIA", "PROVA");
+
+			cliente = clienteService.saveCliente(cliente);
+			
+			ClienteMongo clienteMongo = new ClienteMongo();
+			clienteMongo.setNomeCliente(cliente.getNomeCliente());
+			clienteMongo.setCognomeCliente(cliente.getCognomeCliente());
+			clienteMongo.setPasswordCliente(cliente.getPasswordCliente());
+			clienteMongo.setEmailCliente(cliente.getEmailCliente());
+			clienteMongo.setCodCliente(cliente.getCodCliente());
+			
+			clienteMongoService.saveClienteMongo(clienteMongo);
+
 			
 			return new ModelAndView("redirect:/login");
 
@@ -326,7 +349,32 @@ public class ClientController {
 				mv.setViewName("visualizzaconti");
 				return mv;
 			}
+	}
+	
+	@PostMapping(value="/selconto")
+	public ModelAndView selConto(@RequestParam("codConto") long codConto,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		Optional<Conto> conto = contoService.findById(codConto);
+		if(conto.isPresent()) {
+			Jws<Claims> claims = JWT.validate(token);
+			mv.addObject("nome" ,claims.getBody().get("nome"));
+			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+			if(listaConti!=null && !listaConti.isEmpty()) {
+				mv.addObject("listaConti", listaConti);
+				mv.addObject("conto",conto.get());
+				mv.setViewName("visualizzaconti");
+			}
+			List<MovimentiConto> listaMovimenti = movimentiContoService.findUltimi10(codConto);
+			if(listaMovimenti!= null && !listaMovimenti.isEmpty()) {
+				mv.addObject("listaMovimenti",listaMovimenti);
+			}
+			
+			return mv;
 		}
+		mv.setViewName("visualizzaconti");
+		return mv;
+	}
 	
 	@GetMapping(value="/creaconto")
 	public ModelAndView creaConto(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
@@ -369,6 +417,7 @@ public class ClientController {
 			return new ModelAndView("redirect:/registrazione");
 //			throw new TokenException(exc);
 		}
+		ModelAndView mv = new ModelAndView();
 		Optional<Conto> conto = contoService.findById(codConto);
 		if(conto.isPresent()) {
 			double saldo = conto.get().getSaldo();
@@ -389,11 +438,175 @@ public class ClientController {
 			t.setTipoTransazione(TipoTransazione.ACCREDITO);
 			
 			movimentiContoService.saveMovimentiConto(mc);
-			transazioniService.saveTransazioni(t);
+			t = transazioniService.saveTransazioni(t);
+			
+			TransazioniMongo tm = new TransazioniMongo();
+			tm.setCodiceConto(t.getCodConto().getCodConto());
+			tm.setCodTransazione(t.getCodTransazione());
+			tm.setDataTransazione(t.getDataTransazione());
+			tm.setImporto(t.getImporto());
+			tm.setTipoTransazione(t.getTipoTransazione());
+			
+			transazioniMongoService.saveTransazioniMongo(tm);
+	
+			Jws<Claims> claims = JWT.validate(token);
+			mv.addObject("nome" ,claims.getBody().get("nome"));
+			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+				List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+				if(listaConti!=null && !listaConti.isEmpty()) {
+					mv.addObject("listaConti", listaConti);
+					mv.addObject("conto",conto.get());
+					mv.setViewName("visualizzaconti");
+						
+					return mv;
+				}
+			
 		}
 		return new ModelAndView("redirect:/home");
 	}
+	
+	@PostMapping(value="/preleva")
+	public ModelAndView preleva(@RequestParam("codConto") long codConto,@RequestParam("importo") double importo, @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		Optional<Conto> conto = contoService.findById(codConto);
+		if(conto.isPresent()) {
+			if(conto.get().getSaldo()<importo) {
+				mv.addObject("error", "Impossibile prelevare questa cifra! Saldo insufficiente.");
+				mv.setViewName("home");
+				return mv;
+			}
+			else {
+				double saldo = conto.get().getSaldo();
+				saldo -= importo;
+				conto.get().setSaldo(saldo);
+				contoService.saveConto(conto.get());
+				
+				MovimentiConto mc = new MovimentiConto();
+				mc.setCodConto(conto.get().getCodConto());
+				mc.setDataMovimento(new Date());
+				mc.setImporto(importo);
+				mc.setTipoMovimento(TipoMovimento.ADDEBITO);
+				
+				Transazioni t = new Transazioni();
+				t.setCodConto(conto.get());
+				t.setDataTransazione(new Date());
+				t.setImporto(importo);
+				t.setTipoTransazione(TipoTransazione.ADDEBITO);
+				
+				movimentiContoService.saveMovimentiConto(mc);
+				t = transazioniService.saveTransazioni(t);
+				
+				TransazioniMongo tm = new TransazioniMongo();
+				tm.setCodiceConto(t.getCodConto().getCodConto());
+				tm.setCodTransazione(t.getCodTransazione());
+				tm.setDataTransazione(t.getDataTransazione());
+				tm.setImporto(t.getImporto());
+				tm.setTipoTransazione(t.getTipoTransazione());
+				
+				transazioniMongoService.saveTransazioniMongo(tm);
+				
+				Jws<Claims> claims = JWT.validate(token);
+				mv.addObject("nome" ,claims.getBody().get("nome"));
+				Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+					List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+					if(listaConti!=null && !listaConti.isEmpty()) {
+						mv.addObject("listaConti", listaConti);
+						mv.addObject("conto",conto.get());
+						mv.setViewName("visualizzaconti");
+							
+						return mv;
+					}
+			}
+		}
+		return new ModelAndView("redirect:/home");
+	}
+	
+	/*-----------------------------------------CARTE DI CREDITO-----------------------------------------*/
 
+	@GetMapping(value="visualizzacarte")
+	public ModelAndView visualizzaCarte(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
+		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		List<CarteDiCredito> listaCarte = carteDiCreditoService.findByCodCliente(c.get().getCodCliente());
+			if(listaCarte!=null && !listaCarte.isEmpty()) {
+				mv.addObject("listaCarte", listaCarte);
+				mv.setViewName("visualizzacarte");
+				return mv;
+			}else {
+				mv.setViewName("visualizzacarte");
+				return mv;
+			}
+	}
+	
+	@GetMapping(value="/richiedicarta")
+	public ModelAndView richiediCarta(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		
+		Jws<Claims> claims = JWT.validate(token);
+		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(new Date());
+	    calendar.add(Calendar.YEAR, 5);
+	    Date scadenza = calendar.getTime();
+	    
+	    Random random = new Random();
+        int cvv = 100 + random.nextInt(900);
+        
+        String numerocarta = "1111 0000";
+        
+        int first = 1000 + random.nextInt(9000);
+        int second = 1000 + random.nextInt(9000);
+	    numerocarta = numerocarta + " " +String.valueOf(first) + " " + String.valueOf(second);
+		CarteDiCredito carta = new CarteDiCredito();
+		carta.setCodCliente(c.get());
+		carta.setDataScadenza(scadenza);
+		carta.setCvv(String.valueOf(cvv));
+		carta.setNumeroCarta(numerocarta);
+		carteDiCreditoService.saveCarteDiCredito(carta);
+		
+		return new ModelAndView("redirect:/visualizzacarte");
+	}
+	
+	@PostMapping(value="/selcarte")
+	public ModelAndView selCarta(@RequestParam("codCarta") long codCarta,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		Optional<CarteDiCredito> carta = carteDiCreditoService.findById(codCarta);
+		
+		if(carta.isPresent()) {
+			Jws<Claims> claims = JWT.validate(token);
+			mv.addObject("nome" ,claims.getBody().get("nome"));
+			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			List<CarteDiCredito> listaCarte = carteDiCreditoService.findByCodCliente(c.get().getCodCliente());
+			if(listaCarte!=null && !listaCarte.isEmpty()) {
+				mv.addObject("listaCarte", listaCarte);
+				mv.addObject("carta",carta.get());
+				mv.setViewName("visualizzacarte");
+			}
+			return mv;
+		}
+		mv.setViewName("visualizzacarte");
+		return mv;
+	}
 }
 	
 	

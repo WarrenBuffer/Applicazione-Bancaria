@@ -8,7 +8,9 @@
 				<span class="icon-bar"></span>
 			</button>
 			<div>
-				<a class="navbar-brand" href="/">Applicazione Bancaria</a>
+				<a class="navbar-brand" href="/">
+				<img th:src="@{/img/sito-logo.png}" alt="logo">
+				Applicazione Bancaria</a>
 			</div>
 		</div>
 		<div class="collapse navbar-collapse" id="menu">
@@ -16,6 +18,7 @@
 			<div th:if="${session.email_log}">
 			<div>
 				<ul class="nav navbar-nav navbar-right">
+					
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
 							<span class="glyphicon glyphicon-user">&nbsp;</span>
@@ -24,9 +27,11 @@
 							</span>
 						</a>
 						<ul class="dropdown-menu">
+
 							<li><a href="/visualizzaconti">I tuoi conti</a></li>
 							<li><a href="/visualizzacarte">Le tue carte</a></li>
 							<li><a href="/pagamento">Effettua un pagamento</a></li>
+
 						</ul>
 					</li>
 					<li>
@@ -75,6 +80,7 @@
 			        </div>
    		 		</div>
 		</div>
+		
 	</div>
 </nav>
 </div>

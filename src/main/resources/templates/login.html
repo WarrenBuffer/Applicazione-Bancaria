@@ -2,9 +2,12 @@
 <head th:replace="fragments/cdn :: cdn"></head>
 <body>
 <div th:insert="fragments/nav :: navbar"></div>
-<div class="container">
+<div class="container" style="background-image: url('/img/sfondoHome.png'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;padding-top: 40px;width: 100%;padding-left: 0;padding-right: 0;">
+
+	<div class="jumbotron" style="margin-top: 20px;background: rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 90px;">
 	<header class="page-header">
-		<h3>Inserisci i dati per il login</h3>
+		<h3>Accedi</h3>
 	</header>
 	
 	<div style="color: red;" th:if="${error}">
@@ -40,12 +43,13 @@
 		
 		<div class="row">
 			<div class="col-md-4 col-md-offset-1">
-				<button type="submit" class="btn btn-info">
+				<button type="submit" class="btn btn-warning" style="color: #141414;">
 					Login&nbsp;&nbsp;<span class="glyphicon glyphicon-log-in"></span>
 				</button>
 			</div>
 		</div>
 	</form>
+	</div>
 </div>
 <footer th:insert="fragments/footer :: footer"></footer>
 </body>

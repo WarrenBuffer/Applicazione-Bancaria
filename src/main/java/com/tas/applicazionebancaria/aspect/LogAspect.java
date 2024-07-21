@@ -37,7 +37,7 @@ public class LogAspect {
 		long inizio = System.currentTimeMillis();
 		Object object = pjp.proceed();
 		long delta = System.currentTimeMillis() - inizio;
-		if (delta >= 0L) { // TODO mettere 50L al posto di 0L
+		if (delta >= 1000000L) { // TODO mettere 50L al posto di 0L
 			Path path = Paths.get("c:\\log\\ApplicazioneBancariaLog");
 			if (Files.notExists(path)) {
 				Files.createDirectories(path);
@@ -99,7 +99,7 @@ public class LogAspect {
 			logger.log(Level.WARNING,"Manca request oppure token in: \n\t"+jp.getSignature());
 		}
 		handleHttpLog.close();
-	}
+	}			
 	
 	@After("execution(* com.tas.applicazionebancaria.controller.AdminController.* (..)) && !execution(static * com.tas.applicazionebancaria.controller.AdminController.*(..))")
 	public void accessiLog(JoinPoint jp) throws Throwable{

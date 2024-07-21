@@ -34,4 +34,9 @@ public class MovimentiContoServiceImpl implements MovimentiContoService {
 	public void deleteMovimentiConto(MovimentiConto movimentiConto) {
 		mcr.delete(movimentiConto);
 	}
+
+	@Override
+	public List<MovimentiConto> findUltimi10(long codConto) {
+		return mcr.findUltimi10(codConto);
+	}
 }

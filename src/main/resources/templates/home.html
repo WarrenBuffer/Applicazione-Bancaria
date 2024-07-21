@@ -4,66 +4,15 @@
 </head>
 <body>
 <div th:include="fragments/nav :: navbar"></div>
-<div class="container">
-	<div class="jumbotron" style="margin-top: 50px;">
-		<h1>Benvenuto <span th:text="*{nome}"></span></h1>
-		<a class="btn btn-primary" role="button" href="/pagamento" style="width: 250px;">
+<div class="container" style="background-image: url('/img/pagamenti.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
+
+	<div class="jumbotron" style="margin-top: 30px;background: none;padding: 20px;width: 70%;margin-left: 90px;">
+		<h1 style="color: rgba(255,255,255, 0.9);"><strong>Benvenuto <span th:text="*{nome}"></span></strong></h1>
+		<a class="btn btn-success" role="button" href="/pagamento" style="width: 250px;height: 50px;align-content: center;">
 			Effettua un pagamento&nbsp; <span class="glyphicon glyphicon-euro"></span>
 		</a>
-		
-		<h1>Test</h1>
-		<a class="btn btn-primary" role="button" href="/visualizzaconti" style="width: 250px;">
-			visualizza conti&nbsp; <span class="glyphicon glyphicon-euro"></span>
-		</a>
-		
-		<a class="btn btn-primary" role="button" href="#" data-toggle="modal" data-target="#depositoDatiModal" style="width: 250px;">
-			Deposito&nbsp; <span class="glyphicon glyphicon-euro"></span>
-		</a>
-		
-		<a class="btn btn-primary" role="button" href="/preleva" style="width: 250px;">
-			Preleva&nbsp; <span class="glyphicon glyphicon-euro"></span>
-		</a>
 	</div>
-	
-	<div class="modal fade" id="depositoDatiModal" tabindex="-1" role="dialog" aria-labelledby="depositoDatiModalLabel" aria-hidden="true">
-			        <div class="modal-dialog modal-md">
-			            <div class="modal-content">
-			                <div class="modal-header">
-			                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			                        <span aria-hidden="true">&times;</span>
-			                    </button>
-			                    <h4 class="modal-title" id="depositoDatiModalLabel">Inserisci l'importo da depositare</h4>
-			                </div>
-			                <form th:action="@{/deposito}" method="post" class="form-horizontal">
-			                   <div class="modal-body">
-			                   <div class="form-group ">
-			                   		<label th:if="${listaConti!=null}" class="col-md-3 control-label">Scegli un conto</label>
-										<select >
-										  <option th:each="conto : ${listaConti}" th:value="${conto.codConto}" th:text="${conto.codConto} + ' - ' + ${conto.tipoConto}"></option>
-										</select>
-			                   </div>
-			                   
-			                   <div class="form-group">
-			                        <label class="col-md-3 control-label">Importo</label>
-			                        <div class="col-md-9 inputGroupContainer">
-			                            <div class="input-group">
-			                                <span class="input-group-addon">
-			                                    <i class="glyphicon glyphicon-euro"></i>
-			                                </span>
-			                                <input type="number" class="form-control" name="importo" min="1">
-			                            </div>
-			                        </div>
-                    			</div>
-			                </div>
-			                <div class="modal-footer">
-			                    <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
-			                    <button type="submit" class="btn btn-warning">Conferma</button>
-			                </div>
-			            	</form>
-			        </div>
-   		 		</div>
-		</div>
-		
 </div>
 <footer th:include="fragments/footer :: footer"></footer>
 </body>

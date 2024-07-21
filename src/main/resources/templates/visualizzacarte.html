@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container" style="background-image: url('/img/pagamenti.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
+	<div class="jumbotron" style="margin-top: 30px;background: rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 120px;">
+		<form th:action="@{/selcarte}" method="post" class="form-horizontal" id="cartaForm" style="text-align: center;">
+	<header class="page-header">
+		<h2><strong>Carte</strong></h2>
+	</header>
+	<div style="display: flex; justify-content: center; width: 100%;">
+		<select name="codCarta" th:if="${listaCarte!=null}" id="codCarta" multiple class="form-control" aria-label="Default select example" style="width: 50%;">
+			<option disabled>Nessuna carta selezionata</option>
+			<option th:each="carta : ${listaCarte}" th:value="${carta.codCarta}" th:text="${carta.codCarta}"></option>
+		</select>
+		<p th:if="${listaCarte==null}">Nessun conto disponibile!
+	</div>
+</form>
+<script>
+	$(document).ready(function(){
+		$('#codCarta').change(function(){
+			$('#cartaForm').submit();
+			});
+		});
+</script>
+<br><br>
+
+
+<div class="row" style="display: flex; justify-content: center;">
+
+<div class="panel-group" th:if="${carta != null}"style="display: flex; justify-content: center; width: 100%;">
+<div class="col-sm-6" >
+  <div class="panel panel-default">
+  	<div class="panel-heading">
+  		<h2 style="font-size: 18px;"><strong></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				<span style="font-size: 29px;" th:text="*{carta.numeroCarta}"></span></h2>
+	</div>
+	
+	<div class="panel-body">
+		<p style="font-size: 14px;"><strong>Scadenza</strong>&nbsp;&nbsp;<span th:text="${#dates.format(carta.dataScadenza, 'dd/MMM/YYYY')}"></span>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<strong>CVV</strong>&nbsp;&nbsp;<span th:text="*{carta.cvv}"></span>
+		</p>
+		<p style="font-size: 14px;"><strong>Codice Carta</strong>&nbsp;&nbsp;<span th:text="*{carta.codCarta}"></span></p>
+	</div>
+	<div class="panel-footer">
+		<div class=row>
+			<div class="col-sm-4">
+				<p style="font-size: 14px;"><strong>Nome: </strong>&nbsp;&nbsp;<span th:text="*{carta.codCliente.nomeCliente}"></span></p>
+				<p style="font-size: 14px;"><strong>Cognome: </strong>&nbsp;&nbsp;<span th:text="*{carta.codCliente.cognomeCliente}"></span></p>
+				<p style="font-size: 14px;"><strong>Email: </strong>&nbsp;&nbsp;<span th:text="*{carta.codCliente.emailCliente}"></span></p>
+			</div>
+		</div>
+	</div>
+	
+  </div>
+	
+</div>
+</div>
+</div>
+<br>
+<div class="row">
+			<div class="col-md-4 col-md-offset-1">
+				<a class="btn btn-primary" role="button" href="/richiedicarta" style="width: 250px;">
+					Richiedi una nuova carta!&nbsp; <span class="glyphicon glyphicon-credit-card"></span>
+				</a>
+			</div>
+		</div>
+
+
+
+</div>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

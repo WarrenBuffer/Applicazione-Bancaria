@@ -16,7 +16,8 @@ public class TransazioniMongo implements Serializable {
 	private static final long serialVersionUID = 6122473539967680294L;
 	
 	@Id
-	private String codTransazione;
+	private String id;
+	private long codTransazione;
 	
 	private double importo;
 	
@@ -24,5 +25,5 @@ public class TransazioniMongo implements Serializable {
 	
 	private TipoTransazione tipoTransazione;//TODO forse qua è giusto, forse è sbagliato il tipo dell'attributo
 	
-	private int codiceConto;
+	private long codiceConto;
 }

@@ -4,48 +4,210 @@
 </head>
 <body>
 <div th:include="fragments/nav :: navbar"></div>
-<div class="container">
-	<div class="jumbotron" style="margin-top: 50px;">
-		<h1>Visualizza Conti</h1>
+<div class="container" style="background-image: url('/img/pagamenti.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
+	
+	<div class="jumbotron" style="margin-top: 30px;background: rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 120px;">
+
+<div class="row">
+ <form th:action="@{/selconto}" method="post" class="form-horizontal" id="contoForm" style="text-align: center;">
+	<header class="page-header">
+		<h2><strong>Scegli un conto</strong></h2>
+	</header>
+	<div style="display: flex; justify-content: center; width: 100%;">
+		<select name="codConto" th:if="${listaConti!=null}" id="codConto" multiple class="form-control" aria-label="Default select example" style="width: 50%;">
+			<option disabled>Nessun conto selezionato</option>
+			<option th:each="conto : ${listaConti}" th:value="${conto.codConto}" th:text="${conto.codConto} + ' - ' + ${conto.tipoConto}"></option>
+		</select>
+		<p th:if="${listaConti==null}">Nessun conto disponibile!
+	</div>
+</form>
+</div>
+<script>
+	$(document).ready(function(){
+		$('#codConto').change(function(){
+			$('#contoForm').submit();
+			});
+		});
+</script>
+<br><br>
+
+
+<div class="row" >
+
+<div class="panel-group" th:if="${conto != null}">
+<div class="col-sm-6">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h2 style="font-size: 18px;"><strong>Saldo (€)</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				<span style="font-size: 29px;" th:text="*{conto.saldo}"></span></h2>
+	</div>
+	<br>
+    <div class="panel-body">
+    	<p style="font-size: 14px;"><strong>Codice conto </strong>&nbsp;&nbsp;<span th:text="*{conto.codConto}"></span></p>
+		<p style="font-size: 14px;"><strong>Tipo </strong>&nbsp;&nbsp;<span th:text="*{conto.tipoConto}"></span></p>
+		<br>
+		<hr>
+		<p style="font-size: 18px;"><strong>Dati titolare</strong></p>
+		<p style="font-size: 14px;"><strong>Nome</strong> &nbsp;&nbsp;<span th:text="*{conto.codCliente.nomeCliente}"></span></p>
+		<p style="font-size: 14px;"><strong>Cognome </strong>&nbsp;&nbsp;<span th:text="*{conto.codCliente.cognomeCliente}"></span></p>
+		<p style="font-size: 14px;"><strong>Email </strong>&nbsp;&nbsp;<span th:text="*{conto.emailCliente}"></span></p>
+	</div>
+	
+	
+	
+	<div class="panel-footer">
+	<div class=row>
+		<div class="col-sm-4">
 		
-		<div th:if="${listaConti != null}">
-		<table class="table table-hover">
-	<thead>
-		<tr>
-			<th style="width:200px;">Cod Conto</th>
-			<th style="width:200px;">Saldo (€)</th>
-			<th style="width:200px;">Cod Cliente</th>
-			<th style="width:200px;">Email</th>
-			<th style="width:200px;">Tipo di Conto</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr th:each="conto : ${listaConti}" style="vertical-align: middle;">
-			<td style="vertical-align: middle;" th:text="${conto.codConto}">
-			</td>
-			<td style="vertical-align: middle;" th:text="${#numbers.formatDecimal(conto.saldo,1,2,'COMMA')}">
-			</td>
-			<td style="vertical-align: middle;" th:text="${conto.codCliente.codCliente}">
-			</td>
-			<td style="vertical-align: middle;" th:text="${conto.emailCliente}">
-			</td>
-			<td style="vertical-align: middle;" th:text="${conto.tipoConto}">
-			</td>
-		</tr>
-	</tbody>	
-</table>
+		<!------------ Button deposito ------------->
+		<a class="btn btn-success" role="button" href="#" data-toggle="modal" data-target="#depositoModal">
+			Deposita&nbsp; <span class="glyphicon glyphicon-circle-arrow-down"></span>
+		</a>
+		
+		
+<!---------------------------------------------- Modal per il deposito ------------------------------------>		
+		
+		<div class="modal fade" id="depositoModal" tabindex="-1" role="dialog" aria-labelledby="depositoModalLabel" aria-hidden="true">
+			        <div class="modal-dialog modal-md">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                        <span aria-hidden="true">&times;</span>
+			                    </button>
+			                    <h4 class="modal-title" id="depositoModalLabel">Inserisci l'importo da depositare</h4>
+			                </div>
+			                <form th:action="@{/deposito}" method="post" class="form-horizontal">
+			                   <div class="modal-body">
+			                  	<input type="hidden" th:field="*{conto.codConto}"> 
+			                   <div class="form-group">
+			                        <label class="col-md-3 control-label">Importo</label>
+			                        <div class="col-md-9 inputGroupContainer">
+			                            <div class="input-group">
+			                                <span class="input-group-addon">
+			                                    <i class="glyphicon glyphicon-euro"></i>
+			                                </span>
+			                                <input type="number" class="form-control" name="importo" min="1">
+			                            </div>
+			                        </div>
+                    			</div>
+			                </div>
+			                <div class="modal-footer">
+			                    <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+			                    <button type="submit" class="btn btn-warning">Conferma</button>
+			                </div>
+			            	</form>
+			        </div>
+   		 		</div>
+		</div>
+		
+		</div>
+		<div class="col-sm-4">
+		
+		<!------------ Button prelievo ------------->
+			<a class="btn btn-warning" role="button" href="#" data-toggle="modal" data-target="#prelevaModal">
+			Preleva&nbsp; <span class="glyphicon glyphicon-circle-arrow-up"></span>
+			</a>
+		
+		<!---------------------------------------------- Modal per il prelievo ------------------------------------>
+		
+			<div class="modal fade" id="prelevaModal" tabindex="-1" role="dialog" aria-labelledby="prelelvaModalLabel" aria-hidden="true">
+			        <div class="modal-dialog modal-md">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                        <span aria-hidden="true">&times;</span>
+			                    </button>
+			                    <h4 class="modal-title" id="prelelvaModalLabel">Inserisci l'importo da prelelvare</h4>
+			                </div>
+			                <form th:action="@{/preleva}" method="post" class="form-horizontal">
+			                   <div class="modal-body">
+			                   <input type="hidden" th:field="*{conto.codConto}"> 
+			                   
+			                   <div class="form-group">
+			                        <label class="col-md-3 control-label">Importo</label>
+			                        <div class="col-md-9 inputGroupContainer">
+			                            <div class="input-group">
+			                                <span class="input-group-addon">
+			                                    <i class="glyphicon glyphicon-euro"></i>
+			                                </span>
+			                                <input type="number" class="form-control" name="importo">
+			                            </div>
+			                        </div>
+                    			</div>
+			                </div>
+			                <div class="modal-footer">
+			                    <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+			                    <button type="submit" class="btn btn-warning">Conferma</button>
+			                </div>
+			            	</form>
+			        </div>
+   		 		</div>
+			</div>
+		</div>
+	</div>
+	</div>
+  </div>
+  </div>
+  
+  <!---------------------------------- Panel movimenti ---------------------------------------------->
+  
+  <div class="col-sm-6" th:if="${listaMovimenti!=null}">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h2 style="font-size: 18px;"><strong>Movimenti Recenti</strong> </h2>
+	</div>
+    <div class="panel-body">
+    	<table>
+    		<thead>
+    			<tr>
+    				<th>Cod</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Conto</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Data</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Importo</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Tipo</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			<tr th:each="mov : ${listaMovimenti}">
+    				<td th:text="${mov.codMovimento}"></td>
+    				<td></td>
+    				<td th:text="${mov.codConto}"></td>
+    				<td></td>
+    				<td th:text="${#dates.format(mov.dataMovimento, 'dd/MMM/YYYY')}"></td>
+    				<td></td>
+    				<td th:text="${mov.importo}"></td>
+    				<td></td>
+    				<td th:text="${mov.tipoMovimento}"></td>
+    			</tr>
+    		</tbody>
+    	</table>
+    
+    </div>
+  </div>
+</div>
+<div class="col-sm-6" th:if="${listaMovimenti==null}">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h2 style="font-size: 18px;"><strong>Nessun movimento!</strong> </h2>
+	</div>
+	</div>
 </div>
 
-<p th:if="${listaConti==null}">Nessun conto da visualizzare!</p>
+</div>
+</div>
 
 
+<br><br>
 <a class="btn btn-primary" role="button" href="/creaconto" style="width: 250px;">
 			Crea un nuovo conto!&nbsp; <span class="glyphicon glyphicon-euro"></span>
-		</a>
-	
+		</a>	
 		
-		
-	</div>
+</div>
 
 </div>
 <footer th:include="fragments/footer :: footer"></footer>

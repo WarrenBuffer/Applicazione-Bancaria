@@ -39,4 +39,9 @@ public class CarteDiCreditoServiceImpl implements CarteDiCreditoService{
 	public long findNumCarteByCodCliente(long id) {
 		return ccr.findNumCarteByCodCliente(id);
 	}
+
+	@Override
+	public List<CarteDiCredito> findByCodCliente(long id) {
+		return ccr.findByCodCliente(id);
+	}
 }

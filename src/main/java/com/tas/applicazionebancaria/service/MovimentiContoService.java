@@ -10,4 +10,5 @@ public interface MovimentiContoService {
 	List<MovimentiConto> findAll();
 	Optional<MovimentiConto> findById(long id);
 	void deleteMovimentiConto(MovimentiConto movimentiConto);
+	List<MovimentiConto> findUltimi10(long codConto);
 }
