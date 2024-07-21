@@ -32,6 +32,7 @@ public class Cliente implements Serializable {
 	@Column(nullable = false, unique = true)
 	private String emailCliente;
 	@Column(nullable = false)
+	@JsonIgnore
 	private String passwordCliente;
 	@Column(nullable=false)
 	private int tentativiErrati=0;
@@ -39,19 +40,15 @@ public class Cliente implements Serializable {
 	private boolean accountBloccato=false;
 	
 	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
-	@JsonIgnore
 	private Set<Conto> conti=new HashSet<Conto>(); 
 	
 	@OneToMany(cascade =CascadeType.ALL, mappedBy = "codCliente")
-	@JsonIgnore
 	private Set<CarteDiCredito> carte = new HashSet<CarteDiCredito>();
 	
 	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
-	@JsonIgnore
 	private Set<Prestiti> prestiti=new HashSet<Prestiti>();
 	
 	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
-	@JsonIgnore
 	private Set<Pagamenti> pagamenti=new HashSet<Pagamenti>();
 	
 }

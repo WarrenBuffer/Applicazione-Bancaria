@@ -37,9 +37,8 @@ public class Pagamenti implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private MetodoPagamento metodoPagamento;
 
-	@ManyToOne
 	@JoinColumn(name = "codCliente")
-	private Cliente codCliente;
+	private long codCliente;
 }
 
 

@@ -69,6 +69,9 @@ public class AdminController {
 	@GetMapping("/clienti")
 	public ServerResponse getClienti() {
 		List<Cliente> clienti = clienteService.findAll();
+		for (Cliente c : clienti) {
+			System.out.println(c.getConti());
+		}
 		return new ServerResponse(0, clienti);
 	}
 
@@ -121,9 +124,7 @@ public class AdminController {
 		stat.setPrestitiPerCliente(findTotPrestitiPerCliente());
 		stat.setPagamentiPerCliente(findTotPagamentiPerCliente());
 		stat.setTransazioniPerTipo(tmService.findTransazioniPerTipo());
-		System.out.println("Sono Qui 2");
 		stat.setTransazioniMediePerCliente(tmService.transazioniMediePerCliente());
-		System.out.println("Sono Qui 3");
 		stat.setImportoTransazioniPerMese(tmService.importoTransazioniPerMese());
 		stat.setContiSaldo0(contoService.findConti0());
 		return new ServerResponse(0, stat);

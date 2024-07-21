@@ -41,8 +41,7 @@ public class Transazioni implements Serializable{
 	@Enumerated(EnumType.STRING)
 	private TipoTransazione tipoTransazione;
 
-	@ManyToOne
 	@JoinColumn(name="codConto")
-	private Conto codConto;
+	private long codConto;
 }
 

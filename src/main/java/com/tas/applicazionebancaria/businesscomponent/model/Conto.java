@@ -38,9 +38,8 @@ public class Conto implements Serializable{
 	@Column(nullable=false)
 	private double saldo;
 
-	@ManyToOne
 	@JoinColumn(name = "codCliente")
-	private Cliente codCliente;
+	private long codCliente;
 
 	@OneToMany(cascade =CascadeType.ALL, mappedBy = "contoOrigine")
 	@JsonIgnore

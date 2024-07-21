@@ -32,7 +32,6 @@ public class CarteDiCredito implements Serializable{
 	@Column(name="cvv", nullable=false)
 	private String cvv;
 	
-	@ManyToOne
 	@JoinColumn(name = "codCliente")
-	private Cliente codCliente;
+	private long codCliente;
 }

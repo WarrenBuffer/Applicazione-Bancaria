@@ -287,8 +287,10 @@ public class ClientController {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				cookie.setMaxAge(0);
-				response.addCookie(cookie);
+				if (cookie.getName().equals("token")) {
+					cookie.setMaxAge(0);
+					response.addCookie(cookie);					
+				}
 			}
 		}
 		request.getSession().invalidate();
@@ -359,6 +361,7 @@ public class ClientController {
 			Jws<Claims> claims = JWT.validate(token);
 			mv.addObject("nome" ,claims.getBody().get("nome"));
 			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			mv.addObject("cliente", c.get());
 			List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
 			if(listaConti!=null && !listaConti.isEmpty()) {
 				mv.addObject("listaConti", listaConti);
@@ -398,7 +401,7 @@ public class ClientController {
 		Jws<Claims> claims = JWT.validate(token);
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 		if(c.isPresent()) {
-			conto.setCodCliente(c.get());
+			conto.setCodCliente(c.get().getCodCliente());
 			conto.setEmailCliente(c.get().getEmailCliente());
 			conto.setSaldo(0.00);
 			contoService.saveConto(conto);
@@ -432,7 +435,7 @@ public class ClientController {
 			mc.setTipoMovimento(TipoMovimento.ACCREDITO);
 			
 			Transazioni t = new Transazioni();
-			t.setCodConto(conto.get());
+			t.setCodConto(conto.get().getCodConto());
 			t.setDataTransazione(new Date());
 			t.setImporto(importo);
 			t.setTipoTransazione(TipoTransazione.ACCREDITO);
@@ -441,7 +444,7 @@ public class ClientController {
 			t = transazioniService.saveTransazioni(t);
 			
 			TransazioniMongo tm = new TransazioniMongo();
-			tm.setCodiceConto(t.getCodConto().getCodConto());
+			tm.setCodiceConto(t.getCodConto());
 			tm.setCodTransazione(t.getCodTransazione());
 			tm.setDataTransazione(t.getDataTransazione());
 			tm.setImporto(t.getImporto());
@@ -452,6 +455,7 @@ public class ClientController {
 			Jws<Claims> claims = JWT.validate(token);
 			mv.addObject("nome" ,claims.getBody().get("nome"));
 			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			mv.addObject("cliente", c.get());
 				List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
 				if(listaConti!=null && !listaConti.isEmpty()) {
 					mv.addObject("listaConti", listaConti);
@@ -494,7 +498,7 @@ public class ClientController {
 				mc.setTipoMovimento(TipoMovimento.ADDEBITO);
 				
 				Transazioni t = new Transazioni();
-				t.setCodConto(conto.get());
+				t.setCodConto(conto.get().getCodConto());
 				t.setDataTransazione(new Date());
 				t.setImporto(importo);
 				t.setTipoTransazione(TipoTransazione.ADDEBITO);
@@ -503,7 +507,7 @@ public class ClientController {
 				t = transazioniService.saveTransazioni(t);
 				
 				TransazioniMongo tm = new TransazioniMongo();
-				tm.setCodiceConto(t.getCodConto().getCodConto());
+				tm.setCodiceConto(t.getCodConto());
 				tm.setCodTransazione(t.getCodTransazione());
 				tm.setDataTransazione(t.getDataTransazione());
 				tm.setImporto(t.getImporto());
@@ -514,6 +518,7 @@ public class ClientController {
 				Jws<Claims> claims = JWT.validate(token);
 				mv.addObject("nome" ,claims.getBody().get("nome"));
 				Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+				mv.addObject("cliente", c.get());
 					List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
 					if(listaConti!=null && !listaConti.isEmpty()) {
 						mv.addObject("listaConti", listaConti);
@@ -541,6 +546,7 @@ public class ClientController {
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		mv.addObject("cliente", c.get());
 		List<CarteDiCredito> listaCarte = carteDiCreditoService.findByCodCliente(c.get().getCodCliente());
 			if(listaCarte!=null && !listaCarte.isEmpty()) {
 				mv.addObject("listaCarte", listaCarte);
@@ -578,7 +584,7 @@ public class ClientController {
         int second = 1000 + random.nextInt(9000);
 	    numerocarta = numerocarta + " " +String.valueOf(first) + " " + String.valueOf(second);
 		CarteDiCredito carta = new CarteDiCredito();
-		carta.setCodCliente(c.get());
+		carta.setCodCliente(c.get().getCodCliente());
 		carta.setDataScadenza(scadenza);
 		carta.setCvv(String.valueOf(cvv));
 		carta.setNumeroCarta(numerocarta);
@@ -596,6 +602,7 @@ public class ClientController {
 			Jws<Claims> claims = JWT.validate(token);
 			mv.addObject("nome" ,claims.getBody().get("nome"));
 			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			mv.addObject("cliente", c.get());
 			List<CarteDiCredito> listaCarte = carteDiCreditoService.findByCodCliente(c.get().getCodCliente());
 			if(listaCarte!=null && !listaCarte.isEmpty()) {
 				mv.addObject("listaCarte", listaCarte);

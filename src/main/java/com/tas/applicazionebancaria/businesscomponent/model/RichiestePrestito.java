@@ -37,9 +37,8 @@ public class RichiestePrestito implements Serializable {
 	@Column(nullable = false)
 	private StatoPrestito stato;
 	
-	@ManyToOne
 	@JoinColumn(name = "codCliente")
-	private Cliente codCliente;
+	private long codCliente;
 }
 
 

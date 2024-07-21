@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 class BCryptPasswordTest {
 	@Test
     void testCodifica() {
-        String pass = new BCryptPasswordEncoder().encode("Pass01$");
+        String pass = new BCryptPasswordEncoder().encode("Password01$");
         assertNotNull(pass); // Verifica che la password codificata non sia null
         System.out.println(pass);
     }
