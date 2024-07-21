@@ -17,6 +17,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { HomeComponent } from './home/home.component';
+import { CookieService } from 'ngx-cookie-service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ChipModule } from 'primeng/chip';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
+import { FindClientComponent } from './find-client/find-client.component';
+import { ClientListComponent } from './client-list/client-list.component';
+import { AddClientComponent } from './add-client/add-client.component';
+import { DeleteContoComponent } from './delete-conto/delete-conto.component';
+import { StatsComponent } from './stats/stats.component';
 
 
 @NgModule({
@@ -24,7 +34,12 @@ import { HomeComponent } from './home/home.component';
     AppComponent,
     LoginComponent,
     NavbarComponent,
-    HomeComponent
+    HomeComponent,
+    FindClientComponent,
+    ClientListComponent,
+    AddClientComponent,
+    DeleteContoComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,
@@ -38,12 +53,17 @@ import { HomeComponent } from './home/home.component';
     FormsModule,
     ReactiveFormsModule,
     InputTextModule,
-    MessageModule
+    MessageModule,
+    ProgressSpinnerModule,
+    ChipModule,
+    TagModule,
+    TooltipModule
   ],
   providers: [
     provideClientHydration(),
     provideHttpClient(withFetch()),
-    MessageService
+    MessageService,
+    CookieService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,25 +1,30 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, UrlTree } from '@angular/router';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuardService {
-  private token: string | null = null;
+  private token: string = '';
 
-  constructor(@Inject(DOCUMENT) private document: Document, private _router: Router) {     
+  constructor(private _router: Router, private authenticationService: AuthenticationService ) {     
     
   }
 
   canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
-    this.token = this.document.defaultView?.sessionStorage ? sessionStorage.getItem('token') : null;
-
+    this.token = this.authenticationService.getCookieByName("bearer");
+    
     for (let i = 0; i < route.url.length; ++i) {
       const path = route.url[i].path;
       switch (path) {
-        case 'login': return this.token !== null ? this._router.createUrlTree(['/home']) : true;
-        case 'home': return this.token !== null ? true : this._router.createUrlTree(['/']);
+        case 'login': return this.token !== '' ? this._router.createUrlTree(['/home']) : true;
+        case 'home': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        case 'clientList': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        case 'findClient': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        case 'addClient': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        case 'deleteConto': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        case 'stats': return this.token !== '' ? true : this._router.createUrlTree(['/']);
         default: return false;
       }
     }

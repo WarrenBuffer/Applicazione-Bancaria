@@ -2,12 +2,43 @@
     <p-toolbar>
         <div class="p-toolbar-group-start">
             <a routerLink="/">
-                Home
+                <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" width="30" height="30" viewBox="0 0 122.88 115.44"><defs fill="#ffffff"><style>.cls-1{fill-rule:evenodd;}</style></defs><title>bank</title><path class="cls-1" d="M2.79,48.12,61.44,0l58.94,48.12ZM61.44,24.26A4.73,4.73,0,1,1,56.71,29a4.73,4.73,0,0,1,4.73-4.73Zm0-4.8A9.53,9.53,0,1,1,51.91,29a9.53,9.53,0,0,1,9.53-9.53Zm8.67,1.82a11.6,11.6,0,1,1-8-3.87,11.6,11.6,0,0,1,8,3.87Zm-8.67-6.43A14.14,14.14,0,1,1,47.3,29,14.14,14.14,0,0,1,61.44,14.85ZM0,108.81H9.08v-6.33H10.4v-3h3.84V63.23H6.38V54.55H116.49v8.68h-7.85V99.46h3.84v3h1.32v6.33h9.08v6.63H0v-6.63Zm32.59-6.33H37v-3h3.85V63.23H28.74V99.46h3.85v3Zm26.63,0h4.44v-3h3.85V63.23H55.37V99.46h3.85v3Zm26.63,0h4.44v-3h3.85V63.23H82V99.46h3.85v3Z" fill="#ffffff"/></svg>
+            </a>
+        </div>
+        <div *ngIf="isAuthenticated()" class="p-toolbar-group-center flex gap-4" >
+            <a routerLink="/findClient">
+                <button pTooltip="Cerca cliente" tooltipPosition="bottom" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+                    <i class="pi pi-search text-2xl"></i>
+                </button>
+            </a>
+            <a routerLink="/clientList">
+                <button pTooltip="Lista clienti" tooltipPosition="bottom"  class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+                    <i class="pi pi-users text-2xl"></i>
+                </button>
+            </a>
+            <a routerLink="/addClient">
+                <button pTooltip="Aggiungi cliente" tooltipPosition="bottom" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+                    <i class="pi pi-user-plus text-2xl"></i>
+                </button>
+            </a>
+            <a routerLink="/deleteConto">
+                <button pTooltip="Elimina conto" tooltipPosition="bottom" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+                    <i class="pi pi-user-minus text-2xl"></i>
+                </button>
+            </a>
+            <a routerLink="/stats">
+                <button pTooltip="Statistiche" tooltipPosition="bottom" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+                    <i class="pi pi-chart-bar text-2xl"></i>
+                </button>
             </a>
         </div>
         <div class="p-toolbar-group-end">
-            <a routerLink="/login">
+            <a *ngIf="!isAuthenticated()" routerLink="/login">
                 <p-button label="Login" icon="pi pi-sign-in" size="small" />
+            </a>
+            <a *ngIf="isAuthenticated()" class="flex">
+                <p-button [label]="getName()" icon="pi pi-user" severity="contrast" size="small" class="mr-2"/>
+                <p-button label="Logout" icon="pi pi-sign-out" size="small" (onClick)="logout()" />
             </a>
         </div>
     </p-toolbar>

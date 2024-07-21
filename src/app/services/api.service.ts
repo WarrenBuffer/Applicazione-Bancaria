@@ -12,9 +12,9 @@ export class ApiService {
   private httpOptions = {
     headers: new HttpHeaders({
     'Content-Type': 'application/json',
-    'Authorization': sessionStorage.getItem('token') ?? ''
-    }
-  )};
+    }),
+    withCredentials: true
+  };
 
   constructor(private _http: HttpClient, private _router: Router,  private messageService: MessageService) { }
 
