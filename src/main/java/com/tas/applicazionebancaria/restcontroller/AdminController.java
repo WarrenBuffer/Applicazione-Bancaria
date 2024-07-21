@@ -31,7 +31,7 @@ import com.tas.applicazionebancaria.utils.ServerResponse;
 import com.tas.applicazionebancaria.utils.Statistiche;
 
 @RequestMapping(value = "/api")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 public class AdminController {
 	@Autowired
