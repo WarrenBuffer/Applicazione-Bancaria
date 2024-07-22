@@ -27,6 +27,7 @@ import { AddClientComponent } from './add-client/add-client.component';
 import { DeleteContoComponent } from './delete-conto/delete-conto.component';
 import { StatsComponent } from './stats/stats.component';
 import { TableModule } from 'primeng/table';
+import { RichiestePrestitiComponent } from './richieste-prestiti/richieste-prestiti.component';
 import { LoadingComponent } from './shared/loading/loading.component';
 
 
@@ -40,7 +41,8 @@ import { LoadingComponent } from './shared/loading/loading.component';
     AddClientComponent,
     DeleteContoComponent,
     StatsComponent,
-    LoadingComponent
+    LoadingComponent,
+    RichiestePrestitiComponent
   ],
   imports: [
     BrowserModule,

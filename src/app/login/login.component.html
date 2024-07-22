@@ -7,7 +7,7 @@
         </div>
         <div class="flex flex-column sm:flex-row gap-2 mt-2">
             <input type="password" formControlName="password" pInputText  name="password" placeholder="Password..."/>
-            <p-message *ngIf="form.controls.password.invalid && form.controls.password.dirty" severity="error" text="Min: 8. Max: 32. a-zA-Z0-9@#&%^$?=" />
+            <p-message *ngIf="form.controls.password.invalid && form.controls.password.dirty" severity="error" text="Min: 7. Max: 32. a-zA-Z0-9@#&%^$?=" />
         </div>
         <div class="mt-2">
             <p-button type="submit" severity="primary" [disabled]="!form.valid" [raised]="true" size="small" label="Login" />

@@ -24,6 +24,8 @@ export class AuthGuardService {
         case 'addClient': return this.token !== '' ? true : this._router.createUrlTree(['/']);
         case 'deleteConto': return this.token !== '' ? true : this._router.createUrlTree(['/']);
         case 'stats': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        case 'richiestePrestiti': return this.token !== '' ? true : this._router.createUrlTree(['/']);
+        
         default: return false;
       }
     }

@@ -31,6 +31,11 @@
                     <i class="pi pi-chart-bar text-2xl"></i>
                 </button>
             </a>
+            <a routerLink="/richiestePrestiti">
+                <button pTooltip="Richieste Prestiti" tooltipPosition="bottom" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+                    <i class="pi pi-money-bill text-2xl"></i>
+                </button>
+            </a>
         </div>
         <div class="p-toolbar-group-end">
             <a *ngIf="!isAuthenticated()" routerLink="/login">

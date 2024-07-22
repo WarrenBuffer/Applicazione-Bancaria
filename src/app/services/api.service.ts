@@ -14,12 +14,12 @@ export class ApiService {
   private basePath = "http://localhost:8080/api";
   private httpOptions = {
     headers: new HttpHeaders({
-    'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
     }),
     withCredentials: true
   };
 
-  constructor(private _http: HttpClient, private _router: Router,  private toastService: ToastService, private authService: AuthenticationService) { }
+  constructor(private _http: HttpClient, private _router: Router, private toastService: ToastService, private authService: AuthenticationService) { }
 
   clientList(): Observable<any> {
     return this._http.get(`${this.basePath}/clienti`, this.httpOptions).pipe(
@@ -66,5 +66,33 @@ export class ApiService {
         return of(undefined);
       })
     )
+  }
+
+  getRichiestePrestiti(): Observable<any> {
+    return this._http.get<ServerResponse>(`${this.basePath}/richiestePrestito`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      }))
+  }
+
+  approvaPrestito(id: number): Observable<any> {
+    return this._http.get<ServerResponse>(`${this.basePath}/approvaPrestito/` + id, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      }))
+  }
+
+  declinaPrestito(id: number): Observable<any> {
+    console.log(id);
+    return this._http.get<ServerResponse>(`${this.basePath}/declinaPrestito/` + id, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      }))
   }
 }

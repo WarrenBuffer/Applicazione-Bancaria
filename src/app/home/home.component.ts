@@ -40,4 +40,5 @@ export class HomeComponent {
   getStats() {
     this.apiService.getStats();
   }
+
 }
