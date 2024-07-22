@@ -36,34 +36,77 @@ fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;disp
 
 <div class="row" >
 
-<div class="panel-group" th:if="${prestito != null}">
+<div class="panel-group">
 <div class="col-sm-6">
-  <div class="panel panel-default">
+  <div class="panel panel-default" th:if="${prestito != null}">
   <div class="panel-heading">
   	<h2 style="font-size: 18px;"><strong>Cod prestito</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 				<span style="font-size: 29px;" th:text="*{prestito.codPrestito}"></span></h2>
 	</div>
 	<br>
     <div class="panel-body">
-    	<p style="font-size: 14px;"><strong>Importo:</strong>&nbsp;&nbsp;<span th:text="*{prestito.importo}"></span></p>
+    	<p style="font-size: 14px;"><strong>Importo:</strong>&nbsp;&nbsp;<span th:text="*{#numbers.formatCurrency(prestito.importo)}"></span></p>
 		<p style="font-size: 14px;"><strong>Durata:</strong>&nbsp;&nbsp;<span th:text="*{prestito.durataInMesi}"></span></p>
 		<p style="font-size: 14px;"><strong>Tasso interesse:</strong> &nbsp;&nbsp;<span th:text="*{prestito.tassoInteresse}"></span></p>
 		<p style="font-size: 14px;"><strong>Codice cliente:</strong>&nbsp;&nbsp;<span th:text="*{prestito.codCliente}"></span></p>
 	</div>
 	
+  </div>
+  </div>
+  
+  <!---------------------------------- Panel richieste prestito ---------------------------------------------->
+  
+  <div class="col-sm-6" th:if="${listaRichiestePrestito!=null}">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h2 style="font-size: 18px;"><strong>Le tue richieste</strong> </h2>
+	</div>
+    <div class="panel-body">
+    	<table>
+    		<thead>
+    			<tr>
+    				<th>Codice richiesta</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Importo</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Data</th>
+    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+    				<th>Stato</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			<tr th:each="richiesta : ${listaRichiestePrestito}">
+    				<td th:text="${richiesta.codRichiesta}"></td>
+    				<td></td>
+    				<td th:text="${#numbers.formatCurrency(richiesta.importo)}"></td>
+    				<td></td>
+    				<td th:text="${#dates.format(richiesta.dataRichiesta, 'dd/MMM/YYYY')}"></td>
+    				<td></td>
+    				<td th:text="${richiesta.stato}"></td>
+    			</tr>
+    		</tbody>
+    	</table>
+    
+    </div>
+  </div>
+</div>
+<div class="col-sm-6" th:if="${listaRichiestePrestito==null}">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h2 style="font-size: 18px;"><strong>Nessuna richiesta pendente</strong> </h2>
+	</div>
+	</div>
+</div>
+
+</div>
+</div>	
 	
-	
-	<div class="panel-footer">
-	<div class=row>
-		<div class="col-sm-4">
-		
-		<!------------ Button richiedi prestito ------------->
-		<a class="btn btn-primary" role="button" href="#" data-toggle="modal" data-target="#richiestaPrestitoModal">
+	<!------------ Button richiedi prestito ------------->
+		<a class="btn btn-primary" role="button" href="#" data-toggle="modal" data-target="#richiestaPrestitoModal" style="margin-top: 30px;">
 			Richiedi un nuovo prestito&nbsp; <span class="glyphicon glyphicon-send"></span>
 		</a>
 		
-		
-<!---------------------------------------------- Modal per la richiesta prestito ------------------------------------>		
+		<!---------------------------------------------- Modal per la richiesta prestito ------------------------------------>		
 		
 		<div class="modal fade" id="richiestaPrestitoModal" tabindex="-1" role="dialog" aria-labelledby="richiestaPrestitoModalLabel" aria-hidden="true">
 			        <div class="modal-dialog modal-md">
@@ -96,60 +139,6 @@ fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;disp
 			        </div>
    		 		</div>
 		</div>
-		
-		</div>
-		
-	</div>
-	</div>
-  </div>
-  </div>
-  
-  <!---------------------------------- Panel richieste prestito ---------------------------------------------->
-  
-  <div class="col-sm-6" th:if="${listaRichiestePrestito!=null}">
-  <div class="panel panel-default">
-  <div class="panel-heading">
-  	<h2 style="font-size: 18px;"><strong>Le tue richieste</strong> </h2>
-	</div>
-    <div class="panel-body">
-    	<table>
-    		<thead>
-    			<tr>
-    				<th>Codice richiesta</th>
-    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-    				<th>Importo</th>
-    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-    				<th>Data</th>
-    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-    				<th>Stato</th>
-    			</tr>
-    		</thead>
-    		<tbody>
-    			<tr th:each="richiesta : ${listaRichiestePrestito}">
-    				<td th:text="${richiesta.codRichiesta}"></td>
-    				<td></td>
-    				<td th:text="${richiesta.importo}"></td>
-    				<td></td>
-    				<td th:text="${#dates.format(richiesta.dataRichiesta, 'dd/MMM/YYYY')}"></td>
-    				<td></td>
-    				<td th:text="${richiesta.stato}"></td>
-    			</tr>
-    		</tbody>
-    	</table>
-    
-    </div>
-  </div>
-</div>
-<div class="col-sm-6" th:if="${listaRichiestePrestito==null}">
-  <div class="panel panel-default">
-  <div class="panel-heading">
-  	<h2 style="font-size: 18px;"><strong>Nessuna richiesta pendente</strong> </h2>
-	</div>
-	</div>
-</div>
-
-</div>
-</div>	
 		
 </div>
 
