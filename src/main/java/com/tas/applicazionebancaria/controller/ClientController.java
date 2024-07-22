@@ -615,18 +615,3 @@ public class ClientController {
 		return mv;
 	}
 }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-

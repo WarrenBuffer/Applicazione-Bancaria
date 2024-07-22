@@ -7,5 +7,5 @@ import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
 
 @Repository("RichiestePrestitoRepository")
 public interface RichiestePrestitoRepository extends JpaRepository<RichiestePrestito, Long>{
-	
+
 }

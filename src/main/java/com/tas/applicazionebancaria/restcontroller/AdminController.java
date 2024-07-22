@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
+import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
 import com.tas.applicazionebancaria.service.AmministratoreService;
 import com.tas.applicazionebancaria.service.CarteDiCreditoService;
@@ -24,6 +26,7 @@ import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
 import com.tas.applicazionebancaria.service.PagamentiService;
 import com.tas.applicazionebancaria.service.PrestitiService;
+import com.tas.applicazionebancaria.service.RichiestePrestitoService;
 import com.tas.applicazionebancaria.service.TransazioniBancarieService;
 import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
@@ -52,9 +55,13 @@ public class AdminController {
 	PagamentiService pagamentiService;
 	@Autowired
 	TransazioniMongoService tmService;
-	
+
+	@Autowired
+	RichiestePrestitoService rpService;
+
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
-		if (nome == null || cognome == null || email == null || password == null) return false;
+		if (nome == null || cognome == null || email == null || password == null)
+			return false;
 		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$"))
 			return false;
 		if (!cognome.matches("^[a-zA-Z ,.'-]{2,30}$"))
@@ -76,8 +83,7 @@ public class AdminController {
 	}
 
 	@PostMapping("/clienti")
-	public ServerResponse addCliente(
-			@RequestBody Cliente cliente) {
+	public ServerResponse addCliente(@RequestBody Cliente cliente) {
 		System.out.println(cliente);
 		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
 				cliente.getPasswordCliente()))
@@ -85,7 +91,7 @@ public class AdminController {
 
 		if (clienteService.findByEmail(cliente.getEmailCliente()).isPresent())
 			return new ServerResponse(1, "Cliente con email " + cliente.getEmailCliente() + " esiste.");
-		
+
 		cliente.setPasswordCliente(BCryptEncoder.encode(cliente.getPasswordCliente()));
 		clienteService.saveCliente(cliente);
 		return new ServerResponse(0, "Cliente aggiunto con successo.");
@@ -129,7 +135,43 @@ public class AdminController {
 		stat.setContiSaldo0(contoService.findConti0());
 		return new ServerResponse(0, stat);
 	}
-	
+
+	@GetMapping("/richiestePrestito")
+	public ServerResponse richiestePrestito() {
+		List<RichiestePrestito> richiestaPrestiti = rpService.findAll();
+		if (richiestaPrestiti.isEmpty()) {
+			return new ServerResponse(1, "Nessuna richiesta prestito pendente");
+		}
+		return new ServerResponse(0, richiestaPrestiti);
+	}
+
+	@GetMapping("/approvaPrestito/{id}")
+	public ServerResponse approvaPrestito(@PathVariable long id) {
+		System.out.println("approvato prestito");
+		Optional<RichiestePrestito> rp = rpService.findById(id);
+		if (rp.isEmpty()) {
+			return new ServerResponse(1, "Richiesta Prestito non valida");
+		}
+		rp.get().setStato(StatoPrestito.APPROVATO);
+		// salvo il prestito confermato nella tabella
+		// Prestiti prestito = new Prestiti();
+		// prestitiService.savePrestiti()
+		rpService.saveRichiestePrestito(rp.get());
+		
+		return new ServerResponse(0, "Approvata richiesta n. " + rp.get().getCodRichiesta());
+	}
+
+	@GetMapping("/declinaPrestito/{id}")
+	public ServerResponse declinaPrestito(@PathVariable long id) {
+		Optional<RichiestePrestito> rp = rpService.findById(id);
+		if (rp.isEmpty()) {
+			return new ServerResponse(1, "Richiesta Prestito non valida");
+		}
+		rp.get().setStato(StatoPrestito.RIFIUTATO);
+		rpService.saveRichiestePrestito(rp.get());
+		return new ServerResponse(0, "Rifiutata richiesta n. " + rp.get().getCodRichiesta());
+	}
+
 	private Map<Cliente, Long> findNumContiPerCliente() {
 		Map<Cliente, Long> numContiPerCliente = new HashMap<Cliente, Long>();
 		for (Cliente c : clienteService.findAll()) {
@@ -138,7 +180,7 @@ public class AdminController {
 		}
 		return numContiPerCliente;
 	}
-	
+
 	private Map<Cliente, Long> findNumCartePerCliente() {
 		Map<Cliente, Long> numCartePerCliente = new HashMap<Cliente, Long>();
 		for (Cliente c : clienteService.findAll()) {
@@ -147,23 +189,23 @@ public class AdminController {
 		}
 		return numCartePerCliente;
 	}
-	
+
 	private Map<Cliente, Double> findTotPrestitiPerCliente() {
 		Map<Cliente, Double> totPrestitiPerCliente = new HashMap<Cliente, Double>();
 		for (Cliente c : clienteService.findAll()) {
-			double totPrestiti = prestitiService.findTotPrestitiByCodCliente(c.getCodCliente()); 
+			double totPrestiti = prestitiService.findTotPrestitiByCodCliente(c.getCodCliente());
 			totPrestitiPerCliente.put(c, totPrestiti);
 		}
 		return totPrestitiPerCliente;
 	}
-	
+
 	private Map<Cliente, Double> findTotPagamentiPerCliente() {
 		Map<Cliente, Double> totPagamentiPerCliente = new HashMap<Cliente, Double>();
 		for (Cliente c : clienteService.findAll()) {
-			double totPagamenti = pagamentiService.findTotPagamentiByCodCliente(c.getCodCliente()); 
+			double totPagamenti = pagamentiService.findTotPagamentiByCodCliente(c.getCodCliente());
 			totPagamentiPerCliente.put(c, totPagamenti);
 		}
 		return totPagamentiPerCliente;
 	}
-	
+
 }
