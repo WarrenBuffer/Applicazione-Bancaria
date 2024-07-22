@@ -27,6 +27,7 @@ import { AddClientComponent } from './add-client/add-client.component';
 import { DeleteContoComponent } from './delete-conto/delete-conto.component';
 import { StatsComponent } from './stats/stats.component';
 import { TableModule } from 'primeng/table';
+import { LoadingComponent } from './shared/loading/loading.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { TableModule } from 'primeng/table';
     FindClientComponent,
     AddClientComponent,
     DeleteContoComponent,
-    StatsComponent
+    StatsComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

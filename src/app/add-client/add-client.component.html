@@ -1,2 +1,24 @@
 <app-navbar />
-<p>add-client works!</p>
+<p-card header="Aggiungi cliente">
+    <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+        <div class="flex flex-column sm:flex-row gap-2 mt-2">
+            <input pInputText formControlName="nome" placeholder="Nome..." />
+            <p-message *ngIf="form.controls.nome.invalid && form.controls.nome.dirty" severity="error" text="Nome non valido" />
+        </div>
+        <div class="flex flex-column sm:flex-row gap-2 mt-2">
+            <input pInputText formControlName="cognome" placeholder="Cognome..." />
+            <p-message *ngIf="form.controls.cognome.invalid && form.controls.cognome.dirty" severity="error" text="Cognome non valido" />
+        </div>
+        <div class="flex flex-column sm:flex-row gap-2 mt-2">
+            <input pInputText formControlName="email" placeholder="Email..." />
+            <p-message *ngIf="form.controls.email.invalid && form.controls.email.dirty" severity="error" text="L'email deve essere valida" />
+        </div>
+        <div class="flex flex-column sm:flex-row gap-2 mt-2">
+            <input type="password" formControlName="password" pInputText  name="password" placeholder="Password..."/>
+            <p-message *ngIf="form.controls.password.invalid && form.controls.password.dirty" severity="error" text="Min: 8. Max: 32. a-zA-Z0-9@#&%^$?=" />
+        </div>
+        <div class="mt-2">
+            <p-button type="submit" severity="primary" [disabled]="!form.valid" [raised]="true" size="small" label="Aggiungi" />
+        </div>
+    </form>
+</p-card>

@@ -15,7 +15,6 @@ export class HomeComponent {
     this.apiService.clientList().subscribe({
       next: v => {
         this.clientList = v.message;
-        console.log(this.clientList);
       }
     })
   }
@@ -41,6 +40,4 @@ export class HomeComponent {
   getStats() {
     this.apiService.getStats();
   }
-
-
 }

@@ -5,6 +5,7 @@ import { Cliente } from '../model/cliente';
 import { AuthenticationService } from './authentication.service';
 import { catchError, Observable, of } from 'rxjs';
 import { ToastService } from './toast.service';
+import { ServerResponse } from '../model/server-response';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +32,15 @@ export class ApiService {
   }
 
   addClient(cliente: Cliente) {
-    this._http.post(`${this.basePath}/clienti`, cliente, this.httpOptions).subscribe({
-      next: v => console.log(v),
-      error: err => console.log(err)
+    this._http.post<ServerResponse>(`${this.basePath}/clienti`, cliente, this.httpOptions).subscribe({
+      next: v => {
+        if (v.code !== 0) {
+          this.toastService.showError(v.message);
+        } else {
+          this.toastService.showSuccess(v.message);
+        }
+      },
+      error: err => this.toastService.showError(err.message)
     })
   }
 
@@ -51,10 +58,13 @@ export class ApiService {
     })
   }
 
-  getStats() {
-    this._http.get(`${this.basePath}/statistiche`, this.httpOptions).subscribe({
-      next: v => console.log(v),
-      error: err => console.log(err)
-    })
+  getStats(): Observable<any> {
+    return this._http.get(`${this.basePath}/statistiche`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      })
+    )
   }
 }
