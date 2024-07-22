@@ -29,6 +29,8 @@ import { StatsComponent } from './stats/stats.component';
 import { TableModule } from 'primeng/table';
 import { RichiestePrestitiComponent } from './richieste-prestiti/richieste-prestiti.component';
 import { LoadingComponent } from './shared/loading/loading.component';
+import { LogoutComponent } from './logout/logout.component';
+import { DialogModule } from 'primeng/dialog';
 
 
 @NgModule({
@@ -42,7 +44,8 @@ import { LoadingComponent } from './shared/loading/loading.component';
     DeleteContoComponent,
     StatsComponent,
     LoadingComponent,
-    RichiestePrestitiComponent
+    RichiestePrestitiComponent,
+    LogoutComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +64,8 @@ import { LoadingComponent } from './shared/loading/loading.component';
     ChipModule,
     TagModule,
     TooltipModule,
-    TableModule
+    TableModule,
+    DialogModule
   ],
   providers: [
     provideClientHydration(),

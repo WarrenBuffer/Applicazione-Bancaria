@@ -29,7 +29,17 @@
             <td>{{ cliente.cognomeCliente }}</td>
             <td>{{ cliente.emailCliente }}</td>
             <td>{{ cliente.tentativiErrati }}</td>
-            <td>{{ cliente.accountBloccato }}</td>
+                <td *ngIf="cliente.accountBloccato">
+                    
+                <form (ngSubmit)="lockUnlock(cliente.emailCliente)">
+                    <p-button type="submit" label="Sblocca" severity="success" [rounded]="true" size="small"/>
+                </form>
+                </td>
+                <td *ngIf="!cliente.accountBloccato">
+                    <form (ngSubmit)="lockUnlock(cliente.emailCliente)">
+                    <p-button type="submit" label="Blocca" severity="warning" [rounded]="true" size="small"/>
+                    </form>
+                </td>
             <td>{{ cliente.carte.length }}</td>
             <td>{{ cliente.conti.length }}</td>
             <td>{{ cliente.pagamenti.length }}</td>

@@ -30,7 +30,6 @@ export class ApiService {
       })
     )
   }
-
   addClient(cliente: Cliente) {
     this._http.post<ServerResponse>(`${this.basePath}/clienti`, cliente, this.httpOptions).subscribe({
       next: v => {
@@ -43,19 +42,32 @@ export class ApiService {
       error: err => this.toastService.showError(err.message)
     })
   }
-
-  getClient(id: number) {
-    this._http.get(`${this.basePath}/clienti/${id}`, this.httpOptions).subscribe({
-      next: v => console.log(v),
-      error: err => console.log(err)
-    })
+  contiList(): Observable<any> {
+    return this._http.get(`${this.basePath}/conti`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      })
+    )
   }
-
-  deleteConto(id: number) {
-    this._http.delete(`${this.basePath}/conti/${id}`, this.httpOptions).subscribe({
-      next: v => console.log(v),
-      error: err => console.log(err)
-    })
+  deleteConto(id: number): Observable<any>{
+    return this._http.delete(`${this.basePath}/conti/${id}`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      })
+    )
+  }
+  getClientByEmail(email: String): Observable<any> {
+    return this._http.get<ServerResponse>(`${this.basePath}/clienti/email/${email}`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      })
+    )
   }
 
   getStats(): Observable<any> {
@@ -95,4 +107,14 @@ export class ApiService {
         return of(undefined);
       }))
   }
+  lockUnlock(email:String) : Observable<any>{
+    return this._http.post<ServerResponse>(`${this.basePath}/clienti/lock`, email, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      })
+    )
+  }
+
 }

@@ -1,3 +1,5 @@
+
+
 <div class="mb-4">
     <p-toolbar>
         <div class="p-toolbar-group-start">
@@ -6,6 +8,7 @@
             </a>
         </div>
         <div *ngIf="isAuthenticated()" class="p-toolbar-group-center flex gap-4" >
+           
             <a routerLink="/findClient">
                 <button pTooltip="Cerca cliente" tooltipPosition="bottom" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
                     <i class="pi pi-search text-2xl"></i>
@@ -47,4 +50,5 @@
             </a>
         </div>
     </p-toolbar>
+    
 </div>
