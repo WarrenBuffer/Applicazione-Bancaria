@@ -21,8 +21,11 @@ import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.MovimentiConto;
+import com.tas.applicazionebancaria.businesscomponent.model.Prestiti;
+import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.Transazioni;
 import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMovimento;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
@@ -34,6 +37,8 @@ import com.tas.applicazionebancaria.service.ClienteService;
 
 import com.tas.applicazionebancaria.service.ContoService;
 import com.tas.applicazionebancaria.service.MovimentiContoService;
+import com.tas.applicazionebancaria.service.PrestitiService;
+import com.tas.applicazionebancaria.service.RichiestePrestitoService;
 import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
 
@@ -77,6 +82,12 @@ public class ClientController {
 	
 	@Autowired
 	CarteDiCreditoService carteDiCreditoService;
+	
+	@Autowired
+	PrestitiService prestitiService;
+	
+	@Autowired
+	RichiestePrestitoService richiestePrestitoService;
 	
 	@Autowired
 	//LoginAttemptService loginAttemptService;
@@ -481,9 +492,10 @@ public class ClientController {
 		Optional<Conto> conto = contoService.findById(codConto);
 		if(conto.isPresent()) {
 			if(conto.get().getSaldo()<importo) {
-				mv.addObject("error", "Impossibile prelevare questa cifra! Saldo insufficiente.");
-				mv.setViewName("home");
-				return mv;
+//				mv.addObject("error", "Impossibile prelevare questa cifra! Saldo insufficiente.");
+//				mv.setViewName("home");
+//				return mv;
+				return new ModelAndView("redirect:/selconto");
 			}
 			else {
 				double saldo = conto.get().getSaldo();
@@ -614,4 +626,87 @@ public class ClientController {
 		mv.setViewName("visualizzacarte");
 		return mv;
 	}
+	
+	/*-----------------------------------------PRESTITI-----------------------------------------*/
+	
+	@GetMapping(value = "/visualizzaprestiti")
+	public ModelAndView visualizzaPrestiti(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("visualizzaprestiti");
+		Jws<Claims> claims = JWT.validate(token);
+		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		mv.addObject("nome" ,claims.getBody().get("nome"));
+		
+		List<Prestiti> listaPrestiti = prestitiService.findByCodCliente(c.get().getCodCliente());
+		List<RichiestePrestito> listaRichiestePrestito = richiestePrestitoService.findByCodCliente(c.get().getCodCliente());
+		if (listaPrestiti != null && !listaPrestiti.isEmpty()) {
+			mv.addObject("listaPrestiti", listaPrestiti);
+		}
+		if (listaRichiestePrestito != null && !listaRichiestePrestito.isEmpty()) {
+			mv.addObject("listaRichiestePrestito", listaRichiestePrestito);
+		}
+		return mv;
+	}
+	
+	@PostMapping(value="/selprestito")
+	public ModelAndView selPrestito(@RequestParam("codPrestito") long codPrestito,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		
+		ModelAndView mv = new ModelAndView();
+		Optional<Prestiti> prestito = prestitiService.findById(codPrestito);
+		
+		if(prestito.isPresent()) {
+			Jws<Claims> claims = JWT.validate(token);
+			mv.addObject("nome" ,claims.getBody().get("nome"));
+			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			mv.addObject("cliente", c.get());
+			List<Prestiti> listaPrestiti = prestitiService.findByCodCliente(c.get().getCodCliente());
+			List<RichiestePrestito> listaRichiestePrestito = richiestePrestitoService.findByCodCliente(c.get().getCodCliente());
+			if(listaPrestiti!=null && !listaPrestiti.isEmpty()) {
+				mv.addObject("listaPrestiti", listaPrestiti);
+				mv.addObject("prestito",prestito.get());
+				mv.setViewName("visualizzaprestiti");
+			}
+			if (listaRichiestePrestito != null && !listaRichiestePrestito.isEmpty()) {
+				mv.addObject("listaRichiestePrestito", listaRichiestePrestito);
+				mv.setViewName("visualizzaprestiti");
+			}
+			return mv;
+		}
+		mv.setViewName("visualizzaprestiti");
+		return mv;
+	}
+	
+	@PostMapping(value = "/richiediprestito")
+	public ModelAndView richiediPrestito(@RequestParam("importo") double importo,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		
+		Jws<Claims> claims = JWT.validate(token);
+		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		RichiestePrestito richiesta = new RichiestePrestito();
+		richiesta.setCodCliente(c.get().getCodCliente());
+		richiesta.setDataRichiesta(new Date());
+		richiesta.setImporto(importo);
+		richiesta.setStato(StatoPrestito.IN_ATTESA);
+		richiestePrestitoService.saveRichiestePrestito(richiesta);
+		return new ModelAndView("redirect:/visualizzaprestiti");
+	}
+
 }

@@ -37,9 +37,16 @@
 			<td>Trace</td>
 			<td style="word-wrap: break-word;" th:text="${trace}"></td>
 		</tr>
+		<tr>
+			<td/>
+			<td>
+				<br>
+				<button class="btn btn-default" onclick="history.back()">Indietro</button>
+			</td>
+		</tr>
 	</table>
-<footer th:include="fragments/footer :: footer"></footer>
 	</div>
 </div>
+<footer th:include="fragments/footer :: footer"></footer>
 </body>
 </html>

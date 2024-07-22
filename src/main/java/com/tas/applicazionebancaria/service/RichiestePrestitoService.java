@@ -10,4 +10,5 @@ public interface RichiestePrestitoService {
 	List<RichiestePrestito> findAll();
 	Optional<RichiestePrestito> findById(long id);
 	void deleteRichiestePrestito(RichiestePrestito richiestePrestito);
+	List<RichiestePrestito> findByCodCliente(long codCliente);
 }

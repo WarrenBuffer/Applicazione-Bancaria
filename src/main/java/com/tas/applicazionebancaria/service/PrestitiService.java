@@ -11,4 +11,5 @@ public interface PrestitiService {
 	Optional<Prestiti> findById(long id);
 	void deletePrestiti(Prestiti prestiti);
 	double findTotPrestitiByCodCliente(long id);
+	List<Prestiti> findByCodCliente(long codCliente);
 }

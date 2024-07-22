@@ -34,4 +34,9 @@ public class RichiestePrestitoServiceImpl implements RichiestePrestitoService{
 	public void deleteRichiestePrestito(RichiestePrestito richiestePrestito) {
 		rpr.delete(richiestePrestito);
 	}
+
+	@Override
+	public List<RichiestePrestito> findByCodCliente(long codCliente) {
+		return rpr.findByCodCliente(codCliente);
+	}
 }

@@ -1,7 +1,5 @@
 package test.com.tas.applicazionebancaria.config;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 import com.tas.applicazionebancaria.config.BCryptEncoder;
