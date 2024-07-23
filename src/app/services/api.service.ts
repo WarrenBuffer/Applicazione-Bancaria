@@ -11,6 +11,7 @@ import { ServerResponse } from '../model/server-response';
   providedIn: 'root'
 })
 export class ApiService {
+  private cliente!: Cliente;
   private basePath = "http://localhost:8080/api";
   private httpOptions = {
     headers: new HttpHeaders({
@@ -106,6 +107,25 @@ export class ApiService {
         this.authService.logout();
         return of(undefined);
       }))
+  }
+
+  confermaNuovaPassword(password: string): Observable<any> {
+    //console.log(password);
+    return this._http.get<ServerResponse>(`${this.basePath}/confermaNuovaPassword/` + this.getter().emailCliente + "/" + password, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(undefined);
+      }))
+  }
+
+  //metodi per impostare l'admin a livello globale e ottenere informazioni di esso in diversi punti del programma
+  setter(cliente: Cliente) {
+    this.cliente = cliente;
+  }
+
+  getter() {
+    return this.cliente;
   }
   lockUnlock(email:String) : Observable<any>{
     return this._http.post<ServerResponse>(`${this.basePath}/clienti/lock`, email, this.httpOptions).pipe(

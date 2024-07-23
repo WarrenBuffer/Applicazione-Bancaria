@@ -29,6 +29,8 @@ import { StatsComponent } from './stats/stats.component';
 import { TableModule } from 'primeng/table';
 import { RichiestePrestitiComponent } from './richieste-prestiti/richieste-prestiti.component';
 import { LoadingComponent } from './shared/loading/loading.component';
+import { DropdownModule } from 'primeng/dropdown';
+import { CambioPasswordComponent } from './cambio-password/cambio-password.component';
 import { LogoutComponent } from './logout/logout.component';
 import { DialogModule } from 'primeng/dialog';
 
@@ -45,6 +47,7 @@ import { DialogModule } from 'primeng/dialog';
     StatsComponent,
     LoadingComponent,
     RichiestePrestitiComponent,
+    CambioPasswordComponent,
     LogoutComponent
   ],
   imports: [
@@ -65,6 +68,7 @@ import { DialogModule } from 'primeng/dialog';
     TagModule,
     TooltipModule,
     TableModule,
+    DropdownModule,
     DialogModule
   ],
   providers: [

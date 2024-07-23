@@ -6,4 +6,9 @@ export class Cliente {
     passwordCliente!: string;
     tentativiErrati!: number;
     accountBloccato!: boolean;
+
+    constructor(emailCliente: string = '', passwordCliente: string = '') {
+        this.emailCliente = emailCliente;
+        this.passwordCliente = passwordCliente;
+      }
 }

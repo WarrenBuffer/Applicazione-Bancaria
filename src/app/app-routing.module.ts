@@ -8,6 +8,7 @@ import { DeleteContoComponent } from './delete-conto/delete-conto.component';
 import { AddClientComponent } from './add-client/add-client.component';
 import { StatsComponent } from './stats/stats.component';
 import { RichiestePrestitiComponent } from './richieste-prestiti/richieste-prestiti.component';
+import { CambioPasswordComponent } from './cambio-password/cambio-password.component';
 import { LogoutComponent } from './logout/logout.component';
 
 const routes: Routes = [
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'addClient', canActivate: mapToCanActivate([AuthGuardService]), component: AddClientComponent  },
   { path: 'stats', canActivate: mapToCanActivate([AuthGuardService]), component: StatsComponent },
   { path: 'richiestePrestiti', canActivate: mapToCanActivate([AuthGuardService]), component: RichiestePrestitiComponent },
+  { path: 'cambioPassword', canActivate: mapToCanActivate([AuthGuardService]), component: CambioPasswordComponent },
   { path: 'logout', canActivate: mapToCanActivate([AuthGuardService]), component: LogoutComponent }
 ];
 
