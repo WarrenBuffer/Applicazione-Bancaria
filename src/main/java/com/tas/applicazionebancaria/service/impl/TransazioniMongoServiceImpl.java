@@ -36,18 +36,23 @@ public class TransazioniMongoServiceImpl implements TransazioniMongoService{
 	}
 
 	@Override
-	public List<TransazioniMongo> findTransazioniPerTipo() {
-		return tmr.findTransazioniPerTipo();
-	}
-
-	@Override
-	public List<TransazioniMongo> transazioniMediePerCliente() {
+	public long transazioniMediePerCliente() {
 		return tmr.transazioniMediePerCliente();
 	}
 
 	@Override
 	public List<TransazioniMongo> importoTransazioniPerMese() {
 		return tmr.importoTransazioniPerMese();
+	}
+
+	@Override
+	public long findTotAddebiti() {
+		return tmr.findTotAddebiti();
+	}
+
+	@Override
+	public long findTotAccrediti() {
+		return tmr.findTotAccrediti();
 	}
 	
 }

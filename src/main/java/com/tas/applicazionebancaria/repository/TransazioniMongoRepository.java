@@ -10,16 +10,19 @@ import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 
 @Repository("TransazioniMongoRepository")
 public interface TransazioniMongoRepository extends MongoRepository<TransazioniMongo, String> {
-	@Aggregation(value = { "{$group: {_id: '$tipoTransazione', count: {$sum: 1}}}",
-			"{$group: {_id: null, media: {$avg: '$count'}}}" })
-	List<TransazioniMongo> findTransazioniPerTipo();
+	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",
+			"{$match: {_id: 'ADDEBITO'}}" })
+	long findTotAddebiti();
+
+	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",
+			"{$match: {_id: 'ACCREDITO'}}" })
+	long findTotAccrediti();
 
 	@Aggregation(pipeline = { "{ $group : { _id: '$codCliente', avgTransactions: { $avg: 1 } } }" })
-	List<TransazioniMongo> transazioniMediePerCliente();
+	long transazioniMediePerCliente();
 
 	@Aggregation(pipeline = {
-			"{ $addFields: { adjustedDataTransazione: { $concat: [{ $substrBytes: ['$dataTransazione', 3, 2] }, '/', { $substrBytes: ['$dataTransazione', 0, 2] }, '/', { $substrBytes: ['$dataTransazione', 6, 4] }] } } }",
-			"{ $project: { yearMonth: { $dateToString: { format: '%Y-%m', date: { $dateFromString: { dateString: '$adjustedDataTransazione', format: '%m/%d/%Y' } } } }, importo: 1 } }",
-			"{ $group : { _id: '$yearMonth', totaleImporto: { $sum: '$importo' } } }" })
+	        "{ $group : { _id: {'$month': '$dataTransazione'}, importo: { $sum: '$importo' } } }"
+	    })
 	List<TransazioniMongo> importoTransazioniPerMese();
 }

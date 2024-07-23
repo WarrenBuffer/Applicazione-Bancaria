@@ -51,4 +51,26 @@ public class AccountBlocker implements Costanti{
 		
 		as.saveAmministratore(admin);
 	}
+	
+	public void validClient(String email) {
+		Optional<Cliente> c = cs.findByEmail(email);
+		if (c.isEmpty()) return;
+		
+		Cliente cliente = c.get();
+		cliente.setTentativiErrati(0);
+		cliente.setAccountBloccato(false);
+		
+		cs.saveCliente(cliente);
+	}
+	
+	public void validAdmin(String email) {
+		Optional<Amministratore> a = as.findByEmail(email);
+		if (a.isEmpty()) return;
+		
+		Amministratore admin = a.get();
+		admin.setTentativiErrati(0);
+		admin.setAccountBloccato(false);
+		
+		as.saveAmministratore(admin);
+	}
 }

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +30,6 @@ public class Cliente implements Serializable {
 	@Column(nullable = false, unique = true)
 	private String emailCliente;
 	@Column(nullable = false)
-	@JsonIgnore
 	private String passwordCliente;
 	@Column(nullable=false)
 	private int tentativiErrati=0;

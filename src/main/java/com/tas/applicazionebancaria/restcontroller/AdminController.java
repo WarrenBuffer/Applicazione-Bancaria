@@ -1,8 +1,6 @@
 package com.tas.applicazionebancaria.restcontroller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +51,8 @@ public class AdminController {
 	@Autowired
 	PrestitiService prestitiService;
 	@Autowired
+	RichiestePrestitoService richiestePrestitoService;
+	@Autowired
 	PagamentiService pagamentiService;
 	@Autowired
 	TransazioniMongoService tmService;
@@ -62,15 +62,14 @@ public class AdminController {
 	AmministratoreService asService;
 
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
-		if (nome == null || cognome == null || email == null || password == null)
-			return false;
+		if (nome == null || cognome == null || email == null || password == null) return false;
 		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$"))
 			return false;
 		if (!cognome.matches("^[a-zA-Z ,.'-]{2,30}$"))
 			return false;
 		if (!email.matches("^[\\w.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
 			return false;
-		if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?!=])[a-zA-Z0-9@#&%^$?!=]{7,15}$"))
+		if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#&%^$?=])[a-zA-Z0-9@#&%^$?=]{8,32}$"))
 			return false;
 		return true;
 	}
@@ -90,7 +89,6 @@ public class AdminController {
 	}
 	@PostMapping("/clienti")
 	public ServerResponse addCliente(@RequestBody Cliente cliente) {
-		System.out.println(cliente);
 		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
 				cliente.getPasswordCliente()))
 			return new ServerResponse(1, "Validazione fallita, riprova a inserire i dati.");
@@ -152,20 +150,16 @@ public class AdminController {
 	@GetMapping("/statistiche")
 	public ServerResponse getStatistiche() {
 		Statistiche stat = new Statistiche();
-		stat.setNumeroClienti(clienteService.count());
-		stat.setSaldoPiuAlto(clienteService.findClienteSaldoPiuAlto());
-		stat.setUltimaTransazione(transazioniBancarieService.findUltimaTransazione());
-		stat.setNumTransazioni(transazioniBancarieService.findNumTransazioni());
-		stat.setSommaImporti(transazioniBancarieService.findSommaImporti());
-		stat.setSaldoMedio(contoService.findSaldoMedio());
-		stat.setContiPerCliente(findNumContiPerCliente());
-		stat.setCartePerCliente(findNumCartePerCliente());
-		stat.setPrestitiPerCliente(findTotPrestitiPerCliente());
-		stat.setPagamentiPerCliente(findTotPagamentiPerCliente());
-		stat.setTransazioniPerTipo(tmService.findTransazioniPerTipo());
+		stat.setClienti(clienteService.findAll());
+//		stat.setSaldoPiuAlto(clienteService.findClienteSaldoPiuAlto());
+// 		stat.setUltimaTransazione(transazioniBancarieService.findUltimaTransazione());
+//		stat.setNumTransazioni(transazioniBancarieService.findNumTransazioni());
+//		stat.setSommaImporti(transazioniBancarieService.findSommaImporti());
+//		stat.setSaldoMedio(contoService.findSaldoMedio());
+		stat.setTotAddebiti(tmService.findTotAddebiti());
+		stat.setTotAccrediti(tmService.findTotAddebiti());
 		stat.setTransazioniMediePerCliente(tmService.transazioniMediePerCliente());
 		stat.setImportoTransazioniPerMese(tmService.importoTransazioniPerMese());
-		stat.setContiSaldo0(contoService.findConti0());
 		return new ServerResponse(0, stat);
 	}
 
@@ -217,41 +211,14 @@ public class AdminController {
 		return new ServerResponse(0, "Password salvata correttamente");
 	}
 
-
-	private Map<Cliente, Long> findNumContiPerCliente() {
-		Map<Cliente, Long> numContiPerCliente = new HashMap<Cliente, Long>();
-		for (Cliente c : clienteService.findAll()) {
-			long numConti = contoService.findNumContiByCodCliente(c.getCodCliente());
-			numContiPerCliente.put(c, numConti);
-		}
-		return numContiPerCliente;
+	@GetMapping("/transazioni") 
+	public ServerResponse getTransazioni() {
+		return new ServerResponse(0, transazioniService.findAll());		
 	}
-
-	private Map<Cliente, Long> findNumCartePerCliente() {
-		Map<Cliente, Long> numCartePerCliente = new HashMap<Cliente, Long>();
-		for (Cliente c : clienteService.findAll()) {
-			long numCarte = ccService.findNumCarteByCodCliente(c.getCodCliente());
-			numCartePerCliente.put(c, numCarte);
-		}
-		return numCartePerCliente;
+	
+	
+	@GetMapping("/prestiti") 
+	public ServerResponse getPrestiti() {
+		return new ServerResponse(0, richiestePrestitoService.findAll());
 	}
-
-	private Map<Cliente, Double> findTotPrestitiPerCliente() {
-		Map<Cliente, Double> totPrestitiPerCliente = new HashMap<Cliente, Double>();
-		for (Cliente c : clienteService.findAll()) {
-			double totPrestiti = prestitiService.findTotPrestitiByCodCliente(c.getCodCliente());
-			totPrestitiPerCliente.put(c, totPrestiti);
-		}
-		return totPrestitiPerCliente;
-	}
-
-	private Map<Cliente, Double> findTotPagamentiPerCliente() {
-		Map<Cliente, Double> totPagamentiPerCliente = new HashMap<Cliente, Double>();
-		for (Cliente c : clienteService.findAll()) {
-			double totPagamenti = pagamentiService.findTotPagamentiByCodCliente(c.getCodCliente());
-			totPagamentiPerCliente.put(c, totPagamenti);
-		}
-		return totPagamentiPerCliente;
-	}
-
 }

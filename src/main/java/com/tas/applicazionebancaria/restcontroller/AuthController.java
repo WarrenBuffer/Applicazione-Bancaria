@@ -43,6 +43,7 @@ public class AuthController implements Costanti{
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 			Amministratore admin = adminService.findByEmail(loginRequest.getEmail()).get();
+			accountBlocker.validAdmin(admin.getEmailAdmin());
 			String token = JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin());
 			Cookie cToken = new Cookie(COOKIE_NAME, token);
 			cToken.setMaxAge(COOKIE_MAX_AGE);

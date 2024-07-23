@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
 
 import jakarta.persistence.CascadeType;
@@ -41,10 +40,7 @@ public class Conto implements Serializable{
 	private long codCliente;
 
 	@OneToMany(cascade =CascadeType.ALL, mappedBy = "contoOrigine")
-	@JsonIgnore
 	private Set<TransazioniBancarie> transazioniBancarie=new HashSet<TransazioniBancarie>();
 	@OneToMany(cascade =CascadeType.ALL, mappedBy = "codConto")
-	@JsonIgnore
 	private Set<Transazioni> transazioni=new HashSet<Transazioni>();
-	
 }

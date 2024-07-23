@@ -11,7 +11,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.TransazioniBancarie;
 
 @Repository("TransazioniBancarieRepository")
 public interface TransazioniBancarieRepository extends JpaRepository<TransazioniBancarie, Long>{
-	@Query(value = "select data_transazione from transazioni_bancarie where data_transazione >= all (select data_transazione from transazioni_bancarie)", nativeQuery = true)
+	@Query(value = "select data_transazione from transazioni where data_transazione >= all (select data_transazione from transazioni)", nativeQuery = true)
 	Date findUltimaTransazione(); 
 	
 	@Query(value = "select count(*) from transazioni_bancarie", nativeQuery = true)

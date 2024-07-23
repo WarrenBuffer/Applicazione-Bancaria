@@ -10,7 +10,8 @@ public interface TransazioniMongoService {
 	List<TransazioniMongo> findAll();
 	Optional<TransazioniMongo> findById(String id);
 	void deleteTransazioniMongo(TransazioniMongo transazioniMongo);
-	List<TransazioniMongo> findTransazioniPerTipo();
-	List<TransazioniMongo> transazioniMediePerCliente();
+	long findTotAddebiti();
+	long findTotAccrediti();
+	long transazioniMediePerCliente();
 	List<TransazioniMongo> importoTransazioniPerMese();
 }
