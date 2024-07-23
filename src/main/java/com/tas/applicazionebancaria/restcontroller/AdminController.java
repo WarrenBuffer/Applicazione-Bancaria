@@ -1,9 +1,11 @@
 package com.tas.applicazionebancaria.restcontroller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
+import com.tas.applicazionebancaria.businesscomponent.model.AuditLog;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoModificaAudit;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
 import com.tas.applicazionebancaria.service.AmministratoreService;
+import com.tas.applicazionebancaria.service.AuditService;
 import com.tas.applicazionebancaria.service.CarteDiCreditoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
@@ -29,8 +34,14 @@ import com.tas.applicazionebancaria.service.RichiestePrestitoService;
 import com.tas.applicazionebancaria.service.TransazioniBancarieService;
 import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
+import com.tas.applicazionebancaria.utils.JWT;
 import com.tas.applicazionebancaria.utils.ServerResponse;
 import com.tas.applicazionebancaria.utils.Statistiche;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping(value = "/api")
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -60,6 +71,18 @@ public class AdminController {
 	RichiestePrestitoService rpService;
 	@Autowired
 	AmministratoreService asService;
+	@Autowired
+	AuditService as;
+
+	public static Cookie getToken(HttpServletRequest request) {
+		Cookie[] cookie = request.getCookies();
+		for (Cookie c : cookie) {
+			if (c.getName().equals("token")) {
+				return c;
+			}
+		}
+		return null;
+	}
 
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
 		if (nome == null || cognome == null || email == null || password == null) return false;
@@ -82,11 +105,13 @@ public class AdminController {
 		}
 		return new ServerResponse(0, clienti);
 	}
+
 	@GetMapping("/conti")
 	public ServerResponse getConti() {
 		List<Conto> conti = contoService.findConti0();
 		return new ServerResponse(0, conti);
 	}
+
 	@PostMapping("/clienti")
 	public ServerResponse addCliente(@RequestBody Cliente cliente) {
 		if (!validateInputs(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente(),
@@ -109,6 +134,7 @@ public class AdminController {
 
 		return new ServerResponse(0, cliente.get());
 	}
+
 	@GetMapping("/clienti/email/{email}")
 	public ServerResponse getClienteByEmail(@PathVariable String email) {
 		Optional<Cliente> cliente = clienteService.findByEmail(email);
@@ -117,26 +143,43 @@ public class AdminController {
 		}
 		return new ServerResponse(0, cliente.get());
 	}
+
 	@PostMapping("/clienti/lock")
-	public ServerResponse lockUnlock(@RequestBody String emailCliente) {
+	public ServerResponse lockUnlock(@RequestBody String emailCliente, @CookieValue(name = "bearer", required = false) String token) {
 		Optional<Cliente> cliente = clienteService.findByEmail(emailCliente);
-		System.out.println("start lockUnlock "+ emailCliente);
+		
+		Jws<Claims> claims = JWT.validate(token);
+		String adminEmail = claims.getBody().getSubject();
+		//audit logs
+		AuditLog audit = new AuditLog();
+		String stringIdAdmin = String.valueOf(asService.findByEmail(adminEmail).get().getCodAdmin());
+		audit.setCodAdmin(stringIdAdmin);
+		audit.setData(new Date());
+		audit.setTipo(TipoModificaAudit.DETTAGLI_CLIENTI);
+		
+		//System.out.println("start lockUnlock " + emailCliente);
 		if (cliente.isEmpty()) {
+			audit.setDettagli("Tentativo di blocco/sblocco account id n. " + cliente.get().getCodCliente() + " non riuscito");
+			as.saveAudit(audit);
 			return new ServerResponse(1, "Il cliente con email " + emailCliente + " non esiste.");
 		}
-		
-		Cliente c=cliente.get();
+
+		Cliente c = cliente.get();
 		System.out.println(c);
-		if(c.isAccountBloccato()) {
+		if (c.isAccountBloccato()) {
+			audit.setDettagli("Sblocco account id n. " + cliente.get().getCodCliente());
 			c.setAccountBloccato(false);
-		}else {
+		} else {
+			audit.setDettagli("Blocco account id n. " + cliente.get().getCodCliente());
 			c.setAccountBloccato(true);
 		}
 		clienteService.saveCliente(c);
-		System.out.println(c);
-		return new ServerResponse(0,"Cliente" + emailCliente + " modificato con successo.");
+		//System.out.println(c);
+		
+		as.saveAudit(audit);
+		return new ServerResponse(0, "Cliente" + emailCliente + " modificato con successo.");
 	}
-	
+
 	@DeleteMapping("/conti/{id}")
 	public ServerResponse deleteContoById(@PathVariable long id) {
 		Optional<Conto> conto = contoService.findById(id);
@@ -163,7 +206,6 @@ public class AdminController {
 		return new ServerResponse(0, stat);
 	}
 
-
 	@GetMapping("/richiestePrestito")
 	public ServerResponse richiestePrestito() {
 		List<RichiestePrestito> richiestaPrestiti = rpService.findAll();
@@ -174,32 +216,61 @@ public class AdminController {
 	}
 
 	@GetMapping("/approvaPrestito/{id}")
-	public ServerResponse approvaPrestito(@PathVariable long id) {
-		System.out.println("approvato prestito");
+	public ServerResponse approvaPrestito(@PathVariable long id,
+			@CookieValue(name = "bearer", required = false) String token) {
+		// System.out.println("approvato prestito");
+		Jws<Claims> claims = JWT.validate(token);
+		String adminEmail = claims.getBody().getSubject();
+		//audit logs
+		AuditLog audit = new AuditLog();
+		String stringIdAdmin = String.valueOf(asService.findByEmail(adminEmail).get().getCodAdmin());
+		audit.setCodAdmin(stringIdAdmin);
+		audit.setData(new Date());
+		audit.setTipo(TipoModificaAudit.APPROVAZIONE_PRESTITI);
+
 		Optional<RichiestePrestito> rp = rpService.findById(id);
 		if (rp.isEmpty()) {
+			audit.setDettagli("Tentativo di approvazione prestito n. " + rp.get().getCodRichiesta() + " non riuscita");
+			as.saveAudit(audit);
 			return new ServerResponse(1, "Richiesta Prestito non valida");
 		}
 		rp.get().setStato(StatoPrestito.APPROVATO);
-		// salvo il prestito confermato nella tabella
+		// TODO salvare il prestito confermato nella tabella con approvato
 		// Prestiti prestito = new Prestiti();
 		// prestitiService.savePrestiti()
 		rpService.saveRichiestePrestito(rp.get());
-		
+
+		audit.setDettagli("Approvato prestito n. " + rp.get().getCodRichiesta());
+		as.saveAudit(audit);
 		return new ServerResponse(0, "Approvata richiesta n. " + rp.get().getCodRichiesta());
 	}
 
 	@GetMapping("/declinaPrestito/{id}")
-	public ServerResponse declinaPrestito(@PathVariable long id) {
+	public ServerResponse declinaPrestito(@PathVariable long id ,@CookieValue(name = "bearer", required = false) String token) {
 		Optional<RichiestePrestito> rp = rpService.findById(id);
+		Jws<Claims> claims = JWT.validate(token);
+		String adminEmail = claims.getBody().getSubject();
+		//audit logs
+		AuditLog audit = new AuditLog();
+		String stringIdAdmin = String.valueOf(asService.findByEmail(adminEmail).get().getCodAdmin());
+		audit.setCodAdmin(stringIdAdmin);
+		audit.setData(new Date());
+		audit.setTipo(TipoModificaAudit.APPROVAZIONE_PRESTITI);
+
+		
 		if (rp.isEmpty()) {
+			audit.setDettagli("Tentativo di rifiuto prestito n. " + rp.get().getCodRichiesta() + " non riuscito");
+			as.saveAudit(audit);
 			return new ServerResponse(1, "Richiesta Prestito non valida");
 		}
 		rp.get().setStato(StatoPrestito.RIFIUTATO);
 		rpService.saveRichiestePrestito(rp.get());
+		
+		audit.setDettagli("Rifiutato prestito n. " + rp.get().getCodRichiesta());
+		as.saveAudit(audit);
 		return new ServerResponse(0, "Rifiutata richiesta n. " + rp.get().getCodRichiesta());
 	}
-	
+
 	@GetMapping("/confermaNuovaPassword/{email}/{password}")
 	public ServerResponse confermaNuovaPassword(@PathVariable String email, @PathVariable String password) {
 		Optional<Amministratore> a = asService.findByEmail(email);
@@ -210,6 +281,7 @@ public class AdminController {
 		asService.saveAmministratore(a.get());
 		return new ServerResponse(0, "Password salvata correttamente");
 	}
+
 
 	@GetMapping("/transazioni") 
 	public ServerResponse getTransazioni() {
