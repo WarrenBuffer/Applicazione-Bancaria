@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
@@ -55,9 +56,10 @@ public class AdminController {
 	PagamentiService pagamentiService;
 	@Autowired
 	TransazioniMongoService tmService;
-
 	@Autowired
 	RichiestePrestitoService rpService;
+	@Autowired
+	AmministratoreService asService;
 
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
 		if (nome == null || cognome == null || email == null || password == null)
@@ -170,6 +172,17 @@ public class AdminController {
 		rp.get().setStato(StatoPrestito.RIFIUTATO);
 		rpService.saveRichiestePrestito(rp.get());
 		return new ServerResponse(0, "Rifiutata richiesta n. " + rp.get().getCodRichiesta());
+	}
+	
+	@GetMapping("/confermaNuovaPassword/{email}/{password}")
+	public ServerResponse confermaNuovaPassword(@PathVariable String email, @PathVariable String password) {
+		Optional<Amministratore> a = asService.findByEmail(email);
+		if (a.isEmpty()) {
+			return new ServerResponse(1, "Amministratore non trovato");
+		}
+		a.get().setPasswordAdmin(BCryptEncoder.encode(password));
+		asService.saveAmministratore(a.get());
+		return new ServerResponse(0, "Password salvata correttamente");
 	}
 
 	private Map<Cliente, Long> findNumContiPerCliente() {
