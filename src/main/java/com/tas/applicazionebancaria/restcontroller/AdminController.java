@@ -81,7 +81,11 @@ public class AdminController {
 		}
 		return new ServerResponse(0, clienti);
 	}
-
+	@GetMapping("/conti")
+	public ServerResponse getConti() {
+		List<Conto> conti = contoService.findConti0();
+		return new ServerResponse(0, conti);
+	}
 	@PostMapping("/clienti")
 	public ServerResponse addCliente(@RequestBody Cliente cliente) {
 		System.out.println(cliente);
@@ -105,7 +109,34 @@ public class AdminController {
 
 		return new ServerResponse(0, cliente.get());
 	}
-
+	@GetMapping("/clienti/email/{email}")
+	public ServerResponse getClienteByEmail(@PathVariable String email) {
+		Optional<Cliente> cliente = clienteService.findByEmail(email);
+		if (cliente.isEmpty()) {
+			return new ServerResponse(1, "Il cliente con email " + email + " non esiste.");
+		}
+		return new ServerResponse(0, cliente.get());
+	}
+	@PostMapping("/clienti/lock")
+	public ServerResponse lockUnlock(@RequestBody String emailCliente) {
+		Optional<Cliente> cliente = clienteService.findByEmail(emailCliente);
+		System.out.println("start lockUnlock "+ emailCliente);
+		if (cliente.isEmpty()) {
+			return new ServerResponse(1, "Il cliente con email " + emailCliente + " non esiste.");
+		}
+		
+		Cliente c=cliente.get();
+		System.out.println(c);
+		if(c.isAccountBloccato()) {
+			c.setAccountBloccato(false);
+		}else {
+			c.setAccountBloccato(true);
+		}
+		clienteService.saveCliente(c);
+		System.out.println(c);
+		return new ServerResponse(0,"Cliente" + emailCliente + " modificato con successo.");
+	}
+	
 	@DeleteMapping("/conti/{id}")
 	public ServerResponse deleteContoById(@PathVariable long id) {
 		Optional<Conto> conto = contoService.findById(id);
@@ -135,6 +166,7 @@ public class AdminController {
 		stat.setContiSaldo0(contoService.findConti0());
 		return new ServerResponse(0, stat);
 	}
+
 
 	@GetMapping("/richiestePrestito")
 	public ServerResponse richiestePrestito() {
@@ -171,6 +203,7 @@ public class AdminController {
 		rpService.saveRichiestePrestito(rp.get());
 		return new ServerResponse(0, "Rifiutata richiesta n. " + rp.get().getCodRichiesta());
 	}
+
 
 	private Map<Cliente, Long> findNumContiPerCliente() {
 		Map<Cliente, Long> numContiPerCliente = new HashMap<Cliente, Long>();

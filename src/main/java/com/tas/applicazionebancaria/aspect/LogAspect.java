@@ -37,7 +37,7 @@ public class LogAspect {
 		long inizio = System.currentTimeMillis();
 		Object object = pjp.proceed();
 		long delta = System.currentTimeMillis() - inizio;
-		if (delta >= 1000000L) { // TODO mettere 50L al posto di 0L
+		if (delta >= 10L) { // TODO mettere 50L al posto di 0L
 			Path path = Paths.get("c:\\log\\ApplicazioneBancariaLog");
 			if (Files.notExists(path)) {
 				Files.createDirectories(path);
@@ -186,12 +186,12 @@ public class LogAspect {
 	@Before("execution(* com.tas.applicazionebancaria.controller.AdminController.* (..)) && "
 			+ "!(execution(* com.tas.applicazionebancaria.controller.AdminController.validateInputs (..)) ||"
 			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findNumContiPerCliente (..)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findNumCartePerCliente (..))"
-			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findTotPrestitiPerCliente (..)"
+			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findNumCartePerCliente (..)) ||"
+			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findTotPrestitiPerCliente (..)) ||"
 			+ "	 execution(* com.tas.applicazionebancaria.controller.AdminController.findTotPagamentiPerCliente (..))"
 			+ ")")
 	public void controlloLogAdmin(JoinPoint jp) throws Throwable{
-		System.out.println("Starting: controlloLogUtente");
+		System.out.println("Starting: controlloLogAdmin");
 		String token=null;
 		for(Object o: jp.getArgs()) {
 			if(o instanceof String) {
@@ -208,6 +208,8 @@ public class LogAspect {
 		} catch (Exception e) {
 			throw new AdminTokenException(e.getMessage());
 		}
-		
 	}
+	
+	
+	
 }
