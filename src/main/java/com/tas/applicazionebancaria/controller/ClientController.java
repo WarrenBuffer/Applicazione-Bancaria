@@ -280,7 +280,6 @@ public class ClientController {
 			mv.setViewName("login");
 			return mv;
 		}
-		// TODO aggiungere azzeramento tentativi login
 		Cliente cliente = c.get();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		if (encoder.matches(password, cliente.getPasswordCliente())) {
@@ -290,6 +289,9 @@ public class ClientController {
 			response.addCookie(cookie);
 			HttpSession session = request.getSession();
 			session.setAttribute("email_log", cliente.getEmailCliente());
+			
+			//resetto i tentativi errati in caso il cliente effettui il login
+			accountBlocker.validClient(email);
 			return new ModelAndView("redirect:/home");
 		} else {
 			ModelAndView mv = new ModelAndView();

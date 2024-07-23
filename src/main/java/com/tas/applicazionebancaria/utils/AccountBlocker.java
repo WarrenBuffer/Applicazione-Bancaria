@@ -10,6 +10,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.service.AmministratoreService;
 import com.tas.applicazionebancaria.service.ClienteService;
 
+
 @Component
 public class AccountBlocker implements Costanti{
 	@Autowired
