@@ -39,4 +39,9 @@ public class PagamentiServiceImpl implements PagamentiService {
 	public double findTotPagamentiByCodCliente(long id) {
 		return pr.findTotPagamentiByCodCliente(id);
 	}
+
+	@Override
+	public List<Pagamenti> findUltimi10Pagamenti(long codCliente) {
+		return pr.findUltimi10Pagamenti(codCliente);
+	}
 }

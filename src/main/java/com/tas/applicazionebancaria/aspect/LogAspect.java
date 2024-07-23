@@ -152,7 +152,7 @@ public class LogAspect {
 	@Before("execution(* com.tas.applicazionebancaria.controller.ClientController.* (..)) && "
 			+ "!(execution(* com.tas.applicazionebancaria.controller.ClientController.registrazione(String, HttpServletRequest)) ||"
 			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.registrazione(Cliente, HttpServletRequest)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.login (..))"
+			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.login (..)) ||"
 			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.controlloLogin (..))"
 			+ ") && !execution(static * com.tas.applicazionebancaria.controller.ClientController.* (..))")
 	public void controlloLogUtente(JoinPoint jp) throws Throwable{

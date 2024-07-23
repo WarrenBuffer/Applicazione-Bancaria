@@ -50,4 +50,9 @@ public class TransazioniBancarieServiceImpl implements TransazioniBancarieServic
 	public double findSommaImporti() {
 		return tbr.findSommaImporti();
 	}
+
+	@Override
+	public List<TransazioniBancarie> findUltime10(long contoOrigine) {
+		return tbr.findUltime10(contoOrigine);
+	}
 }

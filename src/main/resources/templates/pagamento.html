@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
+
+	<div class="jumbotron" style="margin-top: 30px;background:  rgba(204, 204, 204, 0.8);padding: 20px;width: 70%;margin-left: 230px;text-align: center;">
+	<header class="page-header">
+		<h2 style="font-size: 50px;"><strong>Pagamento</strong></h2>
+	</header>
+		
+		
+		<!-- SELEZIONE DEL CONTO -->
+		<div class="row">
+    <form th:action="@{/selcontoPagamento}" method="post" class="form-horizontal" id="contoForm" style="text-align: center;">
+        <h2 style="font-size: 35px;"><strong>Scegli un conto</strong></h2>
+    
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <select name="codConto" th:if="${listaConti!=null}" id="codConto" multiple class="form-control" aria-label="Default select example" style="width: 50%;" required>
+                <option value="" disabled selected>Nessun conto selezionato</option>
+                <option th:each="conto : ${listaConti}" th:value="${conto.codConto}" th:text="${conto.codConto} + ' - ' + ${conto.tipoConto}"></option>
+            </select>
+            <p th:if="${listaConti==null}">Nessun conto disponibile!</p>
+        </div>
+    </form>
+</div>
+<script>
+	$(document).ready(function(){
+		$('#codConto').change(function(){
+			$('#contoForm').submit();
+			});
+		});
+</script>
+		<br><br>
+	
+		<form th:action="@{/pagamento}" method="post" class="form-horizontal" id="cartaForm">
+			<input type="hidden" name="codConto" th:value="${codConto}">
+			<!-- IMPORTO -->
+			<div class="form-group">
+				<label class="col-md-1 control-label">Importo</label>
+				<div class="col-md-4 inputGroupContainer">
+					<div class="input-group">
+						<span class="input-group-addon">
+							<i class="glyphicon glyphicon-euro"></i>
+						</span>
+						<input type="number" name="importo" id="importo" placeholder="0.00" min="1" class="form-control" required>
+					</div>
+				</div>
+			</div>
+			<br>
+			
+			<!-- METODO -->
+			<div class="form-group" style="flex:1;">
+        		<label class="col-md-1 control-label">Metodo</label>
+       			<div class="col-md-4 inputGroupContainer">
+            		<div class="input-group" style="display: flex; justify-content: left;">
+                		<input class="form-check-input" type="radio" name="metodoPagamento" id="contanti" value="CONTANTI" style="width: 25px;" onclick="nascondi()">
+                			<label class="form-check-label" for="contanti" style="display: flex;">
+                    			Contanti &nbsp;&nbsp;
+                			</label>
+                		<input class="form-check-input" type="radio" name="metodoPagamento" id="bonifico" value="BONIFICO" checked style="width: 25px;" onclick="nascondi()">
+                			<label class="form-check-label" for="bonifico">
+                    			Bonifico &nbsp;&nbsp;
+                			</label>
+                		<input class="form-check-input" type="radio" name="metodoPagamento" id="cartadicredito" value="CARTA_CREDITO" style="width: 25px;" th:if="${listaCarte != null}" th:disabled="${listaCarte.size() == 0}" onclick="mostra()">
+                			<label class="form-check-label" for="cartadicredito">
+                    			Carta
+                			</label>
+            		</div>
+        		</div>
+    		</div>
+    		
+    		<!-- ELENCO CARTE -->
+			<div id="elencoCarte" style="display:none;justify-content: center;">
+			<br>
+       		 <label for="codCarta">Seleziona una carta di credito:</label>
+       		 <br>
+        		<select id="codCarta" name="codCarta" th:if="${listaCarte!=null}" required>
+            		<option th:each="carta : ${listaCarte}" th:value="${carta.codCarta}" th:text="*{carta.codCarta}"></option>
+       			 </select>
+    		</div>
+    		<br>
+<script>
+	function mostra() {
+		var carta = document.getElementById('cartadicredito');
+		var elenco = document.getElementById('elencoCarte');
+
+		elenco.style.display = carta.checked ? "block" : "none";
+	}
+	function nascondi(){
+		var carta = document.getElementsByName('metodoPagamento');
+		var elenco = document.getElementById('elencoCarte');
+
+		elenco.style.display = "none";
+	}
+</script>
+			<br>
+			
+			<!-- DESTINATARIO -->
+			<div class="form-group">
+				<label class="col-md-1 control-label">Conto Destinatario</label>
+				<div class="col-md-4 inputGroupContainer">
+					<div class="input-group">
+						<span class="input-group-addon">
+							<i class="glyphicon glyphicon-envelope"></i>
+						</span>
+						<input type="text" name="contoDest" id="ContoDest" class="form-control" required>
+					</div>
+				</div>
+			</div>
+			<br>
+			
+			<!-- SUBMIT -->
+			<div class="col-md-3 col-md-offset-1">
+				<button type="submit" class="btn btn-warning" style="color: #141414;">
+					Conferma&nbsp;&nbsp;<span class="glyphicon glyphicon-send"></span>
+				</button>
+			</div>
+		
+		</form>
+		
+
+	</div>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

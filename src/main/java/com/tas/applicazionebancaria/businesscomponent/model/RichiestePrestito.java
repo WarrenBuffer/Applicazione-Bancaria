@@ -20,7 +20,6 @@ import lombok.Data;
 @Entity
 @Table(name = "richieste_prestito")
 public class RichiestePrestito implements Serializable {
-
 	private static final long serialVersionUID = -8584632604811064924L;
 
 	@Id

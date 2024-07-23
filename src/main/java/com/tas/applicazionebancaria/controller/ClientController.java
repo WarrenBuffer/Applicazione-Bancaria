@@ -21,11 +21,21 @@ import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.MovimentiConto;
+
 import com.tas.applicazionebancaria.businesscomponent.model.Prestiti;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
+
+import com.tas.applicazionebancaria.businesscomponent.model.Pagamenti;
+
 import com.tas.applicazionebancaria.businesscomponent.model.Transazioni;
+import com.tas.applicazionebancaria.businesscomponent.model.TransazioniBancarie;
 import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
+
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
+
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.MetodoPagamento;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
+
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMovimento;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
@@ -37,8 +47,13 @@ import com.tas.applicazionebancaria.service.ClienteService;
 
 import com.tas.applicazionebancaria.service.ContoService;
 import com.tas.applicazionebancaria.service.MovimentiContoService;
+
 import com.tas.applicazionebancaria.service.PrestitiService;
 import com.tas.applicazionebancaria.service.RichiestePrestitoService;
+
+import com.tas.applicazionebancaria.service.PagamentiService;
+import com.tas.applicazionebancaria.service.TransazioniBancarieService;
+
 import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
 
@@ -88,6 +103,13 @@ public class ClientController {
 	
 	@Autowired
 	RichiestePrestitoService richiestePrestitoService;
+
+	@Autowired
+	PagamentiService pagamentiService;
+	
+	@Autowired
+	TransazioniBancarieService transazioniBancarieService;
+
 	
 	@Autowired
 	//LoginAttemptService loginAttemptService;
@@ -215,7 +237,7 @@ public class ClientController {
 
 
 			clienteService.saveCliente(cliente);
-			emailService.sendEmail(cliente.getEmailCliente(), "BENVENUTO IN APPLICAZIONE BANCARIA", "PROVA");
+			//emailService.sendEmail(cliente.getEmailCliente(), "BENVENUTO IN APPLICAZIONE BANCARIA", "PROVA");
 
 			cliente = clienteService.saveCliente(cliente);
 			
@@ -263,7 +285,7 @@ public class ClientController {
 			mv.setViewName("login");
 			return mv;
 		}
-		
+		//TODO aggiungere azzeramento tentativi login 
 		Cliente cliente = c.get();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		if (encoder.matches(password, cliente.getPasswordCliente())) {
@@ -322,14 +344,6 @@ public class ClientController {
 
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
-			
-		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
-		List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
-		if(listaConti!=null && !listaConti.isEmpty()) {
-			mv.addObject("listaConti", listaConti);
-			mv.setViewName("home");
-			return mv;
-		}
 		
 
 		mv.setViewName("home");
@@ -384,6 +398,12 @@ public class ClientController {
 				mv.addObject("listaMovimenti",listaMovimenti);
 			}
 			
+			List<TransazioniBancarie> listaTransazioni= transazioniBancarieService.findUltime10(codConto);
+			
+			if(listaTransazioni != null && !listaTransazioni.isEmpty()) {
+				mv.addObject("listaTransazioni",listaTransazioni);
+			}
+			
 			return mv;
 		}
 		mv.setViewName("visualizzaconti");
@@ -408,12 +428,14 @@ public class ClientController {
 	}
 	
 	@PostMapping(value="/confermaconto")
-	public ModelAndView confermaConto(Conto conto, @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+	public ModelAndView confermaConto(@RequestParam("tipoConto") TipoConto tipoConto , @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		Jws<Claims> claims = JWT.validate(token);
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 		if(c.isPresent()) {
+			Conto conto = new Conto();
 			conto.setCodCliente(c.get().getCodCliente());
 			conto.setEmailCliente(c.get().getEmailCliente());
+			conto.setTipoConto(tipoConto);
 			conto.setSaldo(0.00);
 			contoService.saveConto(conto);
 		}
@@ -467,14 +489,24 @@ public class ClientController {
 			mv.addObject("nome" ,claims.getBody().get("nome"));
 			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 			mv.addObject("cliente", c.get());
-				List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
-				if(listaConti!=null && !listaConti.isEmpty()) {
-					mv.addObject("listaConti", listaConti);
-					mv.addObject("conto",conto.get());
-					mv.setViewName("visualizzaconti");
-						
-					return mv;
-				}
+			List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+			if(listaConti!=null && !listaConti.isEmpty()) {
+				mv.addObject("listaConti", listaConti);
+				mv.addObject("conto",conto.get());
+			}
+			List<MovimentiConto> listaMovimenti = movimentiContoService.findUltimi10(codConto);
+			if(listaMovimenti!= null && !listaMovimenti.isEmpty()) {
+				mv.addObject("listaMovimenti",listaMovimenti);
+			}
+			
+			List<TransazioniBancarie> listaTransazioni= transazioniBancarieService.findUltime10(codConto);
+			
+			if(listaTransazioni != null && !listaTransazioni.isEmpty()) {
+				mv.addObject("listaTransazioni",listaTransazioni);
+			}
+			mv.setViewName("visualizzaconti");
+			mv.addObject("success", "Deposito andato a buon fine!");
+			return mv;
 			
 		}
 		return new ModelAndView("redirect:/home");
@@ -489,13 +521,32 @@ public class ClientController {
 			return new ModelAndView("redirect:/registrazione");
 //			throw new TokenException(exc);
 		}
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
+		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		mv.addObject("cliente", c.get());
 		Optional<Conto> conto = contoService.findById(codConto);
 		if(conto.isPresent()) {
+			//
 			if(conto.get().getSaldo()<importo) {
+
 //				mv.addObject("error", "Impossibile prelevare questa cifra! Saldo insufficiente.");
 //				mv.setViewName("home");
 //				return mv;
-				return new ModelAndView("redirect:/selconto");
+				//TODO
+				mv.addObject("error", "Impossibile prelevare questa cifra! Saldo insufficiente.");
+				List<MovimentiConto> listaMovimenti = movimentiContoService.findUltimi10(codConto);
+				if(listaMovimenti!= null && !listaMovimenti.isEmpty()) {
+					mv.addObject("listaMovimenti",listaMovimenti);
+				}
+				List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+				if(listaConti!=null && !listaConti.isEmpty()) {
+					mv.addObject("listaConti", listaConti);
+					mv.addObject("conto",conto.get());
+				}
+				
+				mv.setViewName("visualizzaconti");
+				return mv;
 			}
 			else {
 				double saldo = conto.get().getSaldo();
@@ -527,18 +578,26 @@ public class ClientController {
 				
 				transazioniMongoService.saveTransazioniMongo(tm);
 				
-				Jws<Claims> claims = JWT.validate(token);
-				mv.addObject("nome" ,claims.getBody().get("nome"));
-				Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
-				mv.addObject("cliente", c.get());
-					List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
-					if(listaConti!=null && !listaConti.isEmpty()) {
-						mv.addObject("listaConti", listaConti);
-						mv.addObject("conto",conto.get());
-						mv.setViewName("visualizzaconti");
-							
-						return mv;
-					}
+				
+				List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+				if(listaConti!=null && !listaConti.isEmpty()) {
+					mv.addObject("listaConti", listaConti);
+					mv.addObject("conto",conto.get());
+					mv.setViewName("visualizzaconti");
+				}
+				List<MovimentiConto> listaMovimenti = movimentiContoService.findUltimi10(codConto);
+				if(listaMovimenti!= null && !listaMovimenti.isEmpty()) {
+					mv.addObject("listaMovimenti",listaMovimenti);
+				}
+				
+				List<TransazioniBancarie> listaTransazioni= transazioniBancarieService.findUltime10(codConto);
+				
+				if(listaTransazioni != null && !listaTransazioni.isEmpty()) {
+					mv.addObject("listaTransazioni",listaTransazioni);
+				}
+				
+				mv.addObject("success","Prelievo andato a buon fine!");
+				return mv;
 			}
 		}
 		return new ModelAndView("redirect:/home");
@@ -626,16 +685,157 @@ public class ClientController {
 		mv.setViewName("visualizzacarte");
 		return mv;
 	}
+
+	@PostMapping(value="/eliminacarta")
+	public ModelAndView eliminaCarta(@RequestParam("codCarta") long codCarta, @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		Optional<CarteDiCredito> carta = carteDiCreditoService.findById(codCarta);
+		if(carta.isPresent()) {
+			carteDiCreditoService.deleteCarteDiCredito(carta.get());
+		}
+		
+		return new ModelAndView("redirect:/visualizzacarte");
+	}
+	
+	/*-----------------------------------------PAGAMENTI-----------------------------------------*/
+	
+	@GetMapping(value="/iniziopagamento")
+	public ModelAndView iniziaPagamento(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
+		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		
+		List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+		if(listaConti!=null && !listaConti.isEmpty()) {
+			mv.addObject("listaConti", listaConti);
+		}
+		List<CarteDiCredito> listaCarte = carteDiCreditoService.findByCodCliente(c.get().getCodCliente());
+		if(listaCarte!=null && !listaCarte.isEmpty()) {
+			mv.addObject("listaCarte", listaCarte);
+		}
+		
+		
+		mv.setViewName("pagamento");
+
+		return mv;
+	}
+
+	@PostMapping(value="/selcontoPagamento")
+	public ModelAndView selContoPagamento(@RequestParam("codConto") long codConto,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		
+		Optional<Conto> conto = contoService.findById(codConto);
+		if(conto.isPresent()) {
+			Jws<Claims> claims = JWT.validate(token);
+			mv.addObject("nome" ,claims.getBody().get("nome"));
+			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			List<Conto> listaConti = contoService.findByIdCliente(c.get().getCodCliente());
+			if(listaConti!=null && !listaConti.isEmpty()) {
+				mv.addObject("listaConti", listaConti);
+				mv.addObject("codConto",conto.get().getCodConto());
+			}
+			List<CarteDiCredito> listaCarte = carteDiCreditoService.findByCodCliente(c.get().getCodCliente());
+			if(listaCarte!=null && !listaCarte.isEmpty()) {
+				mv.addObject("listaCarte", listaCarte);
+			}
+			
+			mv.setViewName("pagamento");
+			return mv;
+		}
+		mv.setViewName("pagamento");
+		return mv;
+	}
+	
+	
+	@PostMapping(value="/pagamento")
+	public ModelAndView pagamento(@RequestParam("metodoPagamento") MetodoPagamento metodo,@RequestParam("importo") double importo, 
+			String codConto, @RequestParam("contoDest") String contoDest,@RequestParam("codCarta") String codCarta, @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
+		try {	
+			JWT.validate(token);
+		}catch(Exception exc) {
+			return new ModelAndView("redirect:/registrazione");
+//			throw new TokenException(exc);
+		}
+		ModelAndView mv = new ModelAndView();
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
+		if(codConto=="") {
+			mv.addObject("error","ERRORE! Selezionare un conto!");
+			mv.setViewName("home");
+			return mv;
+		}
+		if(codCarta.equals("false")) {
+			mv.addObject("error","ERRORE! Non puoi selezionare una carta! Devi prima creare una!");
+			mv.setViewName("home");
+			return mv;
+		}
+		Optional<Conto> contoS = contoService.findById(Long.valueOf(codConto));
+		Optional<Conto> contoD = contoService.findById(Long.valueOf(contoDest));
+		if(contoD.isPresent() && contoS.isPresent()) {
+			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+			
+			//Aggiorno saldi
+			double saldo= contoS.get().getSaldo();
+			saldo=saldo-importo;
+			contoS.get().setSaldo(saldo);
+			saldo=0;
+			saldo = contoD.get().getSaldo();
+			saldo = saldo + importo;
+			contoD.get().setSaldo(saldo);
+			
+			Pagamenti p = new Pagamenti();
+			p.setCodCliente(c.get().getCodCliente());
+			p.setDataPagamento(new Date());
+			p.setImporto(importo);
+			p.setMetodoPagamento(metodo);
+			
+			pagamentiService.savePagamenti(p);
+			
+			TransazioniBancarie tb = new TransazioniBancarie();
+			tb.setDataTransazione(new Date());
+			tb.setImporto(importo);
+			tb.setContoOrigine(Long.valueOf(codConto));
+			tb.setContoDestinazione(Long.valueOf(contoDest));
+			tb.setTipoTransazione(TipoTransazione.ADDEBITO);
+			
+			TransazioniBancarie tbDest = new TransazioniBancarie();
+			tbDest.setContoOrigine(Long.valueOf(codConto));
+			tbDest.setContoDestinazione(Long.valueOf(contoDest));
+			tbDest.setImporto(importo);
+			tbDest.setDataTransazione(new Date());
+			tbDest.setTipoTransazione(TipoTransazione.ACCREDITO);
+			
+			transazioniBancarieService.saveTransazioniBancarie(tb);
+			transazioniBancarieService.saveTransazioniBancarie(tbDest);
+			
+			mv.addObject("success","Pagamento effettuato con successo!");
+			
+			mv.setViewName("home");
+			return mv;
+			
+		}
+		//Se error o success sono presenti, apre il modal
+		mv.addObject("error","ERRORE! Il conto inserito non esiste!");
+		mv.setViewName("home");
+		return mv;
+	}
 	
 	/*-----------------------------------------PRESTITI-----------------------------------------*/
-	
+
 	@GetMapping(value = "/visualizzaprestiti")
 	public ModelAndView visualizzaPrestiti(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		try {	
 			JWT.validate(token);
 		}catch(Exception exc) {
 			return new ModelAndView("redirect:/registrazione");
-//			throw new TokenException(exc);
+	//		throw new TokenException(exc);
 		}
 		
 		ModelAndView mv = new ModelAndView();
@@ -654,14 +854,14 @@ public class ClientController {
 		}
 		return mv;
 	}
-	
+
 	@PostMapping(value="/selprestito")
 	public ModelAndView selPrestito(@RequestParam("codPrestito") long codPrestito,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		try {	
 			JWT.validate(token);
 		}catch(Exception exc) {
 			return new ModelAndView("redirect:/registrazione");
-//			throw new TokenException(exc);
+	//		throw new TokenException(exc);
 		}
 		
 		ModelAndView mv = new ModelAndView();
@@ -688,14 +888,14 @@ public class ClientController {
 		mv.setViewName("visualizzaprestiti");
 		return mv;
 	}
-	
+
 	@PostMapping(value = "/richiediprestito")
 	public ModelAndView richiediPrestito(@RequestParam("importo") double importo,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		try {	
 			JWT.validate(token);
 		}catch(Exception exc) {
 			return new ModelAndView("redirect:/registrazione");
-//			throw new TokenException(exc);
+	//		throw new TokenException(exc);
 		}
 		
 		Jws<Claims> claims = JWT.validate(token);
@@ -710,3 +910,5 @@ public class ClientController {
 	}
 
 }
+
+

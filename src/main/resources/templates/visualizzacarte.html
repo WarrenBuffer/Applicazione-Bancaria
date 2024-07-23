@@ -4,19 +4,20 @@
 </head>
 <body>
 <div th:include="fragments/nav :: navbar"></div>
-<div class="container" style="background-image: url('/img/pagamenti.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
-fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
-	<div class="jumbotron" style="margin-top: 30px;background: rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 120px;">
+<div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;width: 100%;display: flex;align-items: center;height: 100vh;flex-direction: column;justify-content: center;background-position: center;">
+
+	<div class="jumbotron" style="margin-top: 30px;background:  rgba(204, 204, 204, 0.8);padding: 20px;width: 55%;margin-left: 135px;">
 		<form th:action="@{/selcarte}" method="post" class="form-horizontal" id="cartaForm" style="text-align: center;">
 	<header class="page-header">
-		<h2><strong>Carte</strong></h2>
+		<h2 style="font-size: 50px;"><strong>Carte</strong></h2>
 	</header>
 	<div style="display: flex; justify-content: center; width: 100%;">
 		<select name="codCarta" th:if="${listaCarte!=null}" id="codCarta" multiple class="form-control" aria-label="Default select example" style="width: 50%;">
 			<option disabled>Nessuna carta selezionata</option>
 			<option th:each="carta : ${listaCarte}" th:value="${carta.codCarta}" th:text="${carta.codCarta}"></option>
 		</select>
-		<p th:if="${listaCarte==null}">Nessun conto disponibile!
+		<p th:if="${listaCarte==null}">Nessuna carta disponibile!
 	</div>
 </form>
 <script>
@@ -35,12 +36,19 @@ fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;disp
 <div class="col-sm-6" >
   <div class="panel panel-default">
   	<div class="panel-heading">
-  		<h2 style="font-size: 18px;"><strong></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-				<span style="font-size: 29px;" th:text="*{carta.numeroCarta}"></span></h2>
+  		<h2 style="font-size: 40px;"><strong></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				<span style="font-size: 30px;" th:text="*{carta.numeroCarta}"></span>	
+		</h2>
+		<form id="deleteForm" th:action="@{/eliminacarta}" method="post" style="display: flex; justify-content: right;">
+		<input type="hidden" th:field="*{carta.codCarta}">
+		<button class="btn btn-danger" role="submit" style="width: 30px;padding: 0;">
+					<span class="glyphicon glyphicon-trash" style="margin-left: 0;"></span>
+				</button>
+		</form>	
 	</div>
 	
 	<div class="panel-body">
-		<p style="font-size: 14px;"><strong>Scadenza</strong>&nbsp;&nbsp;<span th:text="${#dates.format(carta.dataScadenza, 'dd/MMM/YYYY')}"></span>
+		<p style="font-size: 14px;"><strong>Scadenza</strong>&nbsp;&nbsp;<span th:text="${#dates.format(carta.dataScadenza, 'MM/YYYY')}"></span>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<strong>CVV</strong>&nbsp;&nbsp;<span th:text="*{carta.cvv}"></span>
 		</p>
@@ -51,7 +59,7 @@ fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;disp
 			<div class="col-sm-4">
 				<p style="font-size: 14px;"><strong>Nome: </strong>&nbsp;&nbsp;<span th:text="*{cliente.nomeCliente}"></span></p>
 				<p style="font-size: 14px;"><strong>Cognome: </strong>&nbsp;&nbsp;<span th:text="*{cliente.cognomeCliente}"></span></p>
-				<p style="font-size: 14px;"><strong>Email: </strong>&nbsp;&nbsp;<span th:text="*{cliente.emailCliente}"></span></p>
+				<p style="font-size: 14px;"><span th:text="*{cliente.emailCliente}"></span></p>
 			</div>
 		</div>
 	</div>
@@ -64,7 +72,7 @@ fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;disp
 <br>
 <div class="row">
 			<div class="col-md-4 col-md-offset-1">
-				<a class="btn btn-primary" role="button" href="/richiedicarta" style="width: 250px;">
+				<a class="btn btn-warning" role="button" href="/richiedicarta" style="width: 250px;color: #141414;">
 					Richiedi una nuova carta!&nbsp; <span class="glyphicon glyphicon-credit-card"></span>
 				</a>
 			</div>
