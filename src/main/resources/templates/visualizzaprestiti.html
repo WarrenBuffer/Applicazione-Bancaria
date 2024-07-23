@@ -61,26 +61,20 @@
   	<h2 style="font-size: 18px;"><strong>Le tue richieste</strong> </h2>
 	</div>
     <div class="panel-body">
-    	<table>
+    	<table class="table table-hover">
     		<thead>
     			<tr>
     				<th>Codice richiesta</th>
-    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
     				<th>Importo</th>
-    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
     				<th>Data</th>
-    				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
     				<th>Stato</th>
     			</tr>
     		</thead>
     		<tbody>
     			<tr th:each="richiesta : ${listaRichiestePrestito}">
     				<td th:text="${richiesta.codRichiesta}"></td>
-    				<td></td>
     				<td th:text="${#numbers.formatCurrency(richiesta.importo)}"></td>
-    				<td></td>
     				<td th:text="${#dates.format(richiesta.dataRichiesta, 'dd/MMM/YYYY')}"></td>
-    				<td></td>
     				<td th:text="${richiesta.stato}"></td>
     			</tr>
     		</tbody>
@@ -125,7 +119,7 @@
 			                                <span class="input-group-addon">
 			                                    <i class="glyphicon glyphicon-euro"></i>
 			                                </span>
-			                                <input type="number" class="form-control" name="importo" min="5000">
+			                                <input type="number" class="form-control" name="importo" min="5000" step="0.1">
 			                            </div>
 			                        </div>
                     			</div>

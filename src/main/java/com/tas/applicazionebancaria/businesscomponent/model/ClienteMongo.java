@@ -12,11 +12,11 @@ import lombok.Data;
 public class ClienteMongo implements Serializable {
 	private static final long serialVersionUID = 4581204978132293292L;
 	@Id
+	private String id;
 	private long codCliente;
 	private String nomeCliente;
 	private String cognomeCliente;
 	private String emailCliente;
 	private String passwordCliente;
-	private int tentativiErrati=0;
-	private boolean accountBloccato=false;
+	private double saldo;
 }
