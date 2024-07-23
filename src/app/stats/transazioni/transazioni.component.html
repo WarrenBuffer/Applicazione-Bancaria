@@ -1,0 +1,33 @@
+<p-card header="Transazioni">
+    <div class="card flex justify-content-center" >
+        <p-chart type="pie" [data]="data" [options]="options"/>
+    </div>
+
+    <p-table [value]="clienti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }"  [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. cliente</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Email</th>
+                <th>Importo medio</th>
+                <th>N. totale</th>
+                <th>N. accrediti</th>
+                <th>N. addebiti</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cliente>
+            <tr>
+                <td>{{ cliente.codCliente }}</td>
+                <td>{{ cliente.nomeCliente }}</td>
+                <td>{{ cliente.cognomeCliente }}</td>
+                <td>{{ cliente.emailCliente }}</td>
+                <td>{{ calcAvgImporto(cliente.conti) | currency }}</td>
+                <td>{{ calcTotTransazioni(cliente.conti) }}</td>
+                <td>{{ calcTotAccrediti(cliente.conti) }}</td>
+                <td>{{ calcTotAddebiti(cliente.conti) }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

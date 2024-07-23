@@ -1,0 +1,43 @@
+<div class="grid">
+    <p-card header="Richieste in attesa" class="col-12 lg:col-4" [style]="{'border': '1px solid white'}">
+        <h3>{{richiesteAttesa}}</h3>
+    </p-card>
+    <p-card header="Richieste approvate" class="col-12 lg:col-4" [style]="{'border': '1px solid white'}">
+        <h3>{{richiesteApprovate}}</h3>
+    </p-card>
+    <p-card header="Richieste rifiutate" class="col-12 lg:col-4" [style]="{'border': '1px solid white'}">
+        <h3>{{richiesteRifiutate}}</h3>
+    </p-card>
+</div>
+<p-card header="Importo totale per mese">
+    <p-table [value]="clienti" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
+            <tr>
+                <td>Codice cliente</td>
+                <td>Nome</td>
+                <td>Cognome</td>
+                <td>Email</td>
+                <td>Somma prestiti approvati</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cliente>
+            <tr>
+                <td>
+                   {{cliente.codCliente}}
+                </td>
+                <td>
+                   {{cliente.nomeCliente}}
+                </td>
+                <td>
+                   {{cliente.cognomeCliente}}
+                </td>
+                <td>
+                   {{cliente.emailCliente}}
+                </td>
+                <td>
+                   {{calcImporto(cliente) | currency}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

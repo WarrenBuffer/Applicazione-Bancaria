@@ -1,0 +1,142 @@
+<p-card header="Statistiche clienti">
+    <p-table [value]="stats.clienti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. cliente</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Email</th>
+                <th>N. carte</th>
+                <th>N. conti</th>
+                <th>Tot. pagamenti</th>
+                <th>Tot. prestiti</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cliente>
+            <tr (click)="showDialog(cliente)" onmouseover="this.style.cursor='pointer'">
+                <td>{{ cliente.codCliente }}</td>
+                <td>{{ cliente.nomeCliente }}</td>
+                <td>{{ cliente.cognomeCliente }}</td>
+                <td>{{ cliente.emailCliente }}</td>
+                <td>{{ cliente.carte.length }}</td>
+                <td>{{ cliente.conti.length }}</td>
+                <td>{{ calcTotPagamenti(cliente.codCliente) }}</td>
+                <td>{{ calcTotPrestiti(cliente.codCliente) }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>
+<p-dialog [header]="'Cliente: ' + selectedClient?.emailCliente" [style]="{width: '100%', height: '100%'}" [modal]="true"
+    [(visible)]="visible" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+    <h3>Conti</h3>
+    <p-table [value]="selectedClient?.conti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. cliente</th>
+                <th>Cod. conto</th>
+                <th>Tipo conto</th>
+                <th>Saldo</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-conto>
+            <tr>
+                <td>{{ conto.codCliente }}</td>
+                <td>{{ conto.codConto }}</td>
+                <td>{{ conto.tipoConto }}</td>
+                <td>{{ conto.saldo }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <h3>Carte di credito</h3>
+    <p-table [value]="selectedClient?.carte" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. cliente</th>
+                <th>Cod. carta</th>
+                <th>Numero carta</th>
+                <th>Data scadenza</th>
+                <th>CVV</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-carta>
+            <tr>
+                <td>{{ carta.codCliente }}</td>
+                <td>{{ carta.codCarta }}</td>
+                <td>{{ carta.numeroCarta }}</td>
+                <td>{{ carta.dataScadenza | date }}</td>
+                <td>{{ carta.cvv }}</td>                
+            </tr>
+        </ng-template>
+    </p-table>
+    <h3>Prestiti</h3>
+    <p-table [value]="selectedClient?.prestiti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. cliente</th>
+                <th>Cod. prestito</th>
+                <th>Importo</th>
+                <th>Tasso di interesse</th>
+                <th>Durata in mesi</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-prestito>
+            <tr>
+                <td>{{ prestito.codCliente }}</td>
+                <td>{{ prestito.codPrestito }}</td>
+                <td>{{ prestito.importo }}</td>
+                <td>{{ prestito.tassoInteresse }}%</td>
+                <td>{{ prestito.durataInMesi }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <h3>Transazioni stesso conto</h3>
+    <p-table [value]="selectedClient?.transazioni" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. conto</th>
+                <th>Cod. transazione</th>
+                <th>Importo</th>
+                <th>Data transazione</th>
+                <th>Tipo transazione</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-transazione>
+            <tr>
+                <td>{{ transazione.codConto }}</td>
+                <td>{{ transazione.codTransazione }}</td>
+                <td>{{ transazione.importo }}</td>
+                <td>{{ transazione.dataTransazione | date }}</td>
+                <td>{{ transazione.tipoTransazione }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <h3>Transazioni tra conti</h3>
+    <p-table [value]="selectedClient?.transazioniBancarie" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. conto origine</th>
+                <th>Cod. conto destinazione</th>
+                <th>Cod. transazione</th>
+                <th>Importo</th>
+                <th>Data transazione</th>
+                <th>Tipo transazione</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-transazione>
+            <tr>
+                <td>{{ transazione.contoOrigine }}</td>
+                <td>{{ transazione.contoDestinazione }}</td>
+                <td>{{ transazione.codTransazioneBancaria }}</td>
+                <td>{{ transazione.importo }}</td>
+                <td>{{ transazione.dataTransazione | date }}</td>
+                <td>{{ transazione.tipoTransazione }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>

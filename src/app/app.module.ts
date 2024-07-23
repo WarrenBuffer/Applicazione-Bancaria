@@ -33,7 +33,12 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CambioPasswordComponent } from './cambio-password/cambio-password.component';
 import { LogoutComponent } from './logout/logout.component';
 import { DialogModule } from 'primeng/dialog';
-
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { GeneraliComponent } from './stats/generali/generali.component';
+import { ClientiComponent } from './stats/clienti/clienti.component';
+import { PrestitiComponent } from './stats/prestiti/prestiti.component';
+import { TransazioniComponent } from './stats/transazioni/transazioni.component';
+import { ChartModule } from 'primeng/chart';
 
 @NgModule({
   declarations: [
@@ -48,7 +53,11 @@ import { DialogModule } from 'primeng/dialog';
     LoadingComponent,
     RichiestePrestitiComponent,
     CambioPasswordComponent,
-    LogoutComponent
+    LogoutComponent,
+    GeneraliComponent,
+    ClientiComponent,
+    PrestitiComponent,
+    TransazioniComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,6 +78,8 @@ import { DialogModule } from 'primeng/dialog';
     TooltipModule,
     TableModule,
     DropdownModule,
+    SelectButtonModule,
+    ChartModule,
     DialogModule
   ],
   providers: [

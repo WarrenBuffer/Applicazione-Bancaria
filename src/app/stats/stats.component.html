@@ -1,94 +1,15 @@
 <app-navbar />
 <app-loading [loading]="loading"/>
 <p-card *ngIf="!loading" header="Statistiche">
-    <div  class="flex flex-column gap-4">
-        <div class="grid">
-            <p-card header="N. clienti" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.clienti.length}}</h3>
-            </p-card>
-            <p-card header="Cliente saldo maggiore" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>
-                    <span *ngFor="let cliente of stats.saldoPiuAlto" class="mr-1">
-                        <p-tag icon="pi pi-user"  [value]="cliente.emailCliente" />
-                    </span >
-                </h3>
-            </p-card>
-            <p-card header="Data ultima transazione" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.ultimaTransazione | date}}</h3>
-            </p-card>
-            <p-card header="N. Transazioni - Importi" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.numTransazioni}} - {{stats.sommaImporti | currency}}</h3>
-            </p-card>
-        </div>
-        <div class="grid">
-            <p-card header="Saldo medio dei conti" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.saldoMedio | currency}}</h3>
-            </p-card>
-            <p-card header="Tot. addebiti" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.totAddebiti}}</h3>
-            </p-card>
-            <p-card header="Tot. accrediti" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.totAccrediti}}</h3>
-            </p-card>
-            <p-card header="Transazioni medie" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-                <h3>{{stats.transazioniMediePerCliente}}</h3>
-            </p-card>
-        </div>
-        <p-card header="Statistiche clienti" >
-            <p-table [value]="stats.clienti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
-                [tableStyle]="{ 'min-width': '50rem' }"  [rowsPerPageOptions]="[5, 10, 20]">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Cod. cliente</th>
-                        <th>Nome</th>
-                        <th>Cognome</th>
-                        <th>Email</th>
-                        <th>N. carte</th>
-                        <th>N. conti</th>
-                        <th>Tot. pagamenti</th>
-                        <th>Tot. prestiti</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-cliente>
-                    <tr>
-                        <td>{{ cliente.codCliente }}</td>
-                        <td>{{ cliente.nomeCliente }}</td>
-                        <td>{{ cliente.cognomeCliente }}</td>
-                        <td>{{ cliente.emailCliente }}</td>
-                        <td>{{ cliente.carte.length }}</td>
-                        <td>{{ cliente.conti.length }}</td>
-                        <td>{{ calcTotPagamenti(cliente.codCliente) }}</td>
-                        <td>{{ calcTotPrestiti(cliente.codCliente) }}</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </p-card>
-        <p-card header="Importo totale per mese">
-            <p-table [value]="tableTransactions" styleClass="p-datatable-striped">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Gennario</th>
-                        <th>Febbraio</th>
-                        <th>Marzo</th>
-                        <th>Aprile</th>
-                        <th>Maggio</th>
-                        <th>Giugno</th>
-                        <th>Luglio</th>
-                        <th>Agosto</th>
-                        <th>Settembre</th>
-                        <th>Ottobre</th>
-                        <th>Novembre</th>
-                        <th>Dicembre</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-mese>
-                    <tr>
-                        <td *ngFor="let importo of mese">
-                           {{importo | currency}}
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </p-card>
+    <p-selectButton 
+    [options]="stateOptions" 
+    [(ngModel)]="value" 
+    optionLabel="label" 
+    optionValue="value" />
+    <div class="flex flex-column gap-4 mt-4">
+        <app-generali *ngIf="value === 'generali'" [stats]="stats"/>
+        <app-clienti *ngIf="value === 'clienti'" [stats]="stats"/>
+        <app-prestiti *ngIf="value === 'prestiti'" [stats]="stats"/>
+        <app-transazioni *ngIf="value === 'transazioni'" [stats]="stats"/>
     </div>
 </p-card>

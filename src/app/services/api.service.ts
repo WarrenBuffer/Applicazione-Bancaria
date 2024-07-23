@@ -27,7 +27,7 @@ export class ApiService {
       catchError((err) => {
         this.toastService.showError("Errore interno del server\n" + err.message);
         this.authService.logout();
-        return of(undefined);
+        return of('');
       })
     )
   }
@@ -76,7 +76,28 @@ export class ApiService {
       catchError((err) => {
         this.toastService.showError("Errore interno del server\n" + err.message);
         this.authService.logout();
-        return of(undefined);
+        return of('');
+      })
+    )
+  }
+
+  getPrestiti(): Observable<any> {
+    return this._http.get(`${this.basePath}/prestiti`, this.httpOptions).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of('');
+      })
+    )
+  }
+
+  getTransazioni(): Observable<any> {
+    return this._http.get(`${this.basePath}/transazioni`, this.httpOptions).pipe(
+      catchError((err) => {
+        console.log(err);
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of('');
       })
     )
   }
