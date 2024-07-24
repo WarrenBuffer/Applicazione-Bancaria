@@ -25,7 +25,7 @@ public class ClienteMongoServiceImpl implements ClienteMongoService{
 	}
 
 	@Override
-	public Optional<ClienteMongo> findById(long id) {
+	public Optional<ClienteMongo> findById(String id) {
 		return cmr.findById(id);
 	}
 

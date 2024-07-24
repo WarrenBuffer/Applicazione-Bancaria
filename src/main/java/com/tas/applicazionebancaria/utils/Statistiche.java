@@ -20,4 +20,7 @@ public class Statistiche {
 	private long totAccrediti;
 	private long transazioniMediePerCliente;
 	private List<TransazioniMongo> importoTransazioniPerMese;
+	private long clientiSaldoPositivo;
+	private long clientiSaldoNegativo;
+	private long saldoTotale;
 }

@@ -53,7 +53,6 @@ class VisualizzaContoTest {
 		Conto conto1=new Conto();
 		conto1.setCodCliente(1);
 		conto1.setCodConto(1);
-		conto1.setEmailCliente("emailCliente");
 		conto1.setSaldo(1000);
 		conto1.setTipoConto(TipoConto.CORRENTE);
 		conto1.setTransazioni(null);

@@ -1,16 +1,13 @@
 package com.tas.applicazionebancaria.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServerResponse {
 	private int code;
 	private Object message;
-	
-	public ServerResponse() {}
-	
-	public ServerResponse(int code, Object message) {
-		this.code = code;
-		this.message = message;
-	}
 }

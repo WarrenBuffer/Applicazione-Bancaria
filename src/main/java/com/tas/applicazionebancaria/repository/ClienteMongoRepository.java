@@ -10,7 +10,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo;
 
 
 @Repository("ClienteMongoRepository")
-public interface ClienteMongoRepository extends MongoRepository<ClienteMongo, Long>{
+public interface ClienteMongoRepository extends MongoRepository<ClienteMongo, String>{
 	@Query("{ 'emailCliente' : ?0 }")
 	Optional<ClienteMongo> findByEmailCliente(String email);
 }

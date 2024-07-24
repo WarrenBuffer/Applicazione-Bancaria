@@ -35,13 +35,12 @@ import com.tas.applicazionebancaria.service.TransazioniBancarieService;
 import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.service.TransazioniService;
 import com.tas.applicazionebancaria.utils.JWT;
+import com.tas.applicazionebancaria.utils.LoginRequest;
 import com.tas.applicazionebancaria.utils.ServerResponse;
 import com.tas.applicazionebancaria.utils.Statistiche;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping(value = "/api")
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -74,16 +73,6 @@ public class AdminController {
 	@Autowired
 	AuditService as;
 
-	public static Cookie getToken(HttpServletRequest request) {
-		Cookie[] cookie = request.getCookies();
-		for (Cookie c : cookie) {
-			if (c.getName().equals("token")) {
-				return c;
-			}
-		}
-		return null;
-	}
-
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
 		if (nome == null || cognome == null || email == null || password == null) return false;
 		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$"))
@@ -100,9 +89,6 @@ public class AdminController {
 	@GetMapping("/clienti")
 	public ServerResponse getClienti() {
 		List<Cliente> clienti = clienteService.findAll();
-		for (Cliente c : clienti) {
-			System.out.println(c.getConti());
-		}
 		return new ServerResponse(0, clienti);
 	}
 
@@ -145,39 +131,37 @@ public class AdminController {
 	}
 
 	@PostMapping("/clienti/lock")
-	public ServerResponse lockUnlock(@RequestBody String emailCliente, @CookieValue(name = "bearer", required = false) String token) {
-		Optional<Cliente> cliente = clienteService.findByEmail(emailCliente);
+	public ServerResponse lockUnlock(@RequestBody LoginRequest request, @CookieValue(name = "bearer", required = false) String token) {
+		Optional<Cliente> cliente = clienteService.findByEmail(request.getEmail());
+
 		
 		Jws<Claims> claims = JWT.validate(token);
 		String adminEmail = claims.getBody().getSubject();
-		//audit logs
+
 		AuditLog audit = new AuditLog();
 		String stringIdAdmin = String.valueOf(asService.findByEmail(adminEmail).get().getCodAdmin());
 		audit.setCodAdmin(stringIdAdmin);
 		audit.setData(new Date());
 		audit.setTipo(TipoModificaAudit.DETTAGLI_CLIENTI);
 		
-		//System.out.println("start lockUnlock " + emailCliente);
 		if (cliente.isEmpty()) {
-			audit.setDettagli("Tentativo di blocco/sblocco account id n. " + cliente.get().getCodCliente() + " non riuscito");
+			audit.setDettagli("Tentativo di blocco/sblocco cliente con email " + request.getEmail() + " non riuscito");
 			as.saveAudit(audit);
-			return new ServerResponse(1, "Il cliente con email " + emailCliente + " non esiste.");
+			return new ServerResponse(1, "Il cliente con email " + request.getEmail() + " non esiste.");
 		}
 
 		Cliente c = cliente.get();
-		System.out.println(c);
 		if (c.isAccountBloccato()) {
-			audit.setDettagli("Sblocco account id n. " + cliente.get().getCodCliente());
 			c.setAccountBloccato(false);
+			audit.setDettagli("Sblocco account id n. " + cliente.get().getCodCliente());
 		} else {
 			audit.setDettagli("Blocco account id n. " + cliente.get().getCodCliente());
 			c.setAccountBloccato(true);
-		}
-		clienteService.saveCliente(c);
-		//System.out.println(c);
+		}		
 		
+		clienteService.saveCliente(c);
 		as.saveAudit(audit);
-		return new ServerResponse(0, "Cliente" + emailCliente + " modificato con successo.");
+		return new ServerResponse(0, "Cliente" + request.getEmail() + " modificato con successo.");
 	}
 
 	@DeleteMapping("/conti/{id}")
@@ -209,16 +193,13 @@ public class AdminController {
 	@GetMapping("/richiestePrestito")
 	public ServerResponse richiestePrestito() {
 		List<RichiestePrestito> richiestaPrestiti = rpService.findAll();
-		if (richiestaPrestiti.isEmpty()) {
-			return new ServerResponse(1, "Nessuna richiesta prestito pendente");
-		}
 		return new ServerResponse(0, richiestaPrestiti);
 	}
 
 	@GetMapping("/approvaPrestito/{id}")
 	public ServerResponse approvaPrestito(@PathVariable long id,
 			@CookieValue(name = "bearer", required = false) String token) {
-		// System.out.println("approvato prestito");
+
 		Jws<Claims> claims = JWT.validate(token);
 		String adminEmail = claims.getBody().getSubject();
 		//audit logs
@@ -230,7 +211,7 @@ public class AdminController {
 
 		Optional<RichiestePrestito> rp = rpService.findById(id);
 		if (rp.isEmpty()) {
-			audit.setDettagli("Tentativo di approvazione prestito n. " + rp.get().getCodRichiesta() + " non riuscita");
+			audit.setDettagli("Tentativo di approvazione prestito n. " + id + " non riuscita");
 			as.saveAudit(audit);
 			return new ServerResponse(1, "Richiesta Prestito non valida");
 		}
@@ -259,7 +240,7 @@ public class AdminController {
 
 		
 		if (rp.isEmpty()) {
-			audit.setDettagli("Tentativo di rifiuto prestito n. " + rp.get().getCodRichiesta() + " non riuscito");
+			audit.setDettagli("Tentativo di rifiuto prestito n. " + id + " non riuscito");
 			as.saveAudit(audit);
 			return new ServerResponse(1, "Richiesta Prestito non valida");
 		}
@@ -271,14 +252,14 @@ public class AdminController {
 		return new ServerResponse(0, "Rifiutata richiesta n. " + rp.get().getCodRichiesta());
 	}
 
-	@GetMapping("/confermaNuovaPassword/{email}/{password}")
-	public ServerResponse confermaNuovaPassword(@PathVariable String email, @PathVariable String password) {
-		Optional<Amministratore> a = asService.findByEmail(email);
-		if (a.isEmpty()) {
-			return new ServerResponse(1, "Amministratore non trovato");
-		}
-		a.get().setPasswordAdmin(BCryptEncoder.encode(password));
-		asService.saveAmministratore(a.get());
+	@PostMapping("/confermaNuovaPassword")
+	public ServerResponse confermaNuovaPassword(@CookieValue(name = "bearer") String token, @RequestBody LoginRequest request) {
+		Jws<Claims> claims = JWT.validate(token);
+		String email = claims.getBody().getSubject();
+		
+		Amministratore a = asService.findByEmail(email).get();
+		a.setPasswordAdmin(BCryptEncoder.encode(request.getPassword()));
+		asService.saveAmministratore(a);
 		return new ServerResponse(0, "Password salvata correttamente");
 	}
 

@@ -29,8 +29,6 @@ public class Conto implements Serializable{
 	@Id
 	private long codConto;
 	@Column(nullable=false)
-	private String emailCliente;
-	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
 	private TipoConto tipoConto;
 	@Column(nullable=false)
