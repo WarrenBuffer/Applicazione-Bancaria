@@ -11,10 +11,27 @@ export class GeneraliComponent implements OnInit{
 
   transazioniPerMese = new Array<number>(12).fill(0);
   tableTransactions = [this.transazioniPerMese];
+  intervalli = new Array<number>(5).fill(0);
+  tableIntervalli = [this.intervalli];
 
   ngOnInit(): void {
     this.stats.importoTransazioniPerMese.forEach((mese: any) => {
       this.transazioniPerMese[Number(mese.id) - 1] = mese.importo;
+    });
+    this.calcClientPerIntervallo();
+  }
+
+  calcClientPerIntervallo() {
+    this.stats.clienti.forEach((cliente: any) => {
+      let saldo = 0;
+      cliente.conti.forEach((conto: any) => {
+        saldo += conto.saldo;
+      })
+      if (saldo <= 1000) this.intervalli[0]++;
+      else if (saldo <= 5000) this.intervalli[1]++;
+      else if (saldo <= 25000) this.intervalli[2]++;
+      else if (saldo <= 100000) this.intervalli[3]++;
+      else this.intervalli[4]++;
     });
   }
 
@@ -25,9 +42,12 @@ export class GeneraliComponent implements OnInit{
     clienti.forEach((cliente: any) => {
       let saldo = 0;
       cliente.conti.forEach((conto: any) => {
-        saldo += conto.importo;
+        saldo += conto.saldo;
       })
-      if (saldo >= max) maxCliente = cliente;
+      if (saldo >= max) {
+        maxCliente = cliente;
+        max = saldo;
+      }
     })
     return maxCliente;
   }
@@ -38,7 +58,6 @@ export class GeneraliComponent implements OnInit{
     clienti.forEach((cliente: any) => {
       cliente.conti.forEach((conto: any) => {
         conto.transazioni.forEach((transazione: any) => {
-          console.log(transazione.dataTransazione, ultimaTransazione)
           const tmpDate = new Date(transazione.dataTransazione);
           if (tmpDate >= ultimaTransazione) ultimaTransazione = tmpDate;
         })
@@ -84,4 +103,31 @@ export class GeneraliComponent implements OnInit{
     return totConti !== 0 ? totSaldo / totConti : 0;
   }
 
+  calcPositivoNegativo(clienti: any) {
+    let positivi = 0;
+    let negativi = 0;
+
+    clienti.forEach((cliente: any) => {
+      let saldo = 0;
+      cliente.conti.forEach((conto: any) => {
+        saldo += conto.saldo;
+      })
+      if (saldo >= 0) positivi++;
+      else negativi ++;
+    })
+
+    return `${positivi} - ${negativi}`;
+  }
+
+  calcSaldoTotale(clienti: any) {
+    let saldo = 0;
+
+    clienti.forEach((cliente: any) => {
+      cliente.conti.forEach((conto: any) => {
+        saldo += conto.saldo;
+      })
+    })
+
+    return saldo;
+  }
 }

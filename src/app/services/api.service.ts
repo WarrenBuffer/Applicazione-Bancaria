@@ -94,7 +94,6 @@ export class ApiService {
   getTransazioni(): Observable<any> {
     return this._http.get(`${this.basePath}/transazioni`, this.httpOptions).pipe(
       catchError((err) => {
-        console.log(err);
         this.toastService.showError("Errore interno del server\n" + err.message);
         this.authService.logout();
         return of('');
@@ -121,7 +120,6 @@ export class ApiService {
   }
 
   declinaPrestito(id: number): Observable<any> {
-    console.log(id);
     return this._http.get<ServerResponse>(`${this.basePath}/declinaPrestito/` + id, this.httpOptions).pipe(
       catchError((err) => {
         this.toastService.showError("Errore interno del server\n" + err.message);
@@ -131,8 +129,7 @@ export class ApiService {
   }
 
   confermaNuovaPassword(password: string): Observable<any> {
-    //console.log(password);
-    return this._http.get<ServerResponse>(`${this.basePath}/confermaNuovaPassword/` + this.getter().emailCliente + "/" + password, this.httpOptions).pipe(
+    return this._http.post<ServerResponse>(`${this.basePath}/confermaNuovaPassword`, {password: password} , this.httpOptions).pipe(
       catchError((err) => {
         this.toastService.showError("Errore interno del server\n" + err.message);
         this.authService.logout();
@@ -149,7 +146,7 @@ export class ApiService {
     return this.cliente;
   }
   lockUnlock(email:String) : Observable<any>{
-    return this._http.post<ServerResponse>(`${this.basePath}/clienti/lock`, email, this.httpOptions).pipe(
+    return this._http.post<ServerResponse>(`${this.basePath}/clienti/lock`, {email}, this.httpOptions).pipe(
       catchError((err) => {
         this.toastService.showError("Errore interno del server\n" + err.message);
         this.authService.logout();

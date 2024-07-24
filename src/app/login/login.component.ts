@@ -25,7 +25,6 @@ export class LoginComponent{
     this.cliente.passwordCliente = form.password;
 
     this.apiService.setter(this.cliente);
-    console.log(this.cliente);
 
     this.authenticationService.login(form.email, form.password);
   }

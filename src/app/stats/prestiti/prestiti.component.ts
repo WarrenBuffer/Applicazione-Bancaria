@@ -26,7 +26,6 @@ export class PrestitiComponent implements OnInit {
         if (v.code !== 0) this.toastService.showError(v.message);
         else {
           this.prestiti = v.message;
-          console.log(this.prestiti);
           this.prestiti.forEach((prestito: any) => {
             if (prestito.stato === 'IN_ATTESA') this.richiesteAttesa++;
             else if (prestito.stato === 'RIFIUTATO') this.richiesteRifiutate++;

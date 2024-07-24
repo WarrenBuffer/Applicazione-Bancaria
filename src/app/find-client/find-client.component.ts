@@ -24,7 +24,6 @@ export class FindClientComponent {
         if (v.code !== 0) {
           this.toastService.showError(v.message);
         } else {
-          console.log(v.message);
           this.cliente[0]=v.message;
         }
       },
