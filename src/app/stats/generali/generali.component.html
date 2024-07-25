@@ -4,28 +4,28 @@
     </p-card>
     <p-card header="Cliente saldo maggiore" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
         <h3>
-            {{calcSaldoPiuAlto(stats.clienti).emailCliente}}
+            {{clienteSaldoPiuAlto}}
         </h3>
     </p-card>
     <p-card header="Data ultima transazione" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-        <h3>{{calcUltimaTransazione(stats.clienti) | date}}</h3>
+        <h3>{{this.ultimaTransazione | date}}</h3>
     </p-card>
     <p-card header="N. Transazioni - Importi" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-        <h3>{{calcTotTransazioni(stats.clienti)}}</h3>
+        <h3>{{this.totNTransazioni}} - {{this.totImportoTransazioni | currency}}</h3>
     </p-card>
 </div>
 <div class="grid">
     <p-card header="Saldo medio dei conti" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-        <h3>{{calcSaldoMedioConti(stats.clienti) | currency}}</h3>
+        <h3>{{this.saldoMedioConti | currency}}</h3>
     </p-card>
     <p-card header="Transazioni medie" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
         <h3>{{stats.transazioniMediePerCliente}}</h3>
     </p-card>
     <p-card header="Clienti saldo +/-" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-        <h3>{{calcPositivoNegativo(stats.clienti)}}</h3>
+        <h3>{{this.contiPositivi}} - {{this.contiNegativi}}</h3>
     </p-card>
     <p-card header="Saldo totale" class="col-12 md:col-6 lg:col-3" [style]="{'border': '1px solid white'}">
-        <h3>{{calcSaldoTotale(stats.clienti) | currency}}</h3>
+        <h3>{{this.saldoTotale| currency}}</h3>
     </p-card>
 </div>
 <p-card header="Importo totale per mese">
