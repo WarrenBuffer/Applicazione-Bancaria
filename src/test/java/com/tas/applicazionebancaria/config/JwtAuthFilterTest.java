@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.repository.AmministratoreRepository;
+import com.tas.applicazionebancaria.utils.Costanti;
 import com.tas.applicazionebancaria.utils.JWT;
 
 import jakarta.servlet.http.Cookie;
@@ -23,7 +24,7 @@ import jakarta.servlet.http.Cookie;
 @TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @SpringBootTest
-class JwtAuthFilterTest {
+class JwtAuthFilterTest implements Costanti {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
@@ -74,4 +75,13 @@ class JwtAuthFilterTest {
 		ResultActions result = mockMvc.perform(get("/api/clienti").cookie(cookie));
 		result.andExpect(status().isOk());
 	}
+	
+	// Testato cambiando l'expiration nella generazione del token a 10s
+//	@Test
+//	void testDoFilterInternalExpired() throws Exception{
+//		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
+//		TimeUnit.SECONDS.sleep(TOKEN_EXPIRATION + 1);
+//		ResultActions result = mockMvc.perform(get("/api/clienti").cookie(cookie));
+//		result.andExpect(status().isOk());
+//	}
 }

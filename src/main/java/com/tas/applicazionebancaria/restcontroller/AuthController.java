@@ -1,5 +1,6 @@
 package com.tas.applicazionebancaria.restcontroller;
 
+import java.util.Base64;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.businesscomponent.model.LogAccessiAdmin;
 import com.tas.applicazionebancaria.service.AmministratoreService;
@@ -43,7 +46,7 @@ public class AuthController implements Costanti{
 	EmailService emailService;
 	@Autowired
 	LogAccessiService logService;
-
+	
 	@PostMapping("/loginAdmin")
 	public ServerResponse loginAdmin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 		try {
@@ -54,44 +57,33 @@ public class AuthController implements Costanti{
 			Cookie cToken = new Cookie(COOKIE_NAME, token);
 			cToken.setMaxAge(COOKIE_MAX_AGE);
 			// cToken.setSecure(true); // TODO: Da abilitare quando implementiamo HTTPS
-			response.addCookie(cToken);
-			Cookie cAdmin = new Cookie("admin", admin.getNomeAdmin());
+			admin.setPasswordAdmin("[PROTECTED]");
+			ObjectMapper mapper = new ObjectMapper();
+			String json = mapper.writeValueAsString(admin);
+			Cookie cAdmin = new Cookie("admin", Base64.getEncoder().encodeToString(json.getBytes()) );
 			cAdmin.setMaxAge(COOKIE_MAX_AGE);
 			// cAdmin.setSecure(true); // TODO: Da abilitare quando implementiamo HTTPS
 			response.addCookie(cToken);
 			response.addCookie(cAdmin);
 			
 			//logs
-			LogAccessiAdmin log = new LogAccessiAdmin();
-			log.setCodAdmin(String.valueOf(admin.getCodAdmin()));
-			log.setData(new Date());
-			log.setDettagli("Login admin id: "+ admin.getCodAdmin());
-			logService.saveLogAccesso(log);
-			
+			log(String.valueOf(admin.getCodAdmin()), "Login admin id: ");
 			return new ServerResponse(0, "Logged in successfully.");
 		} catch (BadCredentialsException exc) {
 			emailService.sendEmail(loginRequest.getEmail(), "Tentativo di login al tuo account.", "Il tuo account potrebbe essere stato compromesso. Se non sei stato tu a fare l'accesso, contatta l'amministratore.");
 			accountBlocker.invalidAdmin(loginRequest.getEmail());
-			System.out.println("Inside bad credentials");
+			
 			//logs
 			Amministratore admin = adminService.findByEmail(loginRequest.getEmail()).get();
-			LogAccessiAdmin log = new LogAccessiAdmin();
-			log.setCodAdmin(String.valueOf(admin.getCodAdmin()));
-			log.setData(new Date());
-			log.setDettagli("Tentativo di accesso errato admin id: "+ admin.getCodAdmin());
-			logService.saveLogAccesso(log);
-			
+			log(String.valueOf(admin.getCodAdmin()), "Tentativo di accesso errato admin id: ");
 			return new ServerResponse(1, "Credenziali non valide");
 		} catch (LockedException exc) {
 			//logs
 			Amministratore admin = adminService.findByEmail(loginRequest.getEmail()).get();
-			LogAccessiAdmin log = new LogAccessiAdmin();
-			log.setCodAdmin(String.valueOf(admin.getCodAdmin()));
-			log.setData(new Date());
-			log.setDettagli("Login fallito con blocco account admin id: "+ admin.getCodAdmin());
-			logService.saveLogAccesso(log);
-			
+			log(String.valueOf(admin.getCodAdmin()), "Login fallito con blocco account admin id: ");
 			return new ServerResponse(1, "Account bloccato. Contattare l'amministratore");
+		} catch (JsonProcessingException exc) {
+			return new ServerResponse(1, "Impossibile convertire oggetto in JSON.");
 		}
 	}
 	
@@ -108,5 +100,13 @@ public class AuthController implements Costanti{
 		response.addCookie(cAdmin);
 		
 		return new ServerResponse(0, "Logged out successfully.");
+	}
+	
+	private void log(String codAdmin, String message) {
+		LogAccessiAdmin log = new LogAccessiAdmin();
+		log.setCodAdmin(codAdmin);
+		log.setData(new Date());
+		log.setDettagli(message + codAdmin);
+		logService.saveLogAccesso(log);
 	}
 }

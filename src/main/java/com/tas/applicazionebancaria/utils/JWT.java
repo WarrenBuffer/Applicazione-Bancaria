@@ -2,7 +2,6 @@ package com.tas.applicazionebancaria.utils;
 
 import java.security.Key;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -26,7 +25,7 @@ public class JWT implements Costanti {
 				.setSubject(email)
 				.setId(UUID.randomUUID().toString())
 				.setIssuedAt(Date.from(now))
-				.setExpiration(Date.from(now.plus(TOKEN_EXPIRATION, ChronoUnit.HOURS)))
+				.setExpiration(Date.from(now.plus(TOKEN_EXPIRATION, UNIT)))
 				.signWith(hmacKey)
 				.compact();
 		return jwtToken;

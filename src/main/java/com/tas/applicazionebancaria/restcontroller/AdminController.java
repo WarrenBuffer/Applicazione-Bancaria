@@ -134,7 +134,6 @@ public class AdminController {
 	public ServerResponse lockUnlock(@RequestBody LoginRequest request, @CookieValue(name = "bearer", required = false) String token) {
 		Optional<Cliente> cliente = clienteService.findByEmail(request.getEmail());
 
-		
 		Jws<Claims> claims = JWT.validate(token);
 		String adminEmail = claims.getBody().getSubject();
 
