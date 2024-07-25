@@ -13,8 +13,12 @@ export class NavbarComponent{
   }
 
   getName() {
-    const name = this.authService.getCookieByName('admin');
-    return  name !== '' ? name : 'admin';
+    const admin = this.authService.getCookieByName('admin'); 
+    if (admin !== '') {
+      const jsonAdmin = JSON.parse(atob(admin));
+      return jsonAdmin.nomeAdmin;
+    }
+    return 'admin';
   }
 
   isAuthenticated() {
