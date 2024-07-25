@@ -177,15 +177,10 @@ public class AdminController {
 	public ServerResponse getStatistiche() {
 		Statistiche stat = new Statistiche();
 		stat.setClienti(clienteService.findAll());
-//		stat.setSaldoPiuAlto(clienteService.findClienteSaldoPiuAlto());
-// 		stat.setUltimaTransazione(transazioniBancarieService.findUltimaTransazione());
-//		stat.setNumTransazioni(transazioniBancarieService.findNumTransazioni());
-//		stat.setSommaImporti(transazioniBancarieService.findSommaImporti());
-//		stat.setSaldoMedio(contoService.findSaldoMedio());
-		stat.setTotAddebiti(tmService.findTotAddebiti());
-		stat.setTotAccrediti(tmService.findTotAddebiti());
-		stat.setTransazioniMediePerCliente(tmService.transazioniMediePerCliente());
-		stat.setImportoTransazioniPerMese(tmService.importoTransazioniPerMese());
+		stat.setTotAddebiti(tmService.findTotAddebiti().isEmpty() ? 0 : tmService.findTotAddebiti().get());
+		stat.setTotAccrediti(tmService.findTotAddebiti().isEmpty() ? 0 : tmService.findTotAddebiti().get());
+		stat.setTransazioniMediePerCliente(tmService.transazioniMediePerCliente().isEmpty() ? 0 : tmService.transazioniMediePerCliente().get());
+		stat.setImportoTransazioniPerMese(tmService.importoTransazioniPerMese().isEmpty() ? null : tmService.importoTransazioniPerMese().get());
 		return new ServerResponse(0, stat);
 	}
 

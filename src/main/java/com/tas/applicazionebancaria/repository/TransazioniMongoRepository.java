@@ -1,6 +1,7 @@
 package com.tas.applicazionebancaria.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -12,17 +13,17 @@ import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 public interface TransazioniMongoRepository extends MongoRepository<TransazioniMongo, String> {
 	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",
 			"{$match: {_id: 'ADDEBITO'}}" })
-	long findTotAddebiti();
-
+	Optional<Long> findTotAddebiti();
+	
 	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",
 			"{$match: {_id: 'ACCREDITO'}}" })
-	long findTotAccrediti();
+	Optional<Long> findTotAccrediti();
 
 	@Aggregation(pipeline = { "{ $group : { _id: '$codCliente', avgTransactions: { $avg: 1 } } }" })
-	long transazioniMediePerCliente();
+	Optional<Long> transazioniMediePerCliente();
 
 	@Aggregation(pipeline = {
 	        "{ $group : { _id: {'$month': '$dataTransazione'}, importo: { $sum: '$importo' } } }"
 	    })
-	List<TransazioniMongo> importoTransazioniPerMese();
+	Optional<List<TransazioniMongo>> importoTransazioniPerMese();
 }
