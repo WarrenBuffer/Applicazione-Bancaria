@@ -36,11 +36,6 @@ public class PrestitiServiceImpl implements PrestitiService{
 	}
 
 	@Override
-	public double findTotPrestitiByCodCliente(long id) {
-		return pr.findTotPrestitiByCodCliente(id);
-	}
-
-	@Override
 	public List<Prestiti> findByCodCliente(long codCliente) {
 		return pr.findByCodCliente(codCliente);
 	}

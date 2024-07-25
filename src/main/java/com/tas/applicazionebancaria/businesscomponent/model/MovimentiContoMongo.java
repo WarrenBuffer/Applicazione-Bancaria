@@ -20,11 +20,12 @@ public class MovimentiContoMongo implements Serializable{
 	private static final long serialVersionUID = 3589150116495049789L;
 	
 	@Id
-	private String codOperazione;
+	private String id;
 	
+	private String codOperazione;
 	private double importo;
 	private Date dataOperazione;
-	private TipoMovimento tipoOperazione; //TODO forse qua è giusto, forse è sbagliato il tipo dell'attributo
+	private TipoMovimento tipoOperazione;
 	private int codContoOrigine;
 	private int codContoDestinazione;
 }

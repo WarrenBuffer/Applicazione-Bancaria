@@ -37,7 +37,7 @@ public class LogAspect {
 		long inizio = System.currentTimeMillis();
 		Object object = pjp.proceed();
 		long delta = System.currentTimeMillis() - inizio;
-		if (delta >= 10L) { // TODO mettere 50L al posto di 0L
+		if (delta >= 50L) {
 			Path path = Paths.get("c:\\log\\ApplicazioneBancariaLog");
 			if (Files.notExists(path)) {
 				Files.createDirectories(path);
@@ -62,6 +62,7 @@ public class LogAspect {
 			Files.createDirectories(path);
 		}
 		FileHandler handleHttpLog = new FileHandler(path + "\\HttpsLog.log", true);
+		try {
 		logger.setLevel(Level.ALL);
 		SimpleFormatter formato = new SimpleFormatter();
 		handleHttpLog.setFormatter(formato);
@@ -69,13 +70,15 @@ public class LogAspect {
 		logger.addHandler(handleHttpLog);
 		String token=null;
 		HttpServletRequest request=null;
-		for(Object o: jp.getArgs()) {
-			if(o instanceof HttpServletRequest) {
-				request=(HttpServletRequest) o;
-				if(request!=null && request.getCookies()!=null) {
-					for(Cookie c: request.getCookies()) {
-						if(c.getName().equals("token")) {
-							token=c.getValue();
+		if(jp.getArgs()!=null) {
+			for(Object o: jp.getArgs()) {
+				if(o instanceof HttpServletRequest) {
+					request=(HttpServletRequest) o;
+					if(request.getCookies()!=null) {
+						for(Cookie c: request.getCookies()) {
+							if(c.getName().equals("token")) {
+								token=c.getValue();
+							}
 						}
 					}
 				}
@@ -91,14 +94,19 @@ public class LogAspect {
 			data=null;
 		}
 		logger.log(Level.INFO,"Signature Metodo ["+jp.getSignature()+"]");
-		if(subject!=null && request!=null) {
-			logger.log(Level.INFO,"Utente: "+ subject +"\n\t"
-								+ "URL: "+ request.getRequestURI()+"\n\t"
-								+ "Autenticato il: "+ data);
+		if(request!=null) {
+			if(subject!=null){
+				logger.log(Level.INFO,"Utente: "+ subject +"\n\t"
+									+ "URL: "+ request.getRequestURI()+"\n\t"
+									+ "Autenticato il: "+ data);
+			}
 		}else {
 			logger.log(Level.WARNING,"Manca request oppure token in: \n\t"+jp.getSignature());
 		}
-		handleHttpLog.close();
+		}finally {
+			handleHttpLog.close();
+		}
+			
 	}			
 	
 	@After("execution(* com.tas.applicazionebancaria.controller.AdminController.* (..)) && !execution(static * com.tas.applicazionebancaria.controller.AdminController.*(..))")
@@ -109,6 +117,7 @@ public class LogAspect {
 			Files.createDirectories(path);
 		}
 		FileHandler handleHttpLog=new FileHandler(path+"\\HttpsLog.log", true);
+		try {
 		logger.setLevel(Level.ALL);
 		SimpleFormatter formato=new SimpleFormatter();
 		handleHttpLog.setFormatter(formato);
@@ -116,13 +125,16 @@ public class LogAspect {
 		logger.addHandler(handleHttpLog);
 		String token=null;
 		HttpServletRequest request=null;
-		for(Object o: jp.getArgs()) {
-			if(o instanceof HttpServletRequest) {
-				request=(HttpServletRequest) o;
-				if(request!=null && request.getCookies()!=null) {
-					for(Cookie c: request.getCookies()) {
-						if(c.getName().equals("token")) {//TODO cambiare nome del token dell'admin se necessario
-							token=c.getValue();
+		if(jp.getArgs()!=null) {
+			for(Object o: jp.getArgs()) {
+				if(o instanceof HttpServletRequest) {
+					request=(HttpServletRequest) o;
+					if(request.getCookies()!=null) {
+						for(Cookie c: request.getCookies()) {
+							if(c.getName().equals("token")) {
+								token=c.getValue();
+								break;
+							}
 						}
 					}
 				}
@@ -138,32 +150,39 @@ public class LogAspect {
 			data=null;
 		}
 		logger.log(Level.INFO,"Signature Metodo ["+jp.getSignature()+"]");
-		if(subject!=null && request!=null) {
-			logger.log(Level.INFO,"Admin: "+ subject +"\n\t"
-								+ "URL: "+ request.getRequestURI()+"\n\t"
-								+ "Autenticato il: "+ data);
+		if(request!=null) {
+			if(subject!=null){
+				logger.log(Level.INFO,"Admin: "+ subject +"\n\t"
+									+ "URL: "+ request.getRequestURI()+"\n\t"
+									+ "Autenticato il: "+ data);
+			}
 		}else {
 			logger.log(Level.WARNING,"Manca request oppure token in: \n\t"+jp.getSignature());
 		}
+		}finally {
 		handleHttpLog.close();
+		}
 	}
 
 	/*----------------------------------CONTROLLO DEGLI ACCESSI------------------------------------------*/
 	@Before("execution(* com.tas.applicazionebancaria.controller.ClientController.* (..)) && "
 			+ "!(execution(* com.tas.applicazionebancaria.controller.ClientController.registrazione(..)) ||"
 			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.login (..)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.controlloLogin (..))"
-			+ ") && !execution(static * com.tas.applicazionebancaria.controller.ClientController.* (..))")
-	public void controlloLogUtente(JoinPoint jp) throws Throwable{
+			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.controlloLogin (..)) ||"
+			+ "  execution(static * com.tas.applicazionebancaria.controller.ClientController.* (..)))")
+	public void controlloLogUtente(JoinPoint jp) throws Throwable {
 		String token = null;
 		HttpServletRequest request = null;
-		for (Object o : jp.getArgs()) {
-			if (o instanceof HttpServletRequest) {
-				request = (HttpServletRequest) o;
-				if (request != null) {
-					for (Cookie c : request.getCookies()) {
-						if (c.getName().equals("token")) {
-							token = c.getValue();
+		if(jp.getArgs()!=null) {
+			for (Object o : jp.getArgs()) {
+				if (o instanceof HttpServletRequest) {
+					request = (HttpServletRequest) o;
+					if (request.getCookies()!=null) {
+						for (Cookie c : request.getCookies()) {
+							if (c.getName().equals("token")) {
+								token = c.getValue();
+								break;
+							}
 						}
 					}
 				}
@@ -181,30 +200,31 @@ public class LogAspect {
 
 	}
 	
-	@Before("execution(* com.tas.applicazionebancaria.controller.AdminController.* (..)) && "
-			+ "!(execution(* com.tas.applicazionebancaria.controller.AdminController.validateInputs (..)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findNumContiPerCliente (..)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findNumCartePerCliente (..)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.AdminController.findTotPrestitiPerCliente (..)) ||"
-			+ "	 execution(* com.tas.applicazionebancaria.controller.AdminController.findTotPagamentiPerCliente (..))"
-			+ ")")
-	public void controlloLogAdmin(JoinPoint jp) throws Throwable{
-		System.out.println("Starting: controlloLogAdmin");
-		String token=null;
-		for(Object o: jp.getArgs()) {
-			if(o instanceof String) {
-				token=(String) o;
-				break;
-			}
-		}
-		try {
-			if(token!=null) {
-				JWT.validate(token);
-			}else {
-				System.out.println("Mancano token in: \n\t"+jp.getSignature());
-			}
-		} catch (Exception e) {
-			throw new AdminTokenException(e.getMessage());
-		}
-	}	
+//	@Before("execution(* com.tas.applicazionebancaria.config.JwtAuthFilter.doFilterInternal (..)))")
+//	public void controlloLogAdmin(JoinPoint jp) throws Throwable{
+//		String token=null;
+//		if(jp.getArgs()!=null) {
+//			for (Object o : jp.getArgs()) {
+//				if (o instanceof HttpServletRequest) {
+//					HttpServletRequest request = (HttpServletRequest) o;
+//					if (request.getCookies()!=null) {
+//						for (Cookie c : request.getCookies()) {
+//							if (c.getName().equals("bearer")) {
+//								token=c.getValue();
+//								break;
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+//		try {
+//			if(token!=null)
+//				JWT.validate(token);
+//		} catch (Exception e) {
+//			throw new AdminTokenException(e.getMessage());
+//		}
+//	}
+	
 }

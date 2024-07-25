@@ -17,9 +17,11 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.tas.applicazionebancaria.ApplicazioneBancariaApplication;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Prestiti;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
@@ -34,7 +36,7 @@ import jakarta.servlet.http.Cookie;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
-@SpringBootTest
+@SpringBootTest(classes=ApplicazioneBancariaApplication.class)
 class ClientControllerPrestitiTest {
 	@Autowired
 	private MockMvc mockMvc;

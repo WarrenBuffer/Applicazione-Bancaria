@@ -5,6 +5,6 @@ import java.util.List;
 import com.tas.applicazionebancaria.businesscomponent.model.LogAccessiAdmin;
 
 public interface LogAccessiService {
-	void saveLogAccesso(LogAccessiAdmin log);
+	LogAccessiAdmin saveLogAccesso(LogAccessiAdmin log);
 	List<LogAccessiAdmin> findAll();
 }

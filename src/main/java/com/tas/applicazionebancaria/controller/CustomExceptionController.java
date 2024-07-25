@@ -12,12 +12,10 @@ import com.tas.applicazionebancaria.utils.ServerResponse;
 public class CustomExceptionController {
 	@ExceptionHandler(TokenException.class)
 	public ModelAndView tokenExcHandler(TokenException exc) {
-		System.out.println("Striting: TokenExcHandler");
 		return new ModelAndView("redirect:/registrazione");
 	}
 	@ExceptionHandler(AdminTokenException.class)
-	public ServerResponse adminTokenExcHandler(TokenException exc) {
-		System.out.println("Striting: AdminTokenExcHandler");
+	public ServerResponse adminTokenExcHandler(AdminTokenException exc) {
 		return new ServerResponse(-1, "JWT invalido. Rieffettua il login.");
 	}
 	

@@ -95,6 +95,7 @@ public class AdminController {
 	@GetMapping("/conti")
 	public ServerResponse getConti() {
 		List<Conto> conti = contoService.findConti0();
+		System.out.println("sas");
 		return new ServerResponse(0, conti);
 	}
 

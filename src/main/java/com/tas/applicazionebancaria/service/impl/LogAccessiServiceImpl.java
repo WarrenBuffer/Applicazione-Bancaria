@@ -16,8 +16,8 @@ public class LogAccessiServiceImpl implements LogAccessiService{
 	private LogAccessiAdminRepository laRepo;
 	
 	@Override
-	public void saveLogAccesso(LogAccessiAdmin log) {
-		laRepo.save(log);
+	public LogAccessiAdmin saveLogAccesso(LogAccessiAdmin log) {
+		return laRepo.save(log);
 	}
 
 	@Override

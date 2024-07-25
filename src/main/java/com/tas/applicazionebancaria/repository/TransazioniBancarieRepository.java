@@ -1,6 +1,5 @@
 package com.tas.applicazionebancaria.repository;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +10,6 @@ import com.tas.applicazionebancaria.businesscomponent.model.TransazioniBancarie;
 
 @Repository("TransazioniBancarieRepository")
 public interface TransazioniBancarieRepository extends JpaRepository<TransazioniBancarie, Long>{
-	@Query(value = "select data_transazione from transazioni where data_transazione >= all (select data_transazione from transazioni)", nativeQuery = true)
-	Date findUltimaTransazione(); 
 	
 	@Query(value = "select count(*) from transazioni_bancarie", nativeQuery = true)
 	Long findNumTransazioni();

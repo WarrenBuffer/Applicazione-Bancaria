@@ -11,6 +11,5 @@ public interface ClienteService {
 	Optional<Cliente> findById(long id);
 	Optional<Cliente> findByEmail(String email);
 	void deleteCliente(Cliente cliente);
-	List<Cliente> findClienteSaldoPiuAlto();
 	long count();
 }

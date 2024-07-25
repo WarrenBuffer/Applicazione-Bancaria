@@ -41,11 +41,6 @@ public class ClienteServiceImpl implements ClienteService{
 	}
 
 	@Override
-	public List<Cliente> findClienteSaldoPiuAlto() {
-		return cr.findClienteSaldoPiuAlto();
-	}
-
-	@Override
 	public long count() {
 		return cr.count();
 	}

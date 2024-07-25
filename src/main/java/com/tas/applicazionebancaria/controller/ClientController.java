@@ -109,8 +109,6 @@ public class ClientController {
 	@Autowired
 	TransazioniBancarieService transazioniBancarieService;
 
-	@Autowired
-	// LoginAttemptService loginAttemptService;
 
 	/*-----------------------------------------UTILITIES-----------------------------------------*/
 
