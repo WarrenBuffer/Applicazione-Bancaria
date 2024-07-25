@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMovimento;
+
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -22,7 +24,7 @@ public class MovimentiContoMongo implements Serializable{
 	
 	private double importo;
 	private Date dataOperazione;
-	private String tipoOperazione; //TODO forse qua è giusto, forse è sbagliato il tipo dell'attributo
+	private TipoMovimento tipoOperazione; //TODO forse qua è giusto, forse è sbagliato il tipo dell'attributo
 	private int codContoOrigine;
 	private int codContoDestinazione;
 }

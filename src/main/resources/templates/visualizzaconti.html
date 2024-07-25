@@ -34,7 +34,7 @@
           <div th:if="${conto != null}" class="panel panel-default">
             <div class="panel-heading">
               <h2 style="font-size: 18px;"><strong>Saldo (€)</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                <span style="font-size: 29px;" th:text="*{conto.saldo}"></span>
+                <span style="font-size: 29px;" th:text="*{#numbers.formatCurrency(conto.saldo)}"></span>
               </h2>
             </div>
             <br>
@@ -76,7 +76,7 @@
                                   <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-euro"></i>
                                   </span>
-                                  <input type="number" class="form-control" name="importo" min="1" step="0.1" required>
+                                  <input type="number" class="form-control" name="importo" min="1" step="0.01" required>
                                 </div>
                               </div>
                             </div>
@@ -157,7 +157,7 @@
                     <td th:text="${mov.codMovimento}"></td>
                     <td th:text="${mov.codConto}"></td>
                     <td th:text="${#dates.format(mov.dataMovimento, 'dd/MMM/yyyy')}"></td>
-                    <td th:text="${mov.importo}"></td>
+                    <td th:text="${#numbers.formatCurrency(mov.importo)}"></td>
                     <td th:text="${mov.tipoMovimento}"></td>
                   </tr>
                 </tbody>
@@ -191,7 +191,7 @@
                     <td th:text="${t.codTransazioneBancaria}"></td>
                     <td th:text="${t.contoOrigine}"></td>
                     <td th:text="${t.contoDestinazione}"></td>
-                    <td th:text="${t.importo}"></td>
+                    <td th:text="${#numbers.formatCurrency(t.importo)}"></td>
                     <td th:text="${#dates.format(t.dataTransazione, 'dd/MM/yyyy')}"></td>
                     <td th:text="${t.tipoTransazione}"></td>
                   </tr>

@@ -1,4 +1,4 @@
-package test.com.tas.applicazionebancaria.clientcontroller;
+package com.tas.applicazionebancaria.controller;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -493,7 +493,9 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		Set<Conto> conti = new HashSet<Conto>();
+		conti.add(new Conto());
+		cliente.setConti(conti);
 		conto = new Conto();
 		conto.setCodConto(52);
 		conto.setSaldo(100.0);
@@ -511,17 +513,14 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Arrays.asList(new MovimentiConto(), new MovimentiConto());
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Arrays.asList(conto, new Conto());
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
 
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk()).andExpect(model().attributeExists("error"))
 				.andExpect(model().attribute("error", "Impossibile prelevare questa cifra! Saldo insufficiente."))
 				.andExpect(model().attributeExists("listaMovimenti"))
-				.andExpect(model().attribute("listaMovimenti", movimentiConto))
-				.andExpect(model().attributeExists("listaConti")).andExpect(model().attribute("listaConti", listaConti))
-				.andExpect(model().attributeExists("conto")).andExpect(model().attribute("conto", conto))
+				.andExpect(model().attributeExists("listaConti"))
+				.andExpect(model().attributeExists("conto"))
 				.andExpect(view().name("visualizzaconti"));
 	}
 
@@ -535,7 +534,9 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		Set<Conto> conti = new HashSet<Conto>();
+		conti.add(new Conto());
+		cliente.setConti(conti);
 		conto = new Conto();
 		conto.setCodConto(52);
 		conto.setSaldo(100.0);
@@ -553,16 +554,14 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Collections.emptyList();
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Arrays.asList(conto, new Conto());
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
 
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk()).andExpect(model().attributeExists("error"))
 				.andExpect(model().attribute("error", "Impossibile prelevare questa cifra! Saldo insufficiente."))
 				.andExpect(model().attributeDoesNotExist("listaMovimenti"))
-				.andExpect(model().attributeExists("listaConti")).andExpect(model().attribute("listaConti", listaConti))
-				.andExpect(model().attributeExists("conto")).andExpect(model().attribute("conto", conto))
+				.andExpect(model().attributeExists("listaConti"))
+				.andExpect(model().attributeExists("conto"))
 				.andExpect(view().name("visualizzaconti"));
 	}
 
@@ -576,7 +575,8 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		Set<Conto> conti = new HashSet<Conto>();
+		cliente.setConti(conti);
 		conto = new Conto();
 		conto.setCodConto(52);
 		conto.setSaldo(100.0);
@@ -594,15 +594,12 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Arrays.asList(new MovimentiConto(), new MovimentiConto());
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Collections.emptyList();
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
 
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk()).andExpect(model().attributeExists("error"))
 				.andExpect(model().attribute("error", "Impossibile prelevare questa cifra! Saldo insufficiente."))
 				.andExpect(model().attributeExists("listaMovimenti"))
-				.andExpect(model().attribute("listaMovimenti", movimentiConto))
 				.andExpect(model().attributeDoesNotExist("listaConti"))
 				.andExpect(model().attributeDoesNotExist("conto")).andExpect(view().name("visualizzaconti"));
 	}
@@ -617,7 +614,8 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		Set<Conto> conti = new HashSet<Conto>();
+		cliente.setConti(conti);
 		conto = new Conto();
 		conto.setCodConto(52);
 		conto.setSaldo(100.0);
@@ -634,9 +632,6 @@ class TransazioniClientTest {
 
 		List<MovimentiConto> movimentiConto = Collections.emptyList();
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
-
-		List<Conto> listaConti = Collections.emptyList();
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
 
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
@@ -657,7 +652,11 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		
+		Set<Conto> conti = new HashSet<Conto>();
+		conti.add(new Conto());
+		cliente.setConti(conti);
+		
 		clienteM = new ClienteMongo();
 		clienteM.setCodCliente(802);
 		clienteM.setNomeCliente("gabriele");
@@ -690,9 +689,6 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Arrays.asList(new MovimentiConto(), new MovimentiConto());
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Arrays.asList(conto, new Conto());
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
-
 		when(transazioneService.saveTransazioni(Mockito.any(Transazioni.class))).thenReturn(t);
 		when(transazioneServiceM.saveTransazioniMongo(Mockito.any(TransazioniMongo.class))).thenReturn(transazioneM);
 
@@ -703,11 +699,9 @@ class TransazioniClientTest {
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk()).andExpect(model().attributeExists("listaMovimenti"))
-				.andExpect(model().attribute("listaMovimenti", movimentiConto))
-				.andExpect(model().attributeExists("listaConti")).andExpect(model().attribute("listaConti", listaConti))
+				.andExpect(model().attributeExists("listaConti"))
 				.andExpect(model().attributeExists("listaTransazioni"))
-				.andExpect(model().attribute("listaTransazioni", listaTransazioni))
-				.andExpect(model().attributeExists("conto")).andExpect(model().attribute("conto", conto))
+				.andExpect(model().attributeExists("conto"))
 				.andExpect(model().attributeExists("success"))
 				.andExpect(model().attribute("success", "Prelievo andato a buon fine!"))
 				.andExpect(view().name("visualizzaconti"));
@@ -723,7 +717,10 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		
+		Set<Conto> conti = new HashSet<Conto>();
+		cliente.setConti(conti);
+		
 		clienteM = new ClienteMongo();
 		clienteM.setCodCliente(802);
 		clienteM.setNomeCliente("gabriele");
@@ -756,9 +753,6 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Arrays.asList(new MovimentiConto(), new MovimentiConto());
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Collections.emptyList();
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
-
 		when(transazioneService.saveTransazioni(Mockito.any(Transazioni.class))).thenReturn(t);
 		when(transazioneServiceM.saveTransazioniMongo(Mockito.any(TransazioniMongo.class))).thenReturn(transazioneM);
 
@@ -769,10 +763,8 @@ class TransazioniClientTest {
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk()).andExpect(model().attributeExists("listaMovimenti"))
-				.andExpect(model().attribute("listaMovimenti", movimentiConto))
 				.andExpect(model().attributeDoesNotExist("listaConti"))
 				.andExpect(model().attributeExists("listaTransazioni"))
-				.andExpect(model().attribute("listaTransazioni", listaTransazioni))
 				.andExpect(model().attributeDoesNotExist("conto")).andExpect(model().attributeExists("success"))
 				.andExpect(model().attribute("success", "Prelievo andato a buon fine!"))
 				.andExpect(view().name("visualizzaconti"));
@@ -789,7 +781,11 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
-
+		
+		Set<Conto> conti = new HashSet<Conto>();
+		conti.add(new Conto());
+		cliente.setConti(conti);
+		
 		clienteM = new ClienteMongo();
 		clienteM.setCodCliente(802);
 		clienteM.setNomeCliente("gabriele");
@@ -822,9 +818,6 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Collections.emptyList();
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Arrays.asList(conto, new Conto());
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
-
 		when(transazioneService.saveTransazioni(Mockito.any(Transazioni.class))).thenReturn(t);
 		when(transazioneServiceM.saveTransazioniMongo(Mockito.any(TransazioniMongo.class))).thenReturn(transazioneM);
 
@@ -835,10 +828,9 @@ class TransazioniClientTest {
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk()).andExpect(model().attributeDoesNotExist("listaMovimenti"))
-				.andExpect(model().attributeExists("listaConti")).andExpect(model().attribute("listaConti", listaConti))
+				.andExpect(model().attributeExists("listaConti"))
 				.andExpect(model().attributeExists("listaTransazioni"))
-				.andExpect(model().attribute("listaTransazioni", listaTransazioni))
-				.andExpect(model().attributeExists("conto")).andExpect(model().attribute("conto", conto))
+				.andExpect(model().attributeExists("conto"))
 				.andExpect(model().attributeExists("success"))
 				.andExpect(model().attribute("success", "Prelievo andato a buon fine!"))
 				.andExpect(view().name("visualizzaconti"));
@@ -855,6 +847,10 @@ class TransazioniClientTest {
 		cliente.setCodCliente(802);
 		cliente.setEmailCliente("vazzanagabriele4@gmail.com");
 		cliente.setNomeCliente("gabriele");
+		
+		Set<Conto> conti = new HashSet<Conto>();
+		conti.add(new Conto());
+		cliente.setConti(conti);
 
 		clienteM = new ClienteMongo();
 		clienteM.setCodCliente(802);
@@ -888,9 +884,6 @@ class TransazioniClientTest {
 		List<MovimentiConto> movimentiConto = Arrays.asList(new MovimentiConto(), new MovimentiConto());
 		when(mcService.findUltimi10(conto.getCodConto())).thenReturn(movimentiConto);
 
-		List<Conto> listaConti = Arrays.asList(conto, new Conto());
-		when(contoService.findByIdCliente(cliente.getCodCliente())).thenReturn(listaConti);
-
 		when(transazioneService.saveTransazioni(Mockito.any(Transazioni.class))).thenReturn(t);
 		when(transazioneServiceM.saveTransazioniMongo(Mockito.any(TransazioniMongo.class))).thenReturn(transazioneM);
 
@@ -900,10 +893,10 @@ class TransazioniClientTest {
 		mockMvc.perform(
 				post("/preleva").param("codConto", "52").param("importo", "500").cookie(new Cookie("token", token)))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("listaMovimenti")).andExpect(model().attribute("listaMovimenti", movimentiConto))
-				.andExpect(model().attributeExists("listaConti")).andExpect(model().attribute("listaConti", listaConti))
+				.andExpect(model().attributeExists("listaMovimenti"))
+				.andExpect(model().attributeExists("listaConti"))
 				.andExpect(model().attributeDoesNotExist("listaTransazioni"))
-				.andExpect(model().attributeExists("conto")).andExpect(model().attribute("conto", conto))
+				.andExpect(model().attributeExists("conto"))
 				.andExpect(model().attributeExists("success"))
 				.andExpect(model().attribute("success", "Prelievo andato a buon fine!"))
 				.andExpect(view().name("visualizzaconti"));

@@ -150,13 +150,11 @@ public class LogAspect {
 
 	/*----------------------------------CONTROLLO DEGLI ACCESSI------------------------------------------*/
 	@Before("execution(* com.tas.applicazionebancaria.controller.ClientController.* (..)) && "
-			+ "!(execution(* com.tas.applicazionebancaria.controller.ClientController.registrazione(String, HttpServletRequest)) ||"
-			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.registrazione(Cliente, HttpServletRequest)) ||"
+			+ "!(execution(* com.tas.applicazionebancaria.controller.ClientController.registrazione(..)) ||"
 			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.login (..)) ||"
 			+ "  execution(* com.tas.applicazionebancaria.controller.ClientController.controlloLogin (..))"
 			+ ") && !execution(static * com.tas.applicazionebancaria.controller.ClientController.* (..))")
 	public void controlloLogUtente(JoinPoint jp) throws Throwable{
-		System.out.println("Starting: controlloLogUtente");
 		String token = null;
 		HttpServletRequest request = null;
 		for (Object o : jp.getArgs()) {
@@ -208,8 +206,5 @@ public class LogAspect {
 		} catch (Exception e) {
 			throw new AdminTokenException(e.getMessage());
 		}
-	}
-	
-	
-	
+	}	
 }
