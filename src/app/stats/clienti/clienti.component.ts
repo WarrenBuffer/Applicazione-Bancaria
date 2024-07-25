@@ -16,29 +16,19 @@ export class ClientiComponent {
     this.selectedClient = client;
   }
 
-  calcTotPagamenti(codCliente: number) {
+  calcTotPagamenti(cliente: any) {
     let tot = 0;
-    this.stats.clienti.forEach((cliente: any) => {
-      if (cliente.codCliente == codCliente) {
-        cliente.pagamenti.forEach((pagamento: any) => {
-          tot += pagamento.importo;
-        })
-      }
-    });
+    cliente.pagamenti.forEach((pagamento: any) => {
+      tot += pagamento.importo;
+    })
     return tot;
   }
 
-  calcTotPrestiti(codCliente: number) {
+  calcTotPrestiti(cliente: any) {
     let tot = 0;
-    this.stats.clienti.forEach((cliente: any) => {
-      if (cliente.codCliente == codCliente) {
-        cliente.prestiti.forEach((prestito: any) => {
-          tot += prestito.importo;
-        })
-      }
-    });
+    cliente.prestiti.forEach((prestito: any) => {
+      tot += prestito.importo;
+    })
     return tot;
   }
-
-
 }

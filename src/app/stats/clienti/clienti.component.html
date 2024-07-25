@@ -21,8 +21,8 @@
                 <td>{{ cliente.emailCliente }}</td>
                 <td>{{ cliente.carte.length }}</td>
                 <td>{{ cliente.conti.length }}</td>
-                <td>{{ calcTotPagamenti(cliente.codCliente) }}</td>
-                <td>{{ calcTotPrestiti(cliente.codCliente) }}</td>
+                <td>{{ calcTotPagamenti(cliente) }}</td>
+                <td>{{ calcTotPrestiti(cliente) }}</td>
             </tr>
         </ng-template>
     </p-table>

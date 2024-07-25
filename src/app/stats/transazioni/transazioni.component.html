@@ -1,5 +1,5 @@
 <p-card header="Transazioni">
-    <div class="card flex justify-content-center" >
+    <div *ngIf="transazioni.length > 0" class="card flex justify-content-center" >
         <p-chart type="pie" [data]="data" [options]="options"/>
     </div>
 
