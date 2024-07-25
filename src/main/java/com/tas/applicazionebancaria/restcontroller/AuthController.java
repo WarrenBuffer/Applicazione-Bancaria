@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,8 +73,7 @@ public class AuthController implements Costanti{
 			accountBlocker.invalidAdmin(loginRequest.getEmail());
 			
 			//logs
-			Amministratore admin = adminService.findByEmail(loginRequest.getEmail()).get();
-			log(String.valueOf(admin.getCodAdmin()), "Tentativo di accesso errato admin id: ");
+			log(String.valueOf(loginRequest.getEmail()), "Tentativo di accesso errato admin email: ");
 			return new ServerResponse(1, "Credenziali non valide");
 		} catch (LockedException exc) {
 			//logs
@@ -88,7 +86,7 @@ public class AuthController implements Costanti{
 	}
 	
 	@GetMapping("/logoutAdmin") 
-	public ServerResponse logoutAdmin(HttpServletResponse response, @CookieValue(name = "bearer", required = false) String token) {
+	public ServerResponse logoutAdmin(HttpServletResponse response) {
 
 		Cookie cToken = new Cookie(COOKIE_NAME, "");
 		Cookie cAdmin = new Cookie("admin", "");

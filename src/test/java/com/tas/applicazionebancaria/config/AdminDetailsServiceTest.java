@@ -1,6 +1,6 @@
 package com.tas.applicazionebancaria.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.repository.AmministratoreRepository;
-import com.tas.applicazionebancaria.service.AmministratoreService;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
@@ -27,15 +26,14 @@ class AdminDetailsServiceTest {
 	@Autowired
 	AmministratoreRepository repo;
 	Amministratore admin;
-	String email = "pierpaolofeltrin.test@gmail.com";
 	
 	@BeforeAll
 	void setup() {
 		Amministratore a = new Amministratore();
-		a.setNomeAdmin("Piero");
-		a.setCognomeAdmin("Feltrin");
-		a.setEmailAdmin(email);
-		a.setPasswordAdmin(BCryptEncoder.encode("Password01$"));
+		a.setNomeAdmin("Test");
+		a.setCognomeAdmin("Test");
+		a.setEmailAdmin("testadmin123456789@testadmin123456789.com");
+		a.setPasswordAdmin(BCryptEncoder.encode("TestPassword01$"));
 		admin = repo.save(a);
 	}
 	
@@ -46,7 +44,7 @@ class AdminDetailsServiceTest {
 	
 	@Test
 	void testLoadUserByUsername() {
-		UserDetails details = new AdminDetailsService(repo).loadUserByUsername(email);
+		UserDetails details = new AdminDetailsService(repo).loadUserByUsername(admin.getEmailAdmin());
 	}
 	
 	@Test

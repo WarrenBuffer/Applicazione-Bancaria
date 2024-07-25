@@ -54,8 +54,8 @@ class ClientControllerPrestitiTest {
 		Cliente c = new Cliente();
 		c.setNomeCliente("Test");
 		c.setCognomeCliente("Test");
-		c.setEmailCliente("test@test.com");
-		c.setPasswordCliente(BCryptEncoder.encode("Password01$"));
+		c.setEmailCliente("testcliente123456789@testcliente123456789.com");
+		c.setPasswordCliente(BCryptEncoder.encode("TestPassword01$"));
 		cliente = cs.saveCliente(c);
 		
 		Prestiti p = new Prestiti();

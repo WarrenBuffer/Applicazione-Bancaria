@@ -23,10 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
 import com.tas.applicazionebancaria.service.AmministratoreService;
-import com.tas.applicazionebancaria.utils.JWT;
 import com.tas.applicazionebancaria.utils.LoginRequest;
-
-import jakarta.servlet.http.Cookie;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
@@ -38,15 +35,14 @@ class AuthControllerTest {
 	AmministratoreService as;
 	
 	private static Amministratore admin;
-	private static String password = "Password01$";
-	
+	private String password = "TestPassword01$";
 	@BeforeAll
 	void setup() {
 		Amministratore a = new Amministratore();
-		a.setNomeAdmin("Piero");
-		a.setCognomeAdmin("Feltrin");
-		a.setEmailAdmin("pierpaolofeltrin.test@gmail.com");
-		a.setPasswordAdmin(BCryptEncoder.encode("Password01$"));
+		a.setNomeAdmin("Test");
+		a.setCognomeAdmin("Test");
+		a.setEmailAdmin("testadmin123456789@testadmin123456789.com");
+		a.setPasswordAdmin(BCryptEncoder.encode(password));
 		admin = as.saveAmministratore(a);
 	}
 	
@@ -100,8 +96,7 @@ class AuthControllerTest {
 	
 	@Test
 	void testLogout() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
-		ResultActions result = mockMvc.perform(get("/logoutAdmin").cookie(cookie));
+		ResultActions result = mockMvc.perform(get("/logoutAdmin"));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));
 	}

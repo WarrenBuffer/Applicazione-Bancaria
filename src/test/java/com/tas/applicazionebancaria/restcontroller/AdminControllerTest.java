@@ -10,8 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Date;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +32,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
+import com.tas.applicazionebancaria.service.AmministratoreService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
 import com.tas.applicazionebancaria.service.RichiestePrestitoService;
@@ -37,6 +41,7 @@ import com.tas.applicazionebancaria.utils.LoginRequest;
 
 import jakarta.servlet.http.Cookie;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 class AdminControllerTest {
@@ -48,6 +53,8 @@ class AdminControllerTest {
 	ContoService cos;
 	@MockBean
 	RichiestePrestitoService rps;
+	@Autowired
+	AmministratoreService as;
 	
 	private static Conto conto;
 	private static Cliente cliente;
@@ -55,12 +62,12 @@ class AdminControllerTest {
 	private static Amministratore admin;
     
 	@BeforeAll
-	static void setup() {		
+	void setup() {		
 		cliente = new Cliente();
-		cliente.setNomeCliente("Piero");
-		cliente.setCognomeCliente("Feltrin");
-		cliente.setEmailCliente("piero64@gmail.com");
-		cliente.setPasswordCliente("Piero01$");
+		cliente.setNomeCliente("Test");
+		cliente.setCognomeCliente("Test");
+		cliente.setEmailCliente("testcliente123456789@testcliente123456789.com");
+		cliente.setPasswordCliente("TestPassword01$");
 		
         conto = new Conto();
         conto.setCodCliente(cliente.getCodCliente());
@@ -75,15 +82,21 @@ class AdminControllerTest {
         
         admin = new Amministratore();
         admin.setCodAdmin(1);
-        admin.setNomeAdmin("Piero");
-        admin.setCognomeAdmin("Feltrin");
-        admin.setEmailAdmin("pierpaolofeltrin.fe@gmail.com");
-        admin.setPasswordAdmin("Password01$");
+        admin.setNomeAdmin("Test");
+        admin.setCognomeAdmin("Test");
+        admin.setEmailAdmin("testadmin123456789@testadmin123456789.com");
+        admin.setPasswordAdmin("TestPassword01$");
+        admin = as.saveAmministratore(admin);
+	}
+	
+	@AfterAll
+	void tearDown() {
+		as.deleteAmministratore(admin);
 	}
     
 	@Test
 	void testClienti() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/clienti").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.code").value(0));
@@ -91,7 +104,7 @@ class AdminControllerTest {
 	
 	@Test
 	void testContiSuccess() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/conti").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.code").value(0));
@@ -100,7 +113,7 @@ class AdminControllerTest {
 	@Test
 	void testAddCliente() throws Exception {
 		when(cs.saveCliente(cliente)).thenReturn(cliente);
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));
@@ -109,7 +122,7 @@ class AdminControllerTest {
 	@Test
 	void testAddClienteInvalidEmail() throws Exception {
 		when(cs.saveCliente(cliente)).thenReturn(cliente);
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		cliente.setEmailCliente("pierooaisoisajdoij");
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -119,7 +132,7 @@ class AdminControllerTest {
 	
 	@Test
 	void testAddClienteNullInput() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		
 		cliente.setEmailCliente(null);
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
@@ -149,7 +162,7 @@ class AdminControllerTest {
 	@Test
 	void testAddClienteInvalidNome() throws Exception {
 		when(cs.saveCliente(cliente)).thenReturn(cliente);
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		cliente.setNomeCliente("");
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -160,7 +173,7 @@ class AdminControllerTest {
 	@Test
 	void testAddClienteInvalidCognome() throws Exception {
 		when(cs.saveCliente(cliente)).thenReturn(cliente);
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		cliente.setCognomeCliente("");
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -171,7 +184,7 @@ class AdminControllerTest {
 	@Test
 	void testAddClienteInvalidPassword() throws Exception {
 		when(cs.saveCliente(cliente)).thenReturn(cliente);
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		cliente.setPasswordCliente("lala");
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -183,7 +196,7 @@ class AdminControllerTest {
 	void testAddClienteAlreadyPresent() throws Exception {
 		when(cs.saveCliente(cliente)).thenReturn(cliente);
 		when(cs.findByEmail(cliente.getEmailCliente())).thenReturn(Optional.of(cliente));
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(post("/api/clienti").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(cliente)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(1));
@@ -192,7 +205,7 @@ class AdminControllerTest {
 	@Test
 	void testClienteById() throws Exception {
 		when(cs.findById(cliente.getCodCliente())).thenReturn(Optional.of(cliente));
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/clienti/" + cliente.getCodCliente()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.code").value(0));
@@ -201,7 +214,7 @@ class AdminControllerTest {
 	@Test
 	void testClienteByIdNotPresent() throws Exception {
 		when(cs.findById(cliente.getCodCliente())).thenReturn(Optional.empty());
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/clienti/" + cliente.getCodCliente()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(1));
@@ -210,7 +223,7 @@ class AdminControllerTest {
 	@Test
 	void testClienteByEmail() throws Exception {
 		when(cs.findByEmail(cliente.getEmailCliente())).thenReturn(Optional.of(cliente));
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/clienti/email/" + cliente.getEmailCliente()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.code").value(0));
@@ -219,7 +232,7 @@ class AdminControllerTest {
 	@Test
 	void testClienteByEmailNotPresent() throws Exception {
 		when(cs.findByEmail(cliente.getEmailCliente())).thenReturn(Optional.empty());
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/clienti/email/" + cliente.getEmailCliente()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(1));
@@ -228,7 +241,7 @@ class AdminControllerTest {
 	@Test
 	void testBlockCliente() throws Exception {
 		when(cs.findByEmail(cliente.getEmailCliente())).thenReturn(Optional.of(cliente));
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		LoginRequest request = new LoginRequest();
 		request.setEmail(cliente.getEmailCliente());
 		ResultActions result = mockMvc.perform(post("/api/clienti/lock").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(request)));
@@ -240,7 +253,7 @@ class AdminControllerTest {
 	void testBlockClienteNotPresent() throws Exception {
 		when(cs.findByEmail(cliente.getEmailCliente())).thenReturn(Optional.empty());
 		
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		LoginRequest request = new LoginRequest();
 		request.setEmail(cliente.getEmailCliente());
 		
@@ -255,7 +268,7 @@ class AdminControllerTest {
 		when(cs.findByEmail(cliente.getEmailCliente())).thenReturn(Optional.of(cliente));
 		cliente.setAccountBloccato(false);
 		
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		LoginRequest request = new LoginRequest();
 		request.setEmail(cliente.getEmailCliente());
 		
@@ -268,7 +281,7 @@ class AdminControllerTest {
 	void testDeleteConto() throws Exception {
 		when(cos.findById(conto.getCodConto())).thenReturn(Optional.of(conto));
 		
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		
 		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/conti/" + conto.getCodConto()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -279,7 +292,7 @@ class AdminControllerTest {
 	void testDeleteContoNotFound() throws Exception {
 		when(cos.findById(conto.getCodConto())).thenReturn(Optional.empty());
 		
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		
 		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/conti/" + conto.getCodConto()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -288,7 +301,7 @@ class AdminControllerTest {
 	
 	@Test
 	void testStatistiche() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		
 		ResultActions result = mockMvc.perform(get("/api/statistiche").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -297,7 +310,7 @@ class AdminControllerTest {
 	
 	@Test
 	void testRichiestePrestito() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/richiestePrestito").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));
@@ -306,7 +319,7 @@ class AdminControllerTest {
 	@Test
 	void testApprovaPrestito() throws Exception {
 		when(rps.findById(prestito.getCodRichiesta())).thenReturn(Optional.of(prestito));
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/approvaPrestito/" + prestito.getCodRichiesta()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));
@@ -315,7 +328,7 @@ class AdminControllerTest {
 	@Test
 	void testApprovaPrestitoNotFound() throws Exception {
 		when(rps.findById(prestito.getCodRichiesta())).thenReturn(Optional.empty());
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/approvaPrestito/" + prestito.getCodRichiesta()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(1));
@@ -324,7 +337,7 @@ class AdminControllerTest {
 	@Test
 	void testDeclinaPrestito() throws Exception {
 		when(rps.findById(prestito.getCodRichiesta())).thenReturn(Optional.of(prestito));
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/declinaPrestito/" + prestito.getCodRichiesta()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));
@@ -334,7 +347,7 @@ class AdminControllerTest {
 	void testDeclinaPrestitoNotFound() throws Exception {
 		when(rps.findById(prestito.getCodRichiesta())).thenReturn(Optional.empty());
 		
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		
 		ResultActions result = mockMvc.perform(get("/api/declinaPrestito/" + prestito.getCodRichiesta()).cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -343,7 +356,7 @@ class AdminControllerTest {
 	
 	@Test
 	void testCambiaPassword() throws Exception {		
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		LoginRequest request = new LoginRequest();
 		request.setPassword("NewPassword01$");
 		ResultActions result = mockMvc.perform(post("/api/confermaNuovaPassword").cookie(cookie).contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(request)));
@@ -354,7 +367,7 @@ class AdminControllerTest {
 	
 	@Test
 	void testGetTransazioni() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/transazioni").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));
@@ -362,7 +375,7 @@ class AdminControllerTest {
 
 	@Test
 	void testGetPrestiti() throws Exception {
-		Cookie cookie = new Cookie("bearer", JWT.generate("Pier", "Feltrin", "pierpaolofeltrin.fe@gmail.com"));
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
 		ResultActions result = mockMvc.perform(get("/api/prestiti").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(0));

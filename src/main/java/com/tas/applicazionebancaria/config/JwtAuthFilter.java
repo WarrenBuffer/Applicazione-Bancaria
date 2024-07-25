@@ -51,6 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter implements Costanti {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authToken);
+				filterChain.doFilter(request, response);
 			} catch (ExpiredJwtException exc) {
 				Cookie admin = getCookieByName(request, "admin");
 				byte[] json = Base64.getDecoder().decode(admin.getValue());
@@ -70,11 +71,13 @@ public class JwtAuthFilter extends OncePerRequestFilter implements Costanti {
 				cookie.setMaxAge(COOKIE_MAX_AGE);
 				cookie.setPath("/");
 				response.addCookie(cookie);
+				filterChain.doFilter(request, response);
 			} catch (Exception exc) {
 				filterChain.doFilter(request, response);
-			}
+			} 
+		} else {
+			filterChain.doFilter(request, response);
 		}
-		filterChain.doFilter(request, response);
 	}
 
 }
