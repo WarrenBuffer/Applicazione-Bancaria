@@ -80,7 +80,7 @@ public class AuthController implements Costanti{
 			Amministratore admin = adminService.findByEmail(loginRequest.getEmail()).get();
 			log(String.valueOf(admin.getCodAdmin()), "Login fallito con blocco account admin id: ");
 			return new ServerResponse(1, "Account bloccato. Contattare l'amministratore");
-		} catch (JsonProcessingException exc) {
+		} catch (Exception exc) {
 			return new ServerResponse(1, "Impossibile convertire oggetto in JSON.");
 		}
 	}
