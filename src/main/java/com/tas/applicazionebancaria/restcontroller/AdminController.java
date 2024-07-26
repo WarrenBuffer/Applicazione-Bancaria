@@ -1,10 +1,15 @@
 package com.tas.applicazionebancaria.restcontroller;
 
+import java.io.ByteArrayOutputStream;
+import java.time.Month;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,11 +20,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.businesscomponent.model.AuditLog;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
+import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoModificaAudit;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
@@ -74,7 +90,8 @@ public class AdminController {
 	AuditService as;
 
 	private static boolean validateInputs(String nome, String cognome, String email, String password) {
-		if (nome == null || cognome == null || email == null || password == null) return false;
+		if (nome == null || cognome == null || email == null || password == null)
+			return false;
 		if (!nome.matches("^[a-zA-Z ,.'-]{2,30}$"))
 			return false;
 		if (!cognome.matches("^[a-zA-Z ,.'-]{2,30}$"))
@@ -132,7 +149,8 @@ public class AdminController {
 	}
 
 	@PostMapping("/clienti/lock")
-	public ServerResponse lockUnlock(@RequestBody LoginRequest request, @CookieValue(name = "bearer", required = false) String token) {
+	public ServerResponse lockUnlock(@RequestBody LoginRequest request,
+			@CookieValue(name = "bearer", required = false) String token) {
 		Optional<Cliente> cliente = clienteService.findByEmail(request.getEmail());
 
 		Jws<Claims> claims = JWT.validate(token);
@@ -143,7 +161,7 @@ public class AdminController {
 		audit.setCodAdmin(stringIdAdmin);
 		audit.setData(new Date());
 		audit.setTipo(TipoModificaAudit.DETTAGLI_CLIENTI);
-		
+
 		if (cliente.isEmpty()) {
 			audit.setDettagli("Tentativo di blocco/sblocco cliente con email " + request.getEmail() + " non riuscito");
 			as.saveAudit(audit);
@@ -157,8 +175,8 @@ public class AdminController {
 		} else {
 			audit.setDettagli("Blocco account id n. " + cliente.get().getCodCliente());
 			c.setAccountBloccato(true);
-		}		
-		
+		}
+
 		clienteService.saveCliente(c);
 		as.saveAudit(audit);
 		return new ServerResponse(0, "Cliente" + request.getEmail() + " modificato con successo.");
@@ -180,9 +198,135 @@ public class AdminController {
 		stat.setClienti(clienteService.findAll());
 		stat.setTotAddebiti(tmService.findTotAddebiti().isEmpty() ? 0 : tmService.findTotAddebiti().get());
 		stat.setTotAccrediti(tmService.findTotAccrediti().isEmpty() ? 0 : tmService.findTotAccrediti().get());
-		stat.setTransazioniMediePerCliente(tmService.transazioniMediePerCliente().isEmpty() ? 0 : tmService.transazioniMediePerCliente().get());
-		stat.setImportoTransazioniPerMese(tmService.importoTransazioniPerMese().isEmpty() ? null : tmService.importoTransazioniPerMese().get());
+		stat.setTransazioniMediePerCliente(
+				tmService.transazioniMediePerCliente().isEmpty() ? 0 : tmService.transazioniMediePerCliente().get());
+		stat.setImportoTransazioniPerMese(
+				tmService.importoTransazioniPerMese().isEmpty() ? null : tmService.importoTransazioniPerMese().get());
 		return new ServerResponse(0, stat);
+	}
+
+	@GetMapping("/download-statistiche")
+	public ResponseEntity<byte[]> downloadStatistiche() {
+		Document document = new Document();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+		try {
+			// Creazione istanza pdf
+			PdfWriter.getInstance(document, out);
+			document.open();
+
+			// Creazione contenuto PDF
+			// Posso includere testo, tabelle, etc.
+			document.addTitle("Statistiche Report");
+			document.addSubject("Statistiche PDF");
+			document.addKeywords("Statistiche, PDF, Java");
+			document.addAuthor("Applicazione Bancaria");
+			document.addCreator("Applicazione Bancaria");
+
+			document.add(new Paragraph("STATISTICHE REPORT", new Font(FontFamily.HELVETICA, 24, Font.BOLD)));
+			document.add(new Paragraph("Clienti totali: " + clienteService.findAll().size(),
+					new Font(FontFamily.HELVETICA, 14)));
+
+			// verifico che alcuni valori non siano null per non farmi lanciare un'eccezione
+			// e un errore nell'aprire il file pdf
+			if (tmService.findTotAddebiti().isEmpty()) {
+				document.add(new Paragraph("Totali addebiti: 0", new Font(FontFamily.HELVETICA, 14)));
+			} else {
+				document.add(new Paragraph("Totali addebiti: " + tmService.findTotAddebiti().get(),
+						new Font(FontFamily.HELVETICA, 14)));
+			}
+
+			if (tmService.findTotAccrediti().isEmpty()) {
+				document.add(new Paragraph("Totali accrediti: 0", new Font(FontFamily.HELVETICA, 14)));
+			} else {
+				document.add(new Paragraph("Totali accrediti: " + tmService.findTotAccrediti().get(),
+						new Font(FontFamily.HELVETICA, 14)));
+			}
+
+			if (tmService.transazioniMediePerCliente().isEmpty()) {
+				document.add(new Paragraph("Transazioni medie per cliente: 0", new Font(FontFamily.HELVETICA, 14)));
+			} else {
+				document.add(
+						new Paragraph("Transazioni medie per cliente: " + tmService.transazioniMediePerCliente().get(),
+								new Font(FontFamily.HELVETICA, 14)));
+			}
+
+			if (tmService.importoTransazioniPerMese().isEmpty()) {
+				document.add(new Paragraph("Importo transazioni per mese: non ci sono stati importi",
+						new Font(FontFamily.HELVETICA, 14)));
+			} else {
+
+				// creo un tabella per gli importi transazioni per mese
+				List<TransazioniMongo> importiPerMese = tmService.importoTransazioniPerMese().get();
+				document.add(new Paragraph("Statistiche Transazioni per Mese:", new Font(FontFamily.HELVETICA, 14)));
+				document.add(new Paragraph(" ")); // Aggiunge un'interlinea vuota
+
+				PdfPTable table = new PdfPTable(6); // 6 colonne
+				table.setWidthPercentage(100);
+				table.setWidths(new int[] { 2, 3, 2, 3, 3, 2 }); // width per ogni colonna
+
+				// headers tabella
+				Font headerFont = new Font(FontFamily.HELVETICA, 16, Font.BOLD);
+				PdfPCell h1 = new PdfPCell(new Phrase("MESE", headerFont));
+				PdfPCell h2 = new PdfPCell(new Phrase("Cod. Transazione", headerFont));
+				PdfPCell h3 = new PdfPCell(new Phrase("Importo", headerFont));
+				PdfPCell h4 = new PdfPCell(new Phrase("Data_Transazione Mese", headerFont));
+				PdfPCell h5 = new PdfPCell(new Phrase("Tipo_Transazione", headerFont));
+				PdfPCell h6 = new PdfPCell(new Phrase("Cod. Conto", headerFont));
+
+				// tipo di align
+				h1.setHorizontalAlignment(Element.ALIGN_CENTER);
+				h2.setHorizontalAlignment(Element.ALIGN_CENTER);
+				h3.setHorizontalAlignment(Element.ALIGN_CENTER);
+				h4.setHorizontalAlignment(Element.ALIGN_CENTER);
+				h5.setHorizontalAlignment(Element.ALIGN_CENTER);
+				h6.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+				// accodo le celle alla tabella
+				table.addCell(h1);
+				table.addCell(h2);
+				table.addCell(h3);
+				table.addCell(h4);
+				table.addCell(h5);
+				table.addCell(h6);
+
+				// itero la lista e stampo i valori
+				for (TransazioniMongo transazione : importiPerMese) {
+					table.addCell(new PdfPCell(new Phrase(Month.of(Integer.valueOf(transazione.getId())).name(),
+							new Font(FontFamily.HELVETICA, 14))));
+
+					table.addCell(new PdfPCell(new Phrase(String.valueOf(transazione.getCodiceConto()),
+							new Font(FontFamily.HELVETICA, 14))));
+
+					table.addCell(new PdfPCell(new Phrase(String.format("%.2f", transazione.getImporto()),
+							new Font(FontFamily.HELVETICA, 14))));
+
+					table.addCell(new PdfPCell(new Phrase(
+							transazione.getDataTransazione() != null ? transazione.getDataTransazione().toString()
+									: "indefinita",
+							new Font(FontFamily.HELVETICA, 14))));
+
+					table.addCell(new PdfPCell(new Phrase(
+							transazione.getTipoTransazione() != null ? transazione.getTipoTransazione().toString()
+									: "indefinita",
+							new Font(FontFamily.HELVETICA, 14))));
+
+					table.addCell(new PdfPCell(new Phrase(String.valueOf(transazione.getCodiceConto()),
+							new Font(FontFamily.HELVETICA, 14))));
+				}
+				document.add(table);
+			}
+
+			document.close();
+		} catch (DocumentException ex) {
+			ex.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// Set the headers and content type for the response
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statistiche.pdf");
+
+		return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.OK);
 	}
 
 	@GetMapping("/richiestePrestito")
@@ -197,7 +341,7 @@ public class AdminController {
 
 		Jws<Claims> claims = JWT.validate(token);
 		String adminEmail = claims.getBody().getSubject();
-		//audit logs
+		// audit logs
 		AuditLog audit = new AuditLog();
 		String stringIdAdmin = String.valueOf(asService.findByEmail(adminEmail).get().getCodAdmin());
 		audit.setCodAdmin(stringIdAdmin);
@@ -222,18 +366,18 @@ public class AdminController {
 	}
 
 	@GetMapping("/declinaPrestito/{id}")
-	public ServerResponse declinaPrestito(@PathVariable long id ,@CookieValue(name = "bearer", required = false) String token) {
+	public ServerResponse declinaPrestito(@PathVariable long id,
+			@CookieValue(name = "bearer", required = false) String token) {
 		Optional<RichiestePrestito> rp = rpService.findById(id);
 		Jws<Claims> claims = JWT.validate(token);
 		String adminEmail = claims.getBody().getSubject();
-		//audit logs
+		// audit logs
 		AuditLog audit = new AuditLog();
 		String stringIdAdmin = String.valueOf(asService.findByEmail(adminEmail).get().getCodAdmin());
 		audit.setCodAdmin(stringIdAdmin);
 		audit.setData(new Date());
 		audit.setTipo(TipoModificaAudit.APPROVAZIONE_PRESTITI);
 
-		
 		if (rp.isEmpty()) {
 			audit.setDettagli("Tentativo di rifiuto prestito n. " + id + " non riuscito");
 			as.saveAudit(audit);
@@ -241,31 +385,30 @@ public class AdminController {
 		}
 		rp.get().setStato(StatoPrestito.RIFIUTATO);
 		rpService.saveRichiestePrestito(rp.get());
-		
+
 		audit.setDettagli("Rifiutato prestito n. " + rp.get().getCodRichiesta());
 		as.saveAudit(audit);
 		return new ServerResponse(0, "Rifiutata richiesta n. " + rp.get().getCodRichiesta());
 	}
 
 	@PostMapping("/confermaNuovaPassword")
-	public ServerResponse confermaNuovaPassword(@CookieValue(name = "bearer") String token, @RequestBody LoginRequest request) {
+	public ServerResponse confermaNuovaPassword(@CookieValue(name = "bearer") String token,
+			@RequestBody LoginRequest request) {
 		Jws<Claims> claims = JWT.validate(token);
 		String email = claims.getBody().getSubject();
-		
+
 		Amministratore a = asService.findByEmail(email).get();
 		a.setPasswordAdmin(BCryptEncoder.encode(request.getPassword()));
 		asService.saveAmministratore(a);
 		return new ServerResponse(0, "Password salvata correttamente");
 	}
 
-
-	@GetMapping("/transazioni") 
+	@GetMapping("/transazioni")
 	public ServerResponse getTransazioni() {
-		return new ServerResponse(0, transazioniService.findAll());		
+		return new ServerResponse(0, transazioniService.findAll());
 	}
-	
-	
-	@GetMapping("/prestiti") 
+
+	@GetMapping("/prestiti")
 	public ServerResponse getPrestiti() {
 		return new ServerResponse(0, richiestePrestitoService.findAll());
 	}
