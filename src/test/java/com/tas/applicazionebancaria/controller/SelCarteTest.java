@@ -95,25 +95,25 @@ class SelCarteTest {
 	void richiestaCartaTestCartaNonEsiste() throws Exception {
 		 long codCarta = 453;
 
-		    when(carteDiCreditoService.findById(codCarta)).thenReturn(Optional.empty());
+		 when(carteDiCreditoService.findById(codCarta)).thenReturn(Optional.empty());
 
-		    Jws<Claims> mockClaimsJws = mock(Jws.class);
-		    Claims mockClaims = mock(Claims.class);
-		    when(mockClaimsJws.getBody()).thenReturn(mockClaims);
-		    when(mockClaims.getSubject()).thenReturn("mario.rossi@email.it");
-		    when(mockClaims.get("nome")).thenReturn("Mario");
+		 Jws<Claims> mockClaimsJws = mock(Jws.class);
+		 Claims mockClaims = mock(Claims.class);
+		 when(mockClaimsJws.getBody()).thenReturn(mockClaims);
+		 when(mockClaims.getSubject()).thenReturn("mario.rossi@email.it");
+		 when(mockClaims.get("nome")).thenReturn("Mario");
 
-		    when(JWT.validate(token)).thenReturn(mockClaimsJws);
+		 when(JWT.validate(token)).thenReturn(mockClaimsJws);
 
-		    mockMvc.perform(post("/selcarte")
-		            .param("codCarta", String.valueOf(codCarta))
-		            .cookie(new Cookie("token", token)))
-		        .andExpect(status().isOk())
-		        .andExpect(model().attributeDoesNotExist("nome"))
-		        .andExpect(model().attributeDoesNotExist("cliente"))
-		        .andExpect(model().attributeDoesNotExist("listaCarte"))
-		        .andExpect(model().attributeDoesNotExist("carta"))
-		        .andExpect(view().name("visualizzacarte"));
+		 mockMvc.perform(post("/selcarte")
+				 .param("codCarta", String.valueOf(codCarta))
+				 .cookie(new Cookie("token", token)))
+		 .andExpect(status().isOk())
+		 .andExpect(model().attributeExists("nome"))
+		 .andExpect(model().attributeDoesNotExist("cliente"))
+		 .andExpect(model().attributeDoesNotExist("listaCarte"))
+		 .andExpect(model().attributeDoesNotExist("carta"))
+		 .andExpect(view().name("visualizzacarte"));
 	}
 	
 	@Test

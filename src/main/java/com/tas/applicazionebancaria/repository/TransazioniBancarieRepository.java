@@ -22,4 +22,7 @@ public interface TransazioniBancarieRepository extends JpaRepository<Transazioni
 	
 	@Query(value="select * from transazioni_bancarie where conto_origine=?1 and tipo_transazione='ADDEBITO' limit 10", nativeQuery = true)
 	List<TransazioniBancarie> findUltime10(long contoOrigine);
+	
+	@Query(value="select * from transazioni_bancarie where conto_destinazione=?1 and tipo_transazione='ACCREDITO' limit 10", nativeQuery = true)
+	List<TransazioniBancarie> findUltimi10Accrediti(long conto);
 }

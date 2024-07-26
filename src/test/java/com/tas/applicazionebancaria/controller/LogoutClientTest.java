@@ -1,4 +1,4 @@
-package test.com.tas.applicazionebancaria.clientcontroller;
+package com.tas.applicazionebancaria.controller;
 
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

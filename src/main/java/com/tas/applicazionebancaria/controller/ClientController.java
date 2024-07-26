@@ -2,6 +2,7 @@ package com.tas.applicazionebancaria.controller;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -109,6 +110,8 @@ public class ClientController {
 	@Autowired
 	TransazioniBancarieService transazioniBancarieService;
 
+	@Autowired
+	// LoginAttemptService loginAttemptService;
 
 	/*-----------------------------------------UTILITIES-----------------------------------------*/
 
@@ -260,42 +263,41 @@ public class ClientController {
 	}
 
 	@PostMapping(value = "/login")
-	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password,
-			HttpServletResponse response, HttpServletRequest request) {
+	public ModelAndView controlloLogin(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response, HttpServletRequest request) {
 		Optional<Cliente> c = clienteService.findByEmail(email);
-		// (System.out.println(c.get().toString());
+		ModelAndView mv = new ModelAndView();
 
 		if (c.isEmpty()) {
-			ModelAndView mv = new ModelAndView();
 			mv.addObject("error", "Utente non trovato!");
 			mv.setViewName("login");
 			return mv;
 		}
 		Cliente cliente = c.get();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		if (encoder.matches(password, cliente.getPasswordCliente()) && !cliente.isAccountBloccato()) {
-			String token = JWT.generate(cliente.getNomeCliente(), cliente.getCognomeCliente(),cliente.getEmailCliente());
-			Cookie cookie = new Cookie("token", token);
-			response.addCookie(cookie);
-			HttpSession session = request.getSession();
-			session.setAttribute("email_log", cliente.getEmailCliente());
-			
-			//resetto i tentativi errati in caso il cliente effettui il login
-			accountBlocker.validClient(email);
-			return new ModelAndView("redirect:/home");
+		if (encoder.matches(password, cliente.getPasswordCliente())) {
+			if (!cliente.isAccountBloccato()) {
+				String token = JWT.generate(cliente.getNomeCliente(), cliente.getCognomeCliente(),cliente.getEmailCliente());
+				Cookie cookie = new Cookie("token", token);
+				response.addCookie(cookie);
+				HttpSession session = request.getSession();
+				session.setAttribute("email_log", cliente.getEmailCliente());
+				accountBlocker.validClient(email);
+				return new ModelAndView("redirect:/home");
+			} else {
+				mv.addObject("error", "Account bloccato! Contatta l'amministratore.");
+				mv.setViewName("login");
+				return mv;
+			}
 		} else {
-			ModelAndView mv = new ModelAndView();
-			// aggiorna i campi per i tentativi errati
 			if (cliente.isAccountBloccato()) {
-				System.out.println("is blocked?");
-				mv.addObject("error", "Numero di tentativi finiti! Contatta l'amministratore.");
+				mv.addObject("error", "Account bloccato! Contatta l'amministratore.");
 			} else {
 				accountBlocker.invalidClient(cliente.getEmailCliente());
 				mv.addObject("error", "Password errata!");
 			}
 			mv.setViewName("login");
 			return mv;
-		}
+	    }
 	}
 
 /*-----------------------------------------LOGOUT-----------------------------------------*/
@@ -332,14 +334,14 @@ public class ClientController {
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
-			if(!c.get().getConti().isEmpty()) {
-				mv.addObject("listaConti", c.get().getConti());
-				mv.setViewName("visualizzaconti");
-				return mv;
-			}else {
-				mv.setViewName("visualizzaconti");
-				return mv;
-			}
+		if(!c.get().getConti().isEmpty()) {
+			mv.addObject("listaConti", c.get().getConti());
+			mv.setViewName("visualizzaconti");
+			return mv;
+		}else {
+			mv.setViewName("visualizzaconti");
+			return mv;
+		}
 	}
 	
 	@PostMapping(value="/selconto")
@@ -356,17 +358,19 @@ public class ClientController {
 				mv.addObject("conto",conto.get());
 			}
 			List<MovimentiConto> listaMovimenti = movimentiContoService.findUltimi10(codConto);
-			if(listaMovimenti != null && !listaMovimenti.isEmpty()) {
+			if(!listaMovimenti.isEmpty()) {
 				mv.addObject("listaMovimenti",listaMovimenti);
 			}
 			
-			List<TransazioniBancarie> listaTransazioni= transazioniBancarieService.findUltime10(codConto);
-			if(listaTransazioni != null && !listaTransazioni.isEmpty()) {
-				mv.addObject("listaTransazioni",listaTransazioni);
+			if(conto.get().getTipoConto()==TipoConto.CORRENTE) {
+				List<TransazioniBancarie> listaTransazioni= transazioniBancarieService.findUltime10(codConto);
+				List<TransazioniBancarie> listaAccrediti = transazioniBancarieService.findUltimi10Accrediti(codConto);
+				
+				if(!listaTransazioni.isEmpty()) {
+					listaTransazioni.addAll(listaAccrediti);
+					mv.addObject("listaTransazioni",listaTransazioni);
+				}
 			}
-
-			mv.setViewName("visualizzaconti");
-			return mv;
 		}
 		mv.setViewName("visualizzaconti");
 		return mv;
@@ -391,12 +395,11 @@ public class ClientController {
 	
 	@PostMapping(value="/deposito")
 	public ModelAndView deposita(@RequestParam("codConto") long codConto,@RequestParam("importo") double importo, @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
-		
 		ModelAndView mv = new ModelAndView();
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
-		
+		mv.addObject("cliente", c.get());
 		Optional<Conto> conto = contoService.findById(codConto);
 		if(conto.isPresent()) {
 			double saldo = conto.get().getSaldo();
@@ -408,7 +411,6 @@ public class ClientController {
 			clienteM.get().setSaldo(con.getSaldo());
 			clienteM.get().setCodCliente(c.get().getCodCliente());
 			clienteM.get().setEmailCliente(c.get().getEmailCliente());
-			System.out.println(clienteM.get().toString());
 			clienteMongoService.saveClienteMongo(clienteM.get());
 			
 			MovimentiConto mc = new MovimentiConto();
@@ -434,7 +436,7 @@ public class ClientController {
 			tm.setTipoTransazione(t.getTipoTransazione());
 			
 			transazioniMongoService.saveTransazioniMongo(tm);
-			mv.addObject("cliente", c.get());
+			
 			if(!c.get().getConti().isEmpty()) {
 				mv.addObject("listaConti", c.get().getConti());
 				mv.addObject("conto",conto.get());
@@ -459,7 +461,6 @@ public class ClientController {
 	@PostMapping(value="/preleva")
 	public ModelAndView preleva(@RequestParam("codConto") long codConto,@RequestParam("importo") double importo, @CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-		
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
@@ -544,25 +545,20 @@ public class ClientController {
 	@GetMapping(value="visualizzacarte")
 	public ModelAndView visualizzaCarte(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-		
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 		mv.addObject("cliente", c.get());
 		if(!c.get().getCarte().isEmpty()) {
-			mv.addObject("listaCarte", c.get().getCarte());
-				mv.setViewName("visualizzacarte");
-				return mv;
-			}else {
-				mv.setViewName("visualizzacarte");
-				return mv;
-			}
+			mv.addObject("listaCarte", c.get().getCarte());		
+		}
+		
+		mv.setViewName("visualizzacarte");
+		return mv;
 	}
 	
 	@GetMapping(value="/richiedicarta")
 	public ModelAndView richiediCarta(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
-		
-		
 		Jws<Claims> claims = JWT.validate(token);
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 		
@@ -593,19 +589,15 @@ public class ClientController {
 	public ModelAndView selCarta(@RequestParam("codCarta") long codCarta,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		Optional<CarteDiCredito> carta = carteDiCreditoService.findById(codCarta);
-		
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
 		if(carta.isPresent()) {
-			Jws<Claims> claims = JWT.validate(token);
-			mv.addObject("nome" ,claims.getBody().get("nome"));
 			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 			mv.addObject("cliente", c.get());
 			if(!c.get().getCarte().isEmpty()) {
 				mv.addObject("listaCarte", c.get().getCarte());
 				mv.addObject("carta",carta.get());
 			}
-
-			mv.setViewName("visualizzacarte");
-			return mv;
 		}
 		mv.setViewName("visualizzacarte");
 		return mv;
@@ -626,44 +618,53 @@ public class ClientController {
 	@GetMapping(value="/iniziopagamento")
 	public ModelAndView iniziaPagamento(@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-		
 		Jws<Claims> claims = JWT.validate(token);
 		mv.addObject("nome" ,claims.getBody().get("nome"));
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
 		
-		if(!c.get().getConti().isEmpty()) {
-			mv.addObject("listaConti", c.get().getConti());
+		Set<Conto> conti = c.get().getConti();
+		if (!conti.isEmpty()) {
+		    Iterator<Conto> iterator = conti.iterator();
+		    while (iterator.hasNext()) {
+		        Conto con = iterator.next();
+		        if (con.getTipoConto() == TipoConto.RISPARMIO) {
+		            iterator.remove();
+		        }
+		    }
+		    mv.addObject("listaConti", conti);
 		}
 		if(!c.get().getCarte().isEmpty()) {
 			mv.addObject("listaCarte", c.get().getCarte());
 		}
 		
 		mv.setViewName("pagamento");
-
 		return mv;
 	}
 
 	@PostMapping(value="/selcontoPagamento")
 	public ModelAndView selContoPagamento(@RequestParam("codConto") long codConto,@CookieValue(name="token",required=false) String token, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-		
 		Optional<Conto> conto = contoService.findById(codConto);
+		Jws<Claims> claims = JWT.validate(token);
+		mv.addObject("nome" ,claims.getBody().get("nome"));
 		if(conto.isPresent()) {
-			Jws<Claims> claims = JWT.validate(token);
-			mv.addObject("nome" ,claims.getBody().get("nome"));
 			Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
-			
-			if(!c.get().getConti().isEmpty()) {
-				mv.addObject("listaConti", c.get().getConti());
+			Set<Conto> conti = c.get().getConti();
+			if (!conti.isEmpty()) {
+				Iterator<Conto> iterator = conti.iterator();
+				while (iterator.hasNext()) {
+					Conto con = iterator.next();
+					if (con.getTipoConto() == TipoConto.RISPARMIO) {
+						iterator.remove();
+			        }
+			    }
+			    mv.addObject("listaConti", conti);
 				mv.addObject("codConto",conto.get().getCodConto());
 				mv.addObject("conto", conto.get());
 			}
 			if(!c.get().getCarte().isEmpty()) {
 				mv.addObject("listaCarte", c.get().getCarte());
 			}
-			
-			mv.setViewName("pagamento");
-			return mv;
 		}
 		mv.setViewName("pagamento");
 		return mv;
@@ -687,7 +688,7 @@ public class ClientController {
 		List<Conto> contiSorg = contoService.findByIdCliente(c.get().getCodCliente());
 		for (Conto conto : contiSorg) {
 			if (conto.getCodConto() == contoDest) {
-				mv.addObject("error", "Non pui selezionare uno dei tuoi conti!");
+				mv.addObject("error", "Non puoi selezionare uno dei tuoi conti!");
 				mv.setViewName("home");
 				return mv; 
 			}

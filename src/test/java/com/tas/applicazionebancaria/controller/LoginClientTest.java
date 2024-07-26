@@ -86,7 +86,7 @@ class LoginClientTest {
 
 		// Configura il mock del servizio
 		when(clienteService.findByEmail("vazzangabriele4@gmail.com")).thenReturn(Optional.of(cliente));
-
+		
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/login")
 				.param("email", "vazzangabriele4@gmail.com").param("password", "Aags1127!");
 
@@ -112,6 +112,44 @@ class LoginClientTest {
 		mockMvc.perform(requestBuilder).andExpect(status().isOk()).andExpect(view().name("login"))
 				.andExpect(model().attributeExists("error")).andExpect(model().attribute("error", "Password errata!"));
 	}
+	
+	
+	/************** POST_LOGIN_PASSWORD_CORRETTA_UTENTE_BLOCCATO **************/
+	@Test
+	public void testLoginPasswordCorrettaUtenteBloccato() throws Exception {
+		when(clienteService.findByEmail("vazzangabriele4@gmail.com")).thenReturn(Optional.of(cliente));
+	    cliente.setAccountBloccato(true);  
+	    cliente.setPasswordCliente(new BCryptPasswordEncoder().encode("Aags1127!"));
+
+	    MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/login")
+	            .param("email", "vazzangabriele4@gmail.com")
+	            .param("password", "Aags1127!");
+
+	    mockMvc.perform(requestBuilder)
+	            .andExpect(status().isOk())  
+	            .andExpect(view().name("login")) 
+	            .andExpect(model().attributeExists("error"));
+																									
+	}
+	
+	/************** POST_LOGIN_PASSWORD_SBAGLIATA_UTENTE_BLOCCATO **************/
+	@Test
+	public void testLoginPasswordSbagliataUtenteBloccato() throws Exception {
+		when(clienteService.findByEmail("vazzangabriele4@gmail.com")).thenReturn(Optional.of(cliente));
+	    cliente.setAccountBloccato(true);  
+	    cliente.setPasswordCliente(new BCryptPasswordEncoder().encode("testP9?"));
+
+	    MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/login")
+	            .param("email", "vazzangabriele4@gmail.com")
+	            .param("password", "Aags1127!");
+
+	    mockMvc.perform(requestBuilder)
+	            .andExpect(status().isOk())  
+	            .andExpect(view().name("login")) 
+	            .andExpect(model().attributeExists("error"));
+																									
+	}
+	
 
 	/************** POST_LOGIN_UTENTE_NON_TROVATO **************/
 	@Test

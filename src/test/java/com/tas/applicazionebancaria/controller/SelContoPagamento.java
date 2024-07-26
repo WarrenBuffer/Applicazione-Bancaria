@@ -26,6 +26,7 @@ import com.tas.applicazionebancaria.ApplicazioneBancariaApplication;
 import com.tas.applicazionebancaria.businesscomponent.model.CarteDiCredito;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
 import com.tas.applicazionebancaria.service.CarteDiCreditoService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
@@ -227,6 +228,49 @@ class SelContoPagamento {
 	        .andExpect(model().attributeExists("nome"))
 	        .andExpect(model().attributeDoesNotExist("listaConti"))
 	        .andExpect(model().attributeDoesNotExist("listaCarte"))
+	        .andExpect(view().name("pagamento"));
+	}
+	
+	@Test
+	void selContoPagamentoContoEsisteEContiCartePieniRimuoviRisparmio() throws Exception {
+		long codConto=453;
+		
+		Set<Conto> conti = new HashSet<Conto>();
+		Conto con = new Conto();
+		con.setTipoConto(TipoConto.RISPARMIO);
+	    conti.add(con);
+	    Conto conC = new Conto();
+		conC.setTipoConto(TipoConto.CORRENTE);
+	    conti.add(conC);
+	    
+	    Set<CarteDiCredito> carte = new HashSet<CarteDiCredito>();
+	    carte.add(new CarteDiCredito());
+		
+		Conto conto = new Conto();
+		when(contoService.findById(codConto)).thenReturn(Optional.of(conto));
+		
+	    Jws<Claims> mockClaimsJws = mock(Jws.class);
+	    Claims mockClaims = mock(Claims.class);
+	    when(mockClaimsJws.getBody()).thenReturn(mockClaims);
+	    when(mockClaims.getSubject()).thenReturn("mario.rossi@email.it");
+	    when(mockClaims.get("nome")).thenReturn("Mario");  
+	    
+	    
+	    when(JWT.validate(token)).thenReturn(mockClaimsJws);
+	    
+	    Cliente cliente = new Cliente();
+	    when(clienteService.findByEmail(mockClaims.getSubject())).thenReturn(Optional.of(cliente));
+	    cliente.setCarte(carte);
+	    cliente.setConti(conti);
+	    
+	    
+	    mockMvc.perform(post("/selcontoPagamento")
+	    		.param("codConto", String.valueOf(codConto))
+	            .cookie(new Cookie("token", token)))
+	        .andExpect(status().isOk())
+	        .andExpect(model().attributeExists("nome"))
+	        .andExpect(model().attributeExists("listaConti"))
+	        .andExpect(model().attributeExists("listaCarte"))
 	        .andExpect(view().name("pagamento"));
 	}
 

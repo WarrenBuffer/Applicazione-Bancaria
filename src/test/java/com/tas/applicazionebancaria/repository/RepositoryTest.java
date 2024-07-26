@@ -104,6 +104,7 @@ class RepositoryTest {
 	static RichiestePrestito richiesta=new RichiestePrestito();
 	static Transazioni transazione=new Transazioni();
 	static TransazioniBancarie transazioneBancaria =new TransazioniBancarie();
+	static TransazioniBancarie transazioneBancariaAccredito = new TransazioniBancarie();
 	
 	static ClienteMongo clienteMongo=new ClienteMongo();
 	static MovimentiContoMongo movimentoMongo=new MovimentiContoMongo();
@@ -183,6 +184,11 @@ class RepositoryTest {
 		transazioneBancaria.setImporto(100D);
 		transazioneBancaria.setTipoTransazione(TipoTransazione.ADDEBITO);
 		
+		transazioneBancariaAccredito.setContoDestinazione(1);
+		transazioneBancariaAccredito.setContoOrigine(1);
+		transazioneBancariaAccredito.setDataTransazione(new Date(1234567890L));
+		transazioneBancariaAccredito.setImporto(100D);
+		transazioneBancariaAccredito.setTipoTransazione(TipoTransazione.ACCREDITO);
 		
 		
 		clienteMongo.setCognomeCliente("Cognome");
@@ -318,6 +324,15 @@ class RepositoryTest {
 		assertEquals(tbs.findSommaImporti(), 100D);
 		assertFalse(tbs.findUltime10(1).isEmpty());
 		tbs.deleteTransazioniBancarie(transazioneBancaria);
+		assertTrue(tbs.findAll().isEmpty());
+		
+		transazioneBancariaAccredito = tbs.saveTransazioniBancarie(transazioneBancariaAccredito);
+		assertFalse(tbs.findAll().isEmpty());
+		assertTrue(tbs.findById(transazioneBancariaAccredito.getCodTransazioneBancaria()).isPresent());
+		assertEquals(tbs.findNumTransazioni(), 1);
+		assertEquals(tbs.findSommaImporti(), 100D);
+		assertFalse(tbs.findUltimi10Accrediti(1).isEmpty());
+		tbs.deleteTransazioniBancarie(transazioneBancariaAccredito);
 		assertTrue(tbs.findAll().isEmpty());
 	}
 	

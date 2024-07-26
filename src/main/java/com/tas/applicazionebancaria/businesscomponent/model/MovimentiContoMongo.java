@@ -16,7 +16,6 @@ import lombok.Data;
 // --- classe mongo equilvalente alla classe MovimentiConto MySQL
 
 public class MovimentiContoMongo implements Serializable{
-	
 	private static final long serialVersionUID = 3589150116495049789L;
 	
 	@Id

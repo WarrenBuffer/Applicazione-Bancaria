@@ -136,7 +136,7 @@
         </div>
   
         <!---------------------------------- Panel MOVIMENTI ---------------------------------------------->
-        <div class="col-sm-6">
+        <div class="col-sm-6" th:if="${conto != null}">
           <div th:if="${listaMovimenti != null}" class="panel panel-default">
             <div class="panel-heading">
               <h2 style="font-size: 18px;"><strong>Movimenti Recenti</strong></h2>
@@ -199,11 +199,16 @@
               </table>
             </div>
           </div>
+          <div th:if="${conto.tipoConto=='RISPARMIO'}">
+         	<p></p>
+         </div>
+         <div th:if="${conto.tipoConto=='CORRENTE'}">
           <div th:if="${listaTransazioni == null}" class="panel panel-default">
             <div class="panel-heading">
               <h2 style="font-size: 18px;"><strong>Nessuna transazione!</strong></h2>
             </div>
           </div>
+         </div>
         </div>
       </div>
   

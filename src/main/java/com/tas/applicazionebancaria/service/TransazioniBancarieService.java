@@ -13,4 +13,5 @@ public interface TransazioniBancarieService {
 	long findNumTransazioni();
 	double findSommaImporti();
 	List<TransazioniBancarie> findUltime10(long contoOrigine);
+	List<TransazioniBancarie> findUltimi10Accrediti(long conto);
 }

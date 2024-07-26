@@ -49,4 +49,9 @@ public class TransazioniBancarieServiceImpl implements TransazioniBancarieServic
 	public List<TransazioniBancarie> findUltime10(long contoOrigine) {
 		return tbr.findUltime10(contoOrigine);
 	}
+
+	@Override
+	public List<TransazioniBancarie> findUltimi10Accrediti(long conto) {
+		return tbr.findUltimi10Accrediti(conto);
+	}
 }

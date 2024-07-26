@@ -7,12 +7,12 @@
 <div th:include="fragments/nav :: navbar"></div>
 <div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed; flex:1; padding-top: 60px; width: 100%; padding-left: 0; padding-right: 0;">
 	
-	<div class="jumbotron" style="margin-top: 30px; background: rgba(204, 204, 204,0.8); padding: 20px; width: 70%; margin-left: auto; margin-right: auto;">
-
+	<div class="jumbotron" style="margin-top: 30px;background:  rgba(204, 204, 204, 0.8);padding: 20px;width: 70%;margin-left: 230px;text-align: center;">
+	
 <div class="row">
  <form th:action="@{/selprestito}" method="post" class="form-horizontal" id="prestitoForm" style="text-align: center;">
 	<header class="page-header">
-		<h2><strong>I tuoi prestiti</strong></h2>
+		<h2 style="font-size: 50px;"><strong>Prestiti</strong></h2>
 	</header>
 	<div style="display: flex; justify-content: center; width: 100%;">
 		<select name="codPrestito" th:if="${listaPrestiti != null}" id="codPrestito" multiple class="form-control" aria-label="Default select example" style="width: 50%;">
@@ -35,12 +35,12 @@
 
 <div class="row" >
 
-<div class="panel-group">
+<div class="panel-group" style="width: 80%;margin-left: 130px;">
 <div class="col-sm-6">
   <div class="panel panel-default" th:if="${prestito != null}">
   <div class="panel-heading">
-  	<h2 style="font-size: 18px;"><strong>Cod prestito</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-				<span style="font-size: 29px;" th:text="*{prestito.codPrestito}"></span></h2>
+  	<h2 style="font-size: 18px;"><strong>Cod prestito</strong> 
+				<span style="font-size: 29px;margin-left: 25px;" th:text="*{prestito.codPrestito}"></span></h2>
 	</div>
 	<br>
     <div class="panel-body">
@@ -55,7 +55,7 @@
   
   <!---------------------------------- Panel richieste prestito ---------------------------------------------->
   
-  <div class="col-sm-6" th:if="${listaRichiestePrestito!=null}">
+  <div class="col-md-8" style="margin-left: 150px;" th:if="${listaRichiestePrestito!=null}">
   <div class="panel panel-default">
   <div class="panel-heading">
   	<h2 style="font-size: 18px;"><strong>Le tue richieste</strong> </h2>
@@ -83,7 +83,7 @@
     </div>
   </div>
 </div>
-<div class="col-sm-6" th:if="${listaRichiestePrestito==null}">
+<div class="col-md-8" th:if="${listaRichiestePrestito==null}">
   <div class="panel panel-default">
   <div class="panel-heading">
   	<h2 style="font-size: 18px;"><strong>Nessuna richiesta pendente</strong> </h2>
@@ -95,11 +95,10 @@
 </div>	
 	
 	<!------------ Button richiedi prestito ------------->
-		<a class="btn btn-primary" role="button" href="#" data-toggle="modal" data-target="#richiestaPrestitoModal" style="margin-top: 30px;">
+		<a class="btn btn-warning btn-lg" role="button" href="#" data-toggle="modal" data-target="#richiestaPrestitoModal" style="margin-top: 30px;color:black;align-content: center;">
 			Richiedi un nuovo prestito&nbsp; <span class="glyphicon glyphicon-send"></span>
 		</a>
-		
-		<!---------------------------------------------- Modal per la richiesta prestito ------------------------------------>		
+	<!---------------------------------------------- Modal per la richiesta prestito ------------------------------------>		
 		
 		<div class="modal fade" id="richiestaPrestitoModal" tabindex="-1" role="dialog" aria-labelledby="richiestaPrestitoModalLabel" aria-hidden="true">
 			        <div class="modal-dialog modal-md">
