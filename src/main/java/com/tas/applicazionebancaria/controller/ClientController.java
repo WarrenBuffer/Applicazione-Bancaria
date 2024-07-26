@@ -771,6 +771,7 @@ public class ClientController {
 		mv.addObject("nome", claims.getBody().get("nome"));
 
 		Set<Prestiti> listaPrestiti = c.get().getPrestiti();
+		System.out.println(listaPrestiti);
 		List<RichiestePrestito> listaRichiestePrestito = richiestePrestitoService
 				.findByCodCliente(c.get().getCodCliente());
 		if (!listaPrestiti.isEmpty()) {
@@ -809,11 +810,18 @@ public class ClientController {
 	}
 
 	@PostMapping(value = "/richiediprestito")
-	public ModelAndView richiediPrestito(@RequestParam("importo") double importo,
+	public ModelAndView richiediPrestito(@RequestParam("importo") double importo, @RequestParam("durata") int durataInMesi,
 			@CookieValue(name = "token", required = false) String token, HttpServletRequest request) {
 		Jws<Claims> claims = JWT.validate(token);
 
 		Optional<Cliente> c = clienteService.findByEmail(claims.getBody().getSubject().toString());
+		Prestiti prestito = new Prestiti();
+		prestito.setCodCliente(c.get().getCodCliente());
+		prestito.setDurataInMesi(durataInMesi);
+		prestito.setTassoInteresse(0.22);
+		prestito.setImporto(importo);
+		prestitiService.savePrestiti(prestito);
+		
 		RichiestePrestito richiesta = new RichiestePrestito();
 		richiesta.setCodCliente(c.get().getCodCliente());
 		richiesta.setDataRichiesta(new Date());

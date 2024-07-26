@@ -46,6 +46,9 @@ public class Cliente implements Serializable {
 	private Set<Prestiti> prestiti=new HashSet<Prestiti>();
 	
 	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
+	private Set<RichiestePrestito> richiestePrestito =new HashSet<RichiestePrestito>();
+	
+	@OneToMany(cascade =CascadeType.ALL,  mappedBy = "codCliente")
 	private Set<Pagamenti> pagamenti=new HashSet<Pagamenti>();
 	
 }
