@@ -7,6 +7,8 @@ import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoMov
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +32,7 @@ public class MovimentiConto implements Serializable {
 	private Date dataMovimento;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private TipoMovimento tipoMovimento;
 
 	@Column(nullable = false)
