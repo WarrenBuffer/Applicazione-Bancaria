@@ -21,8 +21,8 @@
                 <td>{{ cliente.emailCliente }}</td>
                 <td>{{ cliente.carte.length }}</td>
                 <td>{{ cliente.conti.length }}</td>
-                <td>{{ calcTotPagamenti(cliente) }}</td>
-                <td>{{ calcTotPrestiti(cliente) }}</td>
+                <td>{{ calcTotPagamenti(cliente) | currency}}</td>
+                <td>{{ calcTotPrestiti(cliente) | currency }}</td>
             </tr>
         </ng-template>
     </p-table>
@@ -88,13 +88,13 @@
                 <td>{{ prestito.codCliente }}</td>
                 <td>{{ prestito.codPrestito }}</td>
                 <td>{{ prestito.importo }}</td>
-                <td>{{ prestito.tassoInteresse }}%</td>
+                <td>{{ prestito.tassoInteresse | percent }}</td>
                 <td>{{ prestito.durataInMesi }}</td>
             </tr>
         </ng-template>
     </p-table>
     <h3>Transazioni stesso conto</h3>
-    <p-table [value]="selectedClient?.transazioni" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+    <p-table [value]="transazioni" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
         [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
         <ng-template pTemplate="header">
             <tr>
@@ -116,13 +116,13 @@
         </ng-template>
     </p-table>
     <h3>Transazioni tra conti</h3>
-    <p-table [value]="selectedClient?.transazioniBancarie" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+    <p-table [value]="transazioniBancarie" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
         [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
         <ng-template pTemplate="header">
             <tr>
+                <th>Cod. transazione</th>
                 <th>Cod. conto origine</th>
                 <th>Cod. conto destinazione</th>
-                <th>Cod. transazione</th>
                 <th>Importo</th>
                 <th>Data transazione</th>
                 <th>Tipo transazione</th>
@@ -130,9 +130,9 @@
         </ng-template>
         <ng-template pTemplate="body" let-transazione>
             <tr>
+                <td>{{ transazione.codTransazioneBancaria }}</td>
                 <td>{{ transazione.contoOrigine }}</td>
                 <td>{{ transazione.contoDestinazione }}</td>
-                <td>{{ transazione.codTransazioneBancaria }}</td>
                 <td>{{ transazione.importo }}</td>
                 <td>{{ transazione.dataTransazione | date }}</td>
                 <td>{{ transazione.tipoTransazione }}</td>

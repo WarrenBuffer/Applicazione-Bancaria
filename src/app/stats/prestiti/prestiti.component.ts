@@ -39,8 +39,9 @@ export class PrestitiComponent implements OnInit {
 
   calcImporto(cliente: any) {
     let tot: number = 0;
-    cliente.prestiti.forEach((prestito: any) => {
-      tot += prestito.importo;
+    cliente.richiestePrestito.forEach((richiesta: any) => {
+      if (richiesta.stato === 'APPROVATO')
+        tot += richiesta.importo;
     });
     return tot;
   }

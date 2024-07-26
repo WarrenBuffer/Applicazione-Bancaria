@@ -9,8 +9,9 @@
         <h3>{{richiesteRifiutate}}</h3>
     </p-card>
 </div>
-<p-card header="Importo totale per mese">
-    <p-table [value]="clienti" styleClass="p-datatable-striped">
+<p-card header="Clienti con richieste approvate">
+    <p-table [value]="clienti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
         <ng-template pTemplate="header">
             <tr>
                 <td>Codice cliente</td>

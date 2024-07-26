@@ -28,5 +28,6 @@ export class AddClientComponent {
       tentativiErrati: 0,
       codCliente: 0,
     });
+    this.form.reset();
   }
 }

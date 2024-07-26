@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-clienti',
@@ -7,13 +7,24 @@ import { Component, Input } from '@angular/core';
 })
 export class ClientiComponent {
   @Input() stats: any;
-
+  
   visible: boolean = false;
   selectedClient: any;
-  
+  transazioni = new Array<any>();
+  transazioniBancarie = new Array<any>();
+
   showDialog(client: any) {
     this.visible = true;
     this.selectedClient = client;
+
+    this.selectedClient.conti.forEach((conto: any) => {
+      conto.transazioni.forEach((transazione: any) => {
+        this.transazioni.push(transazione);
+      })
+      conto.transazioniBancarie.forEach((transazione: any) => {
+        this.transazioniBancarie.push(transazione);
+      })
+    });    
   }
 
   calcTotPagamenti(cliente: any) {

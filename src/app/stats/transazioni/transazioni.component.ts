@@ -33,7 +33,7 @@ export class TransazioniComponent {
           let percentuale;
           this.transazioni.length > 0 ? percentuale = accrediti / this.transazioni.length * 100 : percentuale = 0;
           this.data = {
-            labels: [`Accredito ${percentuale}%`, `Addebito ${100 - percentuale}%`],
+            labels: [`Accredito ${parseFloat(percentuale + '').toFixed(2)}%`, `Addebito ${parseFloat(100 - percentuale + '').toFixed(2)}%`],
             datasets: [
               {
                 data: [accrediti, addebiti],
