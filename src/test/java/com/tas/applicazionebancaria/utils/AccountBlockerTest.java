@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
@@ -18,6 +19,8 @@ import com.tas.applicazionebancaria.service.ClienteService;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
+@TestPropertySource(
+		locations = "classpath:test.properties")
 class AccountBlockerTest {
 	@Autowired
 	AmministratoreService as;

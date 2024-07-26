@@ -1,5 +1,6 @@
 package com.tas.applicazionebancaria.restcontroller;
 
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -38,6 +40,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+@TestPropertySource(
+		locations = "classpath:test.properties")
 class AuthControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
@@ -101,7 +105,6 @@ class AuthControllerTest {
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.code").value(1));
 	}
-	
 
 	@Test
 	void testLoginLocked() throws Exception {

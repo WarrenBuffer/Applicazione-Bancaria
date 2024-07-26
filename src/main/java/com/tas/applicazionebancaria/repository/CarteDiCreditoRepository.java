@@ -15,8 +15,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 public interface CarteDiCreditoRepository extends JpaRepository<CarteDiCredito, Long> {
 	@Query(value = "select count(*) from carte_di_credito where cod_cliente = ?1", nativeQuery = true)
 	Long findNumCarteByCodCliente(long id);
-	
+
 	@Query(value = "select * from carte_di_credito where cod_cliente = ?1", nativeQuery = true)
 	List<CarteDiCredito> findByCodCliente(long id);
-	
+
 }

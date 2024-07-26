@@ -134,3 +134,4 @@ values (1, 1, 2, 1000, '2024-04-19 12:02:09.268000', 'ACCREDITO');
 
 insert into transazioni_bancarie (cod_transazione_bancaria, conto_origine, conto_destinazione, importo, data_transazione, tipo_transazione)
 values (2, 2, 3, 1000, '2024-05-19 12:02:09.268000', 'ADDEBITO');
+

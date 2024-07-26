@@ -1,0 +1,63 @@
+-- LOGGATO COME ADMIN
+use applicazione_bancaria;
+db.createUser({user: 'project_admin', pwd: 'pass', roles: [{role: 'readWrite', db: 'applicazione_bancaria'}]})
+
+-- Cliente
+db.cliente.insertMany([
+	{
+		codCliente: Long(1),
+		nomeCliente: 'Mario',
+		cognomeCliente: 'Rossi',
+		emailCliente: 'mario.rossi@gmail.com',
+		passwordCliente: '$2a$10$Tw7pOZ5AvHVi7Qsz4Gj2vuJ/uGfd5iNFAHPlyuGgPkQLPrIqQm7T.',
+		saldo: 20000,
+		_class: 'com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo'
+	},
+	{
+		codCliente: Long(2),
+		nomeCliente: 'Giorgio',
+		cognomeCliente: 'Verdi',
+		emailCliente: 'giorgio.verdi@gmail.com',
+		passwordCliente: '$2a$10$Tw7pOZ5AvHVi7Qsz4Gj2vuJ/uGfd5iNFAHPlyuGgPkQLPrIqQm7T.',
+		saldo: 7000,
+		_class: 'com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo'
+	},
+	{
+		codCliente: Long(3),
+		nomeCliente: 'Anna',
+		cognomeCliente: 'Rosa',
+		emailCliente: 'anna.rosa@gmail.com',
+		passwordCliente: '$2a$10$Tw7pOZ5AvHVi7Qsz4Gj2vuJ/uGfd5iNFAHPlyuGgPkQLPrIqQm7T.',
+		saldo: 6800,
+		_class: 'com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo'
+	},
+	{
+		codCliente: Long(4),
+		nomeCliente: 'Pietro',
+		cognomeCliente: 'Neri',
+		emailCliente: 'pietro.neri@gmail.com',
+		passwordCliente: '$2a$10$Tw7pOZ5AvHVi7Qsz4Gj2vuJ/uGfd5iNFAHPlyuGgPkQLPrIqQm7T.',
+		saldo: 150000,
+		_class: 'com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo'
+	},
+]);
+
+-- Transazioni
+db.transazioni.insertMany([
+	{
+		codTransazione: Long(1),
+		importo: 1000,
+		dataTransazione: ISODate('2024-04-19 12:02:09.268000'),
+		tipoTransazione: 'ACCREDITO',
+		codiceConto: Long(1),
+		_class: 'com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo'
+	},
+	{
+		codTransazione: Long(2),
+		importo: 1000,
+		dataTransazione: ISODate('2024-04-19 12:02:09.268000'),
+		tipoTransazione: 'ADDEBITO',
+		codiceConto: Long(2),
+		_class: 'com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo'
+	}
+]);

@@ -10,7 +10,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -20,6 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.tas.applicazionebancaria.ApplicazioneBancariaApplication;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
@@ -37,6 +41,8 @@ import jakarta.servlet.http.Cookie;
 @TestInstance(Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @SpringBootTest(classes=ApplicazioneBancariaApplication.class)
+@TestPropertySource(
+		locations = "classpath:test.properties")
 class ClientControllerPrestitiTest {
 	@Autowired
 	private MockMvc mockMvc;
@@ -51,7 +57,7 @@ class ClientControllerPrestitiTest {
 	private Prestiti prestiti;
 	private RichiestePrestito richiestePrestito;
 	
-	@BeforeAll
+	@BeforeEach
 	void setup() {
 		Cliente c = new Cliente();
 		c.setNomeCliente("Test");
@@ -75,14 +81,17 @@ class ClientControllerPrestitiTest {
 		richiestePrestito = rps.saveRichiestePrestito(rp);
 	}
 	
-	@AfterAll
-	void tearDown() {
+	
+	
+	@AfterEach
+	void teardown() {
 		List<RichiestePrestito> lrp = rps.findByCodCliente(cliente.getCodCliente());
 		for (RichiestePrestito rp : lrp) {
 			rps.deleteRichiestePrestito(rp);			
 		}
 		ps.deletePrestiti(prestiti);
 		cs.deleteCliente(cliente);
+		ps.findAll().forEach(prestito->ps.deletePrestiti(prestito));
 	}
 	
 	@Test
@@ -157,8 +166,12 @@ class ClientControllerPrestitiTest {
 	
 	@Test
 	void testRichiediPrestito() throws Exception {
+	    MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+	    params.add("importo", String.valueOf(1000));
+	    params.add("durata", String.valueOf(32));
+	    
 		Cookie cookie = new Cookie("token", JWT.generate(cliente.getNomeCliente(), cliente.getCognomeCliente(), cliente.getEmailCliente()));
-		ResultActions result = mockMvc.perform(post("/richiediprestito").cookie(cookie).param("importo", String.valueOf(10000)));
+		ResultActions result = mockMvc.perform(post("/richiediprestito").cookie(cookie).params(params));
 		result.andExpect(status().is3xxRedirection());
 	}
 

@@ -205,129 +205,129 @@ public class AdminController {
 		return new ServerResponse(0, stat);
 	}
 
-	@GetMapping("/download-statistiche")
-	public ResponseEntity<byte[]> downloadStatistiche() {
-		Document document = new Document();
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-		try {
-			// Creazione istanza pdf
-			PdfWriter.getInstance(document, out);
-			document.open();
-
-			// Creazione contenuto PDF
-			// Posso includere testo, tabelle, etc.
-			document.addTitle("Statistiche Report");
-			document.addSubject("Statistiche PDF");
-			document.addKeywords("Statistiche, PDF, Java");
-			document.addAuthor("Applicazione Bancaria");
-			document.addCreator("Applicazione Bancaria");
-
-			document.add(new Paragraph("STATISTICHE REPORT", new Font(FontFamily.HELVETICA, 24, Font.BOLD)));
-			document.add(new Paragraph("Clienti totali: " + clienteService.findAll().size(),
-					new Font(FontFamily.HELVETICA, 14)));
-
-			// verifico che alcuni valori non siano null per non farmi lanciare un'eccezione
-			// e un errore nell'aprire il file pdf
-			if (tmService.findTotAddebiti().isEmpty()) {
-				document.add(new Paragraph("Totali addebiti: 0", new Font(FontFamily.HELVETICA, 14)));
-			} else {
-				document.add(new Paragraph("Totali addebiti: " + tmService.findTotAddebiti().get(),
-						new Font(FontFamily.HELVETICA, 14)));
-			}
-
-			if (tmService.findTotAccrediti().isEmpty()) {
-				document.add(new Paragraph("Totali accrediti: 0", new Font(FontFamily.HELVETICA, 14)));
-			} else {
-				document.add(new Paragraph("Totali accrediti: " + tmService.findTotAccrediti().get(),
-						new Font(FontFamily.HELVETICA, 14)));
-			}
-
-			if (tmService.transazioniMediePerCliente().isEmpty()) {
-				document.add(new Paragraph("Transazioni medie per cliente: 0", new Font(FontFamily.HELVETICA, 14)));
-			} else {
-				document.add(
-						new Paragraph("Transazioni medie per cliente: " + tmService.transazioniMediePerCliente().get(),
-								new Font(FontFamily.HELVETICA, 14)));
-			}
-
-			if (tmService.importoTransazioniPerMese().isEmpty()) {
-				document.add(new Paragraph("Importo transazioni per mese: non ci sono stati importi",
-						new Font(FontFamily.HELVETICA, 14)));
-			} else {
-
-				// creo un tabella per gli importi transazioni per mese
-				List<TransazioniMongo> importiPerMese = tmService.importoTransazioniPerMese().get();
-				document.add(new Paragraph("Statistiche Transazioni per Mese:", new Font(FontFamily.HELVETICA, 14)));
-				document.add(new Paragraph(" ")); // Aggiunge un'interlinea vuota
-
-				PdfPTable table = new PdfPTable(6); // 6 colonne
-				table.setWidthPercentage(100);
-				table.setWidths(new int[] { 2, 3, 2, 3, 3, 2 }); // width per ogni colonna
-
-				// headers tabella
-				Font headerFont = new Font(FontFamily.HELVETICA, 16, Font.BOLD);
-				PdfPCell h1 = new PdfPCell(new Phrase("MESE", headerFont));
-				PdfPCell h2 = new PdfPCell(new Phrase("Cod. Transazione", headerFont));
-				PdfPCell h3 = new PdfPCell(new Phrase("Importo", headerFont));
-				PdfPCell h4 = new PdfPCell(new Phrase("Data_Transazione Mese", headerFont));
-				PdfPCell h5 = new PdfPCell(new Phrase("Tipo_Transazione", headerFont));
-				PdfPCell h6 = new PdfPCell(new Phrase("Cod. Conto", headerFont));
-
-				// tipo di align
-				h1.setHorizontalAlignment(Element.ALIGN_CENTER);
-				h2.setHorizontalAlignment(Element.ALIGN_CENTER);
-				h3.setHorizontalAlignment(Element.ALIGN_CENTER);
-				h4.setHorizontalAlignment(Element.ALIGN_CENTER);
-				h5.setHorizontalAlignment(Element.ALIGN_CENTER);
-				h6.setHorizontalAlignment(Element.ALIGN_CENTER);
-
-				// accodo le celle alla tabella
-				table.addCell(h1);
-				table.addCell(h2);
-				table.addCell(h3);
-				table.addCell(h4);
-				table.addCell(h5);
-				table.addCell(h6);
-
-				// itero la lista e stampo i valori
-				for (TransazioniMongo transazione : importiPerMese) {
-					table.addCell(new PdfPCell(new Phrase(Month.of(Integer.valueOf(transazione.getId())).name(),
-							new Font(FontFamily.HELVETICA, 14))));
-
-					table.addCell(new PdfPCell(new Phrase(String.valueOf(transazione.getCodiceConto()),
-							new Font(FontFamily.HELVETICA, 14))));
-
-					table.addCell(new PdfPCell(new Phrase(String.format("%.2f", transazione.getImporto()),
-							new Font(FontFamily.HELVETICA, 14))));
-
-					table.addCell(new PdfPCell(new Phrase(
-							transazione.getDataTransazione() != null ? transazione.getDataTransazione().toString()
-									: "indefinita",
-							new Font(FontFamily.HELVETICA, 14))));
-
-					table.addCell(new PdfPCell(new Phrase(
-							transazione.getTipoTransazione() != null ? transazione.getTipoTransazione().toString()
-									: "indefinita",
-							new Font(FontFamily.HELVETICA, 14))));
-
-					table.addCell(new PdfPCell(new Phrase(String.valueOf(transazione.getCodiceConto()),
-							new Font(FontFamily.HELVETICA, 14))));
-				}
-				document.add(table);
-			}
-
-			document.close();
-		} catch (DocumentException ex) {
-			ex.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		// Set the headers and content type for the response
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statistiche.pdf");
-
-		return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.OK);
-	}
+//	@GetMapping("/download-statistiche")
+//	public ResponseEntity<byte[]> downloadStatistiche() {
+//		Document document = new Document();
+//		ByteArrayOutputStream out = new ByteArrayOutputStream();
+//
+//		try {
+//			// Creazione istanza pdf
+//			PdfWriter.getInstance(document, out);
+//			document.open();
+//
+//			// Creazione contenuto PDF
+//			// Posso includere testo, tabelle, etc.
+//			document.addTitle("Statistiche Report");
+//			document.addSubject("Statistiche PDF");
+//			document.addKeywords("Statistiche, PDF, Java");
+//			document.addAuthor("Applicazione Bancaria");
+//			document.addCreator("Applicazione Bancaria");
+//
+//			document.add(new Paragraph("STATISTICHE REPORT", new Font(FontFamily.HELVETICA, 24, Font.BOLD)));
+//			document.add(new Paragraph("Clienti totali: " + clienteService.findAll().size(),
+//					new Font(FontFamily.HELVETICA, 14)));
+//
+//			// verifico che alcuni valori non siano null per non farmi lanciare un'eccezione
+//			// e un errore nell'aprire il file pdf
+//			if (tmService.findTotAddebiti().isEmpty()) {
+//				document.add(new Paragraph("Totali addebiti: 0", new Font(FontFamily.HELVETICA, 14)));
+//			} else {
+//				document.add(new Paragraph("Totali addebiti: " + tmService.findTotAddebiti().get(),
+//						new Font(FontFamily.HELVETICA, 14)));
+//			}
+//
+//			if (tmService.findTotAccrediti().isEmpty()) {
+//				document.add(new Paragraph("Totali accrediti: 0", new Font(FontFamily.HELVETICA, 14)));
+//			} else {
+//				document.add(new Paragraph("Totali accrediti: " + tmService.findTotAccrediti().get(),
+//						new Font(FontFamily.HELVETICA, 14)));
+//			}
+//
+//			if (tmService.transazioniMediePerCliente().isEmpty()) {
+//				document.add(new Paragraph("Transazioni medie per cliente: 0", new Font(FontFamily.HELVETICA, 14)));
+//			} else {
+//				document.add(
+//						new Paragraph("Transazioni medie per cliente: " + tmService.transazioniMediePerCliente().get(),
+//								new Font(FontFamily.HELVETICA, 14)));
+//			}
+//
+//			if (tmService.importoTransazioniPerMese().isEmpty()) {
+//				document.add(new Paragraph("Importo transazioni per mese: non ci sono stati importi",
+//						new Font(FontFamily.HELVETICA, 14)));
+//			} else {
+//
+//				// creo un tabella per gli importi transazioni per mese
+//				List<TransazioniMongo> importiPerMese = tmService.importoTransazioniPerMese().get();
+//				document.add(new Paragraph("Statistiche Transazioni per Mese:", new Font(FontFamily.HELVETICA, 14)));
+//				document.add(new Paragraph(" ")); // Aggiunge un'interlinea vuota
+//
+//				PdfPTable table = new PdfPTable(6); // 6 colonne
+//				table.setWidthPercentage(100);
+//				table.setWidths(new int[] { 2, 3, 2, 3, 3, 2 }); // width per ogni colonna
+//
+//				// headers tabella
+//				Font headerFont = new Font(FontFamily.HELVETICA, 16, Font.BOLD);
+//				PdfPCell h1 = new PdfPCell(new Phrase("MESE", headerFont));
+//				PdfPCell h2 = new PdfPCell(new Phrase("Cod. Transazione", headerFont));
+//				PdfPCell h3 = new PdfPCell(new Phrase("Importo", headerFont));
+//				PdfPCell h4 = new PdfPCell(new Phrase("Data_Transazione Mese", headerFont));
+//				PdfPCell h5 = new PdfPCell(new Phrase("Tipo_Transazione", headerFont));
+//				PdfPCell h6 = new PdfPCell(new Phrase("Cod. Conto", headerFont));
+//
+//				// tipo di align
+//				h1.setHorizontalAlignment(Element.ALIGN_CENTER);
+//				h2.setHorizontalAlignment(Element.ALIGN_CENTER);
+//				h3.setHorizontalAlignment(Element.ALIGN_CENTER);
+//				h4.setHorizontalAlignment(Element.ALIGN_CENTER);
+//				h5.setHorizontalAlignment(Element.ALIGN_CENTER);
+//				h6.setHorizontalAlignment(Element.ALIGN_CENTER);
+//
+//				// accodo le celle alla tabella
+//				table.addCell(h1);
+//				table.addCell(h2);
+//				table.addCell(h3);
+//				table.addCell(h4);
+//				table.addCell(h5);
+//				table.addCell(h6);
+//
+//				// itero la lista e stampo i valori
+//				for (TransazioniMongo transazione : importiPerMese) {
+//					table.addCell(new PdfPCell(new Phrase(Month.of(Integer.valueOf(transazione.getId())).name(),
+//							new Font(FontFamily.HELVETICA, 14))));
+//
+//					table.addCell(new PdfPCell(new Phrase(String.valueOf(transazione.getCodiceConto()),
+//							new Font(FontFamily.HELVETICA, 14))));
+//
+//					table.addCell(new PdfPCell(new Phrase(String.format("%.2f", transazione.getImporto()),
+//							new Font(FontFamily.HELVETICA, 14))));
+//
+//					table.addCell(new PdfPCell(new Phrase(
+//							transazione.getDataTransazione() != null ? transazione.getDataTransazione().toString()
+//									: "indefinita",
+//							new Font(FontFamily.HELVETICA, 14))));
+//
+//					table.addCell(new PdfPCell(new Phrase(
+//							transazione.getTipoTransazione() != null ? transazione.getTipoTransazione().toString()
+//									: "indefinita",
+//							new Font(FontFamily.HELVETICA, 14))));
+//
+//					table.addCell(new PdfPCell(new Phrase(String.valueOf(transazione.getCodiceConto()),
+//							new Font(FontFamily.HELVETICA, 14))));
+//				}
+//				document.add(table);
+//			}
+//
+//			document.close();
+//		} catch (DocumentException ex) {
+//			ex.printStackTrace();
+//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//		// Set the headers and content type for the response
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statistiche.pdf");
+//
+//		return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.OK);
+//	}
 
 	@GetMapping("/richiestePrestito")
 	public ServerResponse richiestePrestito() {
