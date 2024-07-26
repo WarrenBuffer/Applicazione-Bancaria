@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Transazioni;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
 @Repository("TransazioniRepository")
 public interface TransazioniRepository extends JpaRepository<Transazioni, Long>{
 //	@Query(value = "select count(*) from transazioni where tipo_transazione = 'ACCREDITO'")

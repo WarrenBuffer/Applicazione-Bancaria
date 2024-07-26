@@ -1,5 +1,6 @@
 package com.tas.applicazionebancaria.restcontroller;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.config.BCryptEncoder;
@@ -69,6 +71,20 @@ class AuthControllerTest {
 		LoginRequest lr = new LoginRequest();
 		lr.setEmail(admin.getEmailAdmin());
 		lr.setPassword(password + "l");
+		
+		ResultActions result = mockMvc.perform(post("/loginAdmin").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(lr)));
+		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(jsonPath("$.code").value(1));
+	}
+	
+	@Test
+	void testLoginJsonException() throws Exception {
+		
+		LoginRequest lr = new LoginRequest();
+		lr.setEmail(admin.getEmailAdmin());
+		lr.setPassword(password);
+		
+		when(new ObjectMapper().writeValueAsString(admin)).thenThrow(JsonProcessingException.class);
 		
 		ResultActions result = mockMvc.perform(post("/loginAdmin").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsBytes(lr)));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))

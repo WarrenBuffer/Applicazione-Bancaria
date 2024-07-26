@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Prestiti;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
 @Repository("PrestitiRepository")
 public interface PrestitiRepository extends JpaRepository<Prestiti, Long>{
 

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -30,6 +31,9 @@ class JwtAuthFilterTest implements Costanti {
 	@Autowired
 	AmministratoreRepository repo;
 	Amministratore admin;
+	@MockBean
+	JWT jwt;
+	
 
 	@BeforeAll
 	void setup() {
@@ -77,11 +81,4 @@ class JwtAuthFilterTest implements Costanti {
 	}
 	
 	// Testato cambiando l'expiration nella generazione del token a 10s
-//	@Test
-//	void testDoFilterInternalExpired() throws Exception{
-//		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
-//		TimeUnit.SECONDS.sleep(TOKEN_EXPIRATION + 1);
-//		ResultActions result = mockMvc.perform(get("/api/clienti").cookie(cookie));
-//		result.andExpect(status().isOk());
-//	}
 }

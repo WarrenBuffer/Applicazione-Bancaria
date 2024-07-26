@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.ClienteMongo;
 
+import io.swagger.v3.oas.annotations.Hidden;
 
+@Hidden
 @Repository("ClienteMongoRepository")
 public interface ClienteMongoRepository extends MongoRepository<ClienteMongo, String>{
 	@Query("{ 'emailCliente' : ?0 }")

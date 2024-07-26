@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
 @Repository("TransazioniMongoRepository")
 public interface TransazioniMongoRepository extends MongoRepository<TransazioniMongo, String> {
 	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",

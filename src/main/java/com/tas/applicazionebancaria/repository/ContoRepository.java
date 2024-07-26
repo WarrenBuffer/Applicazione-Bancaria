@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
 @Repository("ContoRepository")
 public interface ContoRepository extends JpaRepository<Conto, Long>{
 

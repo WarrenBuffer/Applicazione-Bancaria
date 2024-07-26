@@ -32,5 +32,4 @@ public class Amministratore implements Serializable {
 	private int tentativiErrati = 0;
 	@Column(nullable = false)
 	private boolean accountBloccato = false;
-
 }

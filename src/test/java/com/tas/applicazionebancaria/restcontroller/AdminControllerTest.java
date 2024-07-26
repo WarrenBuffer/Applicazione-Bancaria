@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterAll;
@@ -30,12 +31,14 @@ import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
 import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
+import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
 import com.tas.applicazionebancaria.service.AmministratoreService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
 import com.tas.applicazionebancaria.service.RichiestePrestitoService;
+import com.tas.applicazionebancaria.service.TransazioniMongoService;
 import com.tas.applicazionebancaria.utils.JWT;
 import com.tas.applicazionebancaria.utils.LoginRequest;
 
@@ -53,6 +56,8 @@ class AdminControllerTest {
 	ContoService cos;
 	@MockBean
 	RichiestePrestitoService rps;
+	@MockBean
+	TransazioniMongoService tmService;
 	@Autowired
 	AmministratoreService as;
 	
@@ -302,6 +307,24 @@ class AdminControllerTest {
 	@Test
 	void testStatistiche() throws Exception {
 		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
+		
+		when(tmService.findTotAddebiti()).thenReturn(Optional.of(2l));
+		when(tmService.findTotAccrediti()).thenReturn(Optional.of(2l));
+		when(tmService.transazioniMediePerCliente()).thenReturn(Optional.of(2l));
+		when(tmService.importoTransazioniPerMese()).thenReturn(Optional.of(List.of(new TransazioniMongo())));
+		ResultActions result = mockMvc.perform(get("/api/statistiche").cookie(cookie));
+		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(jsonPath("$.code").value(0));
+	}
+
+	@Test
+	void testStatisticheNoValues() throws Exception {
+		Cookie cookie = new Cookie("bearer", JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
+		
+		when(tmService.findTotAddebiti()).thenReturn(Optional.empty());
+		when(tmService.findTotAccrediti()).thenReturn(Optional.empty());
+		when(tmService.transazioniMediePerCliente()).thenReturn(Optional.empty());
+		when(tmService.importoTransazioniPerMese()).thenReturn(Optional.empty());
 		
 		ResultActions result = mockMvc.perform(get("/api/statistiche").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))

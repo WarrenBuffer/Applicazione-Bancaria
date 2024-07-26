@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tas.applicazionebancaria.businesscomponent.model.TransazioniBancarie;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
 @Repository("TransazioniBancarieRepository")
 public interface TransazioniBancarieRepository extends JpaRepository<TransazioniBancarie, Long>{
 	
