@@ -39,6 +39,8 @@ import { ClientiComponent } from './stats/clienti/clienti.component';
 import { PrestitiComponent } from './stats/prestiti/prestiti.component';
 import { TransazioniComponent } from './stats/transazioni/transazioni.component';
 import { ChartModule } from 'primeng/chart';
+import { MenubarModule } from 'primeng/menubar';
+import { ImageModule } from 'primeng/image';
 
 @NgModule({
   declarations: [
@@ -80,7 +82,9 @@ import { ChartModule } from 'primeng/chart';
     DropdownModule,
     SelectButtonModule,
     ChartModule,
-    DialogModule
+    DialogModule,
+    MenubarModule,
+    ImageModule
   ],
   providers: [
     provideClientHydration(),
