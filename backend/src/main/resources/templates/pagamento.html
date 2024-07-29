@@ -5,11 +5,12 @@
 <body>
 <div th:include="fragments/nav :: navbar"></div>
 <div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
-fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
+fixed;flex:1;width: 100%;display: flex;align-items: center;height: 100vh;flex-direction: column;justify-content: center;background-position: center;">
 
-	<div class="jumbotron" style="margin-top: 30px;background:  rgba(204, 204, 204, 0.8);padding: 20px;width: 70%;margin-left: 230px;text-align: center;">
-	<header class="page-header">
-		<h2 style="font-size: 50px;"><strong>Pagamento</strong></h2>
+
+	<div class="jumbotron" style="margin-top: 20px;background:  rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 90px;">
+	<header class="page-header" style="text-align: center;">
+	    <h2 style="font-size: 50px; display: inline-block;"><strong>Pagamento</strong></h2>
 	</header>
 		
 		
@@ -88,17 +89,17 @@ fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;disp
             		</div>
         		</div>
     		</div>
-    		
-    		<!-- ELENCO CARTE -->
-			<div id="elencoCarte" style="display:none;justify-content: center;">
-			<br>
-       		 <label for="codCarta">Seleziona una carta di credito:</label>
-       		 <br>
-        		<select id="codCarta" name="codCarta" th:if="${listaCarte!=null}" required>
-            		<option th:each="carta : ${listaCarte}" th:value="${carta.codCarta}" th:text="*{carta.codCarta}"></option>
-       			 </select>
-    		</div>
     		<br>
+    		<!-- ELENCO CARTE -->
+			<div id="elencoCarte" style="display:none;justify-content: center;align-content: inline;">
+			    <div style="display: flex; align-items: center;">
+			        <label for="codCarta" style="margin-right: 10px;">Seleziona una carta di credito:</label>
+			        <select id="codCarta" name="codCarta" th:if="${listaCarte!=null}" required>
+			            <option th:each="carta : ${listaCarte}" th:value="${carta.codCarta}" th:text="*{carta.codCarta}"></option>
+			        </select>
+			    </div>
+			</div>
+    		<br><br>
 <script>
 	function mostra() {
 		var carta = document.getElementById('cartadicredito');

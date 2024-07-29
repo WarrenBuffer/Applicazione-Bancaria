@@ -1,11 +1,22 @@
 <app-navbar />
 <app-loading [loading]="loading"/>
 <p-card *ngIf="!loading" header="Statistiche">
-    <p-selectButton 
-    [options]="stateOptions" 
-    [(ngModel)]="value" 
-    optionLabel="label" 
-    optionValue="value" />
+    <div class="flex align-items-center gap-2 mt-4">
+        <p-selectButton 
+            [options]="stateOptions" 
+            [(ngModel)]="value" 
+            optionLabel="label" 
+            optionValue="value" 
+        />
+        <p-button 
+            label="Scarica statistiche" 
+            icon="pi pi-download"
+            size="small" iconPos="right" 
+            severity="info"
+            (click)="downloadStatistics()" 
+        />
+    </div>
+
     <div class="flex flex-column gap-4 mt-4">
         <app-generali *ngIf="value === 'generali'" [stats]="stats"/>
         <app-clienti *ngIf="value === 'clienti'" [stats]="stats"/>

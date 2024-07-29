@@ -155,4 +155,17 @@ export class ApiService {
     )
   }
 
+  downloadStatistics(): Observable<Blob> {
+    return this._http.get(`${this.basePath}/download-statistiche`, {
+      ...this.httpOptions,
+      responseType: 'blob' // blob response type
+    }).pipe(
+      catchError((err) => {
+        this.toastService.showError("Errore interno del server\n" + err.message);
+        this.authService.logout();
+        return of(new Blob());
+      })
+    );
+  }
+
 }

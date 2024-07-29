@@ -1,5 +1,8 @@
 package com.tas.applicazionebancaria.restcontroller;
 
+//import static org.hamcrest.CoreMatchers.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -7,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +33,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.tas.applicazionebancaria.businesscomponent.model.Amministratore;
 import com.tas.applicazionebancaria.businesscomponent.model.Cliente;
 import com.tas.applicazionebancaria.businesscomponent.model.Conto;
@@ -35,6 +43,7 @@ import com.tas.applicazionebancaria.businesscomponent.model.RichiestePrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.TransazioniMongo;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.StatoPrestito;
 import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoConto;
+import com.tas.applicazionebancaria.businesscomponent.model.enumerations.TipoTransazione;
 import com.tas.applicazionebancaria.service.AmministratoreService;
 import com.tas.applicazionebancaria.service.ClienteService;
 import com.tas.applicazionebancaria.service.ContoService;
@@ -58,6 +67,8 @@ class AdminControllerTest {
 	ContoService cos;
 	@MockBean
 	RichiestePrestitoService rps;
+//	@Autowired
+//	TransazioniMongoService tmServiceWired;
 	@MockBean
 	TransazioniMongoService tmService;
 	@Autowired
@@ -67,6 +78,7 @@ class AdminControllerTest {
 	private static Cliente cliente;
 	private static RichiestePrestito prestito;
 	private static Amministratore admin;
+	private static TransazioniMongo transazioneMongo;
 
 	@BeforeAll
 	void setup() {
@@ -94,6 +106,16 @@ class AdminControllerTest {
 		admin.setEmailAdmin("testadmin123456789@testadmin123456789.com");
 		admin.setPasswordAdmin("TestPassword01$");
 		admin = as.saveAmministratore(admin);
+
+		transazioneMongo = new TransazioniMongo();
+		transazioneMongo.setId("7");
+		transazioneMongo.setCodiceConto(1);
+		transazioneMongo.setCodTransazione(1);
+		transazioneMongo.setDataTransazione(new Date());
+		transazioneMongo.setImporto(2000);
+		transazioneMongo.setTipoTransazione(TipoTransazione.ACCREDITO);
+
+		// transazioneMongo = tmServiceWired.saveTransazioniMongo(transazioneMongo);
 	}
 
 	@AfterAll
@@ -354,6 +376,40 @@ class AdminControllerTest {
 	}
 
 	@Test
+	void testDownloadPDF() throws Exception {
+		Cookie cookie = new Cookie("bearer",
+				JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
+		
+//		System.err.println("Transazione Mongo:");
+//		System.err.println(transazioneMongo);
+		Optional<List<TransazioniMongo>> importi = Optional.of(List.of(transazioneMongo));
+		//importi.get().add(transazioneMongo);
+		//System.err.println("Importi per mese -> " + importi);
+		when(tmService.importoTransazioniPerMese()).thenReturn(importi);
+		when(tmService.findTotAddebiti()).thenReturn(Optional.of(2l));
+		when(tmService.findTotAccrediti()).thenReturn(Optional.of(2l));
+		when(tmService.transazioniMediePerCliente()).thenReturn(Optional.of(2l));
+
+		ResultActions result = mockMvc.perform(get("/api/download-statistiche").cookie(cookie));
+		result.andExpect(status().isOk());
+	}
+
+	@Test
+	void testDownloadPDFOggettiAssenti() throws Exception {
+		Cookie cookie = new Cookie("bearer",
+				JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
+		Optional<List<TransazioniMongo>> importi = Optional.empty();
+		when(tmService.importoTransazioniPerMese()).thenReturn(importi);
+
+		when(tmService.findTotAddebiti()).thenReturn(Optional.empty());
+		when(tmService.findTotAccrediti()).thenReturn(Optional.empty());
+		when(tmService.transazioniMediePerCliente()).thenReturn(Optional.empty());
+
+		ResultActions result = mockMvc.perform(get("/api/download-statistiche").cookie(cookie));
+		result.andExpect(status().isOk());
+	}
+
+	@Test
 	void testStatisticheNoValues() throws Exception {
 		Cookie cookie = new Cookie("bearer",
 				JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
@@ -366,6 +422,20 @@ class AdminControllerTest {
 		ResultActions result = mockMvc.perform(get("/api/statistiche").cookie(cookie));
 		result.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.code").value(0));
+	}
+
+	@Test
+	void testEccexionePdf() throws Exception {
+		Cookie cookie = new Cookie("bearer",
+				JWT.generate(admin.getNomeAdmin(), admin.getCognomeAdmin(), admin.getEmailAdmin()));
+		MockedStatic<PdfWriter> pdfWriter = mockStatic(PdfWriter.class);
+		pdfWriter.when(() -> PdfWriter.getInstance(any(Document.class), any(ByteArrayOutputStream.class)))
+         .thenThrow(new DocumentException("Mocked exception"));
+		
+		
+		ResultActions result = mockMvc.perform(get("/api/download-statistiche").cookie(cookie));
+		result.andExpect(status().isInternalServerError());
+		pdfWriter.close();
 	}
 
 	@Test
