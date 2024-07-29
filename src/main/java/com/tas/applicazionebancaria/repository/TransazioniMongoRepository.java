@@ -17,7 +17,7 @@ public interface TransazioniMongoRepository extends MongoRepository<TransazioniM
 	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",
 			"{$match: {_id: 'ADDEBITO'}}" })
 	Optional<Long> findTotAddebiti();
-	
+		
 	@Aggregation(pipeline = { "{$group: { _id: '$tipoTransazione', count: {$sum: 1} }}",
 			"{$match: {_id: 'ACCREDITO'}}" })
 	Optional<Long> findTotAccrediti();

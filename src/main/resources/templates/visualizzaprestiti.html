@@ -5,9 +5,11 @@
 </head>
 <body>
 <div th:include="fragments/nav :: navbar"></div>
-<div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed; flex:1; padding-top: 60px; width: 100%; padding-left: 0; padding-right: 0;">
-	
-	<div class="jumbotron" style="margin-top: 30px;background:  rgba(204, 204, 204, 0.8);padding: 20px;width: 70%;margin-left: 230px;text-align: center;">
+<div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;width: 100%;display: flex;align-items: center;height: 100vh;flex-direction: column;justify-content: center;background-position: center;">
+
+
+	<div class="jumbotron" style="margin-top: 20px;background:  rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 90px;">
 	
 <div class="row">
  <form th:action="@{/selprestito}" method="post" class="form-horizontal" id="prestitoForm" style="text-align: center;">
@@ -35,62 +37,61 @@
 
 <div class="row" >
 
-<div class="panel-group" style="width: 80%;margin-left: 130px;">
-<div class="col-sm-6">
-  <div class="panel panel-default" th:if="${prestito != null}">
-  <div class="panel-heading">
-  	<h2 style="font-size: 18px;"><strong>Cod prestito</strong> 
-				<span style="font-size: 29px;margin-left: 25px;" th:text="*{prestito.codPrestito}"></span></h2>
-	</div>
-	<br>
-    <div class="panel-body">
-    	<p style="font-size: 14px;"><strong>Importo:</strong>&nbsp;&nbsp;<span th:text="*{#numbers.formatCurrency(prestito.importo)}"></span></p>
-		<p style="font-size: 14px;"><strong>Durata:</strong>&nbsp;&nbsp;<span th:text="*{prestito.durataInMesi}"></span></p>
-		<p style="font-size: 14px;"><strong>Tasso interesse:</strong> &nbsp;&nbsp;<span th:text="*{prestito.tassoInteresse}"></span></p>
-		<p style="font-size: 14px;"><strong>Codice cliente:</strong>&nbsp;&nbsp;<span th:text="*{prestito.codCliente}"></span></p>
-	</div>
-	
-  </div>
-  </div>
-  
-  <!---------------------------------- Panel richieste prestito ---------------------------------------------->
-  
-  <div class="col-md-8" style="margin-left: 150px;" th:if="${listaRichiestePrestito!=null}">
-  <div class="panel panel-default">
-  <div class="panel-heading">
-  	<h2 style="font-size: 18px;"><strong>Le tue richieste</strong> </h2>
-	</div>
-    <div class="panel-body">
-    	<table class="table table-hover">
-    		<thead>
-    			<tr>
-    				<th>Codice richiesta</th>
-    				<th>Importo</th>
-    				<th>Data</th>
-    				<th>Stato</th>
-    			</tr>
-    		</thead>
-    		<tbody>
-    			<tr th:each="richiesta : ${listaRichiestePrestito}">
-    				<td th:text="${richiesta.codRichiesta}"></td>
-    				<td th:text="${#numbers.formatCurrency(richiesta.importo)}"></td>
-    				<td th:text="${#dates.format(richiesta.dataRichiesta, 'dd/MMM/YYYY')}"></td>
-    				<td th:text="${richiesta.stato}"></td>
-    			</tr>
-    		</tbody>
-    	</table>
-    
-    </div>
-  </div>
-</div>
-<div class="col-md-8" th:if="${listaRichiestePrestito==null}">
-  <div class="panel panel-default">
-  <div class="panel-heading">
-  	<h2 style="font-size: 18px;"><strong>Nessuna richiesta pendente</strong> </h2>
-	</div>
-	</div>
-</div>
+<div class="panel-group" style="width: 80%;">
+    <div class="row" style="margin-left: 150px;">
+        <div class="col-sm-6">
+            <div class="panel panel-default" th:if="${prestito != null}">
+                <div class="panel-heading">
+                    <h2 style="font-size: 18px;"><strong>Cod prestito</strong> 
+                        <span style="font-size: 29px; margin-left: 25px;" th:text="*{prestito.codPrestito}"></span>
+                    </h2>
+                </div>
+                <br>
+                <div class="panel-body">
+                    <p style="font-size: 14px;"><strong>Importo:</strong>&nbsp;&nbsp;<span th:text="*{#numbers.formatCurrency(prestito.importo)}"></span></p>
+                    <p style="font-size: 14px;"><strong>Durata:</strong>&nbsp;&nbsp;<span th:text="*{prestito.durataInMesi}"></span></p>
+                    <p style="font-size: 14px;"><strong>Tasso interesse:</strong> &nbsp;&nbsp;<span th:text="*{prestito.tassoInteresse}"></span></p>
+                    <p style="font-size: 14px;"><strong>Codice cliente:</strong>&nbsp;&nbsp;<span th:text="*{prestito.codCliente}"></span></p>
+                </div>
+            </div>
+        </div>
+        <!---------------------------------- Panel richieste prestito ---------------------------------------------->
+        <div class="col-md-6" th:if="${listaRichiestePrestito!=null}">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 style="font-size: 18px;"><strong>Le tue richieste</strong></h2>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Codice richiesta</th>
+                                <th>Importo</th>
+                                <th>Data</th>
+                                <th>Stato</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="richiesta : ${listaRichiestePrestito}">
+                                <td th:text="${richiesta.codRichiesta}"></td>
+                                <td th:text="${#numbers.formatCurrency(richiesta.importo)}"></td>
+                                <td th:text="${#dates.format(richiesta.dataRichiesta, 'dd/MMM/YYYY')}"></td>
+                                <td th:text="${richiesta.stato}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-8" th:if="${listaRichiestePrestito==null}">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 style="font-size: 18px;"><strong>Nessuna richiesta pendente</strong></h2>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </div>	
 	

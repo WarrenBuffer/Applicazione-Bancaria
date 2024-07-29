@@ -5,9 +5,10 @@
 <body>
 <div th:include="fragments/nav :: navbar"></div>
 <div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
-fixed;flex:1;padding-top: 60px;width: 100%;padding-left: 0;padding-right: 0;display: flex;align-items: center;">
+fixed;flex:1;width: 100%;display: flex;align-items: center;height: 100vh;flex-direction: column;justify-content: center;background-position: center;">
 
-	<div class="jumbotron" style="margin-top: 30px;background:  rgba(204, 204, 204, 0.8);padding: 20px;width: 70%;margin-left: 230px;">
+
+	<div class="jumbotron" style="margin-top: 20px;background:  rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 90px;">
 		<form th:action="@{/selcarte}" method="post" class="form-horizontal" id="cartaForm" style="text-align: center;">
 	<header class="page-header">
 		<h2 style="font-size: 50px;"><strong>Carte</strong></h2>
