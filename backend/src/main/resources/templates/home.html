@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container" style="background-image: url('/img/img.jpg'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;width: 100%;display: flex;align-items: center;height: 100vh;flex-direction: column;justify-content: center;background-position: center;">
+
+
+	<div class="jumbotron" style="margin-top: 20px;background:  rgba(204, 204, 204, 0.6);padding: 20px;width: 70%;margin-left: 90px;">
+		<h1 style="color: #141414;"><strong>Benvenuto </strong></h1>
+		<br><br>
+		<a class="btn btn-success" role="button" href="/iniziopagamento" style="width: 250px;height: 50px;align-content: center;color: #141414;">
+			Effettua un pagamento&nbsp; <span class="glyphicon glyphicon-transfer"></span>
+		</a>
+		<a class="btn btn-success" role="button" href="/visualizzaprestiti" style="margin-left: 20px;width: 250px;height: 50px;align-content: center;color: #141414;">
+			I tuoi prestiti&nbsp; <span class="glyphicon glyphicon-save"></span>
+		</a>
+	
+	</div>
+	
+				<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+				  <div class="modal-dialog modal-sm">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				        <h4 class="modal-title" id="myModalLabel">Messaggio</h4>
+				      </div>
+				      <div class="modal-body">
+				        <p th:text="${success}" th:if="${success}" style="color:green;font-size: 20px;"></p>
+					    <p th:text="${error}" th:if="${error}" style="color: red;font-size: 20px;"></p>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			    
+			    
+<script>
+	var success = '[[${success}]]';
+	var error = '[[${error}]]';
+
+	if(success != '' || error != ''){
+		$('#messageModal').modal('show');
+	}
+</script>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>
+

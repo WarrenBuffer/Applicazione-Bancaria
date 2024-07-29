@@ -1,0 +1,34 @@
+<app-navbar />
+<p-card header="Richieste prestiti">
+    <p-table [value]="richiestePrestiti" [paginator]="true" [rows]="5" styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[5, 10, 20]">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Cod. richiesta</th>
+                <th>Importo</th>
+                <th>Data Richiesta</th>
+                <th>Stato</th>
+                <th>Cod. cliente</th>
+                <th>Approva</th>
+                <th>Rifiuta</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-richiestaPrestito>
+            <tr>
+                <td>{{ richiestaPrestito.codRichiesta }}</td>
+                <td>{{ richiestaPrestito.importo }}</td>
+                <td>{{ richiestaPrestito.dataRichiesta | date : 'dd/MM/yyyy'}}</td>
+                <td>{{ richiestaPrestito.stato }}</td>
+                <td>{{ richiestaPrestito.codCliente }}</td>
+                <td *ngIf="richiestaPrestito.stato !== 'IN_ATTESA'"></td>
+                <td *ngIf="richiestaPrestito.stato !== 'IN_ATTESA'"></td>
+                <td *ngIf="richiestaPrestito.stato === 'IN_ATTESA'">
+                    <button (click) = "approvaPrestito(richiestaPrestito.codRichiesta)" pButton pRipple label="Approva" icon="pi pi-check" size="small" iconPos="right" class="p-button-success"></button>
+                </td>
+                <td *ngIf="richiestaPrestito.stato === 'IN_ATTESA'"><button (click) = "declinaPrestito(richiestaPrestito.codRichiesta)" pButton pRipple label="Declina" icon="pi pi-times" size="small" iconPos="right" class="p-button-danger">
+                    </button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

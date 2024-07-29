@@ -1,0 +1,11 @@
+<app-navbar />
+<div>
+	<p-card header="Logout">
+		<form (ngSubmit)="submit()">
+			<h4>Conferma il logout e torna alla pagina principale</h4>
+			<div class="mt-2">
+				<p-button type="submit" severity="primary" [raised]="true"  label="Logout" />
+			</div>
+		</form>
+	</p-card>
+</div>

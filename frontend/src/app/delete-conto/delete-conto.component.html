@@ -1,0 +1,32 @@
+<app-navbar />
+<p-card header="Lista Conti">
+    <p-table
+    [value]="contiList"
+    styleClass="p-datatable-striped" 
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    >
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Cod. Cliente</th>
+            <th>Cod. conto</th>
+            <th>Tipo di Conto</th>
+            <th>Saldo</th>
+            <th>&nbsp;</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-conto>
+        <tr>
+            <td>{{ conto.codCliente }}</td>
+            <td>{{ conto.codConto }}</td>
+            <td>{{ conto.tipoConto }}</td>
+            <td>{{ conto.saldo }}</td>
+            <td>
+                <p-button label="Elimina" icon="pi pi-trash" size="small" (click)="eliminaConto(conto.codConto)" />
+            </td>
+        </tr>
+    </ng-template>
+    </p-table>
+
+
+</p-card>

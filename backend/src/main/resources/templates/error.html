@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+
+<title>Error Page</title>
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container">
+	<header class="page-header">
+		<h3>Pagina per la gestione di eccezioni</h3>	
+	</header>
+	
+	<div class="table table-responsive">
+	<table>
+		<tr>
+			<td style="width: 20%;">Date</td>
+			<td style="width: 80%;" th:text="${timestamp}"></td>
+		</tr>
+		<tr>
+			<td>Path</td>
+			<td th:text="${path}"></td>
+		</tr>
+		<tr>
+			<td>Status</td>
+			<td th:text="${status}"></td>
+		</tr>
+		<tr>
+			<td>Message</td>
+			<td th:text="${message}"></td>
+		</tr>
+		<tr>
+			<td>Exception</td>
+			<td th:text="${exception}"></td>
+		</tr>
+		<tr>
+			<td>Trace</td>
+			<td style="word-wrap: break-word;" th:text="${trace}"></td>
+		</tr>
+		<tr>
+			<td/>
+			<td>
+				<br>
+				<button class="btn btn-default" onclick="history.back()">Indietro</button>
+			</td>
+		</tr>
+	</table>
+	</div>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

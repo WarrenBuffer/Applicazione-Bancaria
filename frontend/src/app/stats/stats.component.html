@@ -1,0 +1,15 @@
+<app-navbar />
+<app-loading [loading]="loading"/>
+<p-card *ngIf="!loading" header="Statistiche">
+    <p-selectButton 
+    [options]="stateOptions" 
+    [(ngModel)]="value" 
+    optionLabel="label" 
+    optionValue="value" />
+    <div class="flex flex-column gap-4 mt-4">
+        <app-generali *ngIf="value === 'generali'" [stats]="stats"/>
+        <app-clienti *ngIf="value === 'clienti'" [stats]="stats"/>
+        <app-prestiti *ngIf="value === 'prestiti'" [stats]="stats"/>
+        <app-transazioni *ngIf="value === 'transazioni'" [stats]="stats"/>
+    </div>
+</p-card>

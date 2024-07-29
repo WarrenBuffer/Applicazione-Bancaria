@@ -1,0 +1,50 @@
+<app-navbar />
+<p-card header="Lista clienti">
+    <p-table
+    [value]="clientList"
+    [paginator]="true"
+    [rows]="5"
+    styleClass="p-datatable-striped" 
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[5, 10, 20]"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Cod. cliente</th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Email</th>
+            <th>Tentativi errati</th>
+            <th>Bloccato</th>
+            <th>N. carte</th>
+            <th>N. conti</th>
+            <th>N. pagamenti</th>
+            <th>N. prestiti</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cliente>
+        <tr>
+            <td>{{ cliente.codCliente }}</td>
+            <td>{{ cliente.nomeCliente }}</td>
+            <td>{{ cliente.cognomeCliente }}</td>
+            <td>{{ cliente.emailCliente }}</td>
+            <td>{{ cliente.tentativiErrati }}</td>
+                <td *ngIf="cliente.accountBloccato">
+                    
+                <form (ngSubmit)="lockUnlock(cliente.emailCliente)">
+                    <p-button type="submit" label="Sblocca" severity="success" [rounded]="true" size="small"/>
+                </form>
+                </td>
+                <td *ngIf="!cliente.accountBloccato">
+                    <form (ngSubmit)="lockUnlock(cliente.emailCliente)">
+                    <p-button type="submit" label="Blocca" severity="warning" [rounded]="true" size="small"/>
+                    </form>
+                </td>
+            <td>{{ cliente.carte.length }}</td>
+            <td>{{ cliente.conti.length }}</td>
+            <td>{{ cliente.pagamenti.length }}</td>
+            <td>{{ cliente.prestiti.length }}</td>
+        </tr>
+    </ng-template>
+</p-table>
+</p-card>

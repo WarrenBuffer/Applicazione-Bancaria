@@ -1,0 +1,43 @@
+<app-navbar />
+<p-card header="Cerca utente">
+    <form [formGroup]="form" (ngSubmit)="findCliente(form.value)">
+        <div class="flex flex-column sm:flex-row gap-2">
+            <input pInputText formControlName="email" placeholder="Email..." />
+            <p-message *ngIf="form.controls.email.invalid && form.controls.email.dirty" severity="error" text="L'email deve essere valida" />
+            <p-button type="submit" severity="primary" [disabled]="!form.valid" [raised]="true" label="Cerca" />
+        </div>
+    </form>
+</p-card>
+<br>
+<p-card>
+<p-table [value]="cliente">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Cod. cliente</th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Email</th>
+            <th>Tentativi errati</th>
+            <th>Bloccato</th>
+            <th>N. carte</th>
+            <th>N. conti</th>
+            <th>N. pagamenti</th>
+            <th>N. prestiti</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cliente>
+        <tr>
+            <td>{{ cliente.codCliente }}</td>
+            <td>{{ cliente.nomeCliente }}</td>
+            <td>{{ cliente.cognomeCliente }}</td>
+            <td>{{ cliente.emailCliente }}</td>
+            <td>{{ cliente.tentativiErrati }}</td>
+            <td>{{ cliente.accountBloccato }}</td>
+            <td>{{ cliente.carte.length }}</td>
+            <td>{{ cliente.conti.length }}</td>
+            <td>{{ cliente.pagamenti.length }}</td>
+            <td>{{ cliente.prestiti.length }}</td>
+        </tr>
+    </ng-template> 
+</p-table>
+</p-card>

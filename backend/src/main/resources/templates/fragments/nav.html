@@ -1,0 +1,87 @@
+<div th:fragment="navbar" xmlns:th="http://w3c.org/1999/xhtml" xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity6">
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<div>
+				<a class="navbar-brand" href="/">
+				<img th:src="@{/img/sito-logo.png}" alt="logo">
+				Applicazione Bancaria</a>
+			</div>
+		</div>
+		<div class="collapse navbar-collapse" id="menu">
+			
+			<div th:if="${session.email_log}">
+			<div>
+				<ul class="nav navbar-nav navbar-right">
+					
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+							<span class="glyphicon glyphicon-user">&nbsp;</span>
+							<span class="badge">
+								<th:block th:text="${nome} ? ${nome} : ''"></th:block>
+							</span>
+						</a>
+						<ul class="dropdown-menu">
+
+							<li><a href="/visualizzaconti">I tuoi conti</a></li>
+							<li><a href="/visualizzacarte">Le tue carte</a></li>
+							<li><a href="/iniziopagamento">Effettua un pagamento</a></li>
+							<li><a href="/visualizzaprestiti">Visualizza prestiti</a></li>
+
+						</ul>
+					</li>
+					<li>
+						<a href="#" data-toggle="modal" data-target="#logoutModal"><span class="glyphicon glyphicon-log-out">&nbsp;</span>Logout</a>
+					</li>
+				</ul>
+			</div>
+			</div>
+			
+			<div th:unless="${session.email_log}">
+			<div>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="/registrazione">
+							<span class="glyphicon glyphicon-pencil">&nbsp;</span>Registrati
+						</a>
+					</li>
+					<li>
+						<a href="/login">
+							<span class="glyphicon glyphicon-log-in">&nbsp;</span>Log-in
+						</a>
+					</li>
+				</ul>
+			</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+			        <div class="modal-dialog modal-md">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                        <span aria-hidden="true">&times;</span>
+			                    </button>
+			                    <h4 class="modal-title" id="logoutModalLabel">Logout</h4>
+			                </div>
+			                <form th:action="@{/logout}" method="post" class="form-horizontal">
+			                  	<div class="modal-body">
+			                  		<p>Vuoi effettuare il logout?</p>
+			                	</div>
+			                	<div class="modal-footer">
+			                    	<button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+			                    	<button type="submit" class="btn btn-warning">Conferma</button>
+			                	</div>
+			            	</form>
+			        </div>
+   		 		</div>
+		</div>
+		
+	</div>
+</nav>
+</div>

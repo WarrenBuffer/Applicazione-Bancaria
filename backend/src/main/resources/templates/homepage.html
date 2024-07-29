@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments/cdn :: cdn">
+</head>
+<body>
+<div th:include="fragments/nav :: navbar"></div>
+<div class="container" style="background-image: url('/img/sfondoHome.png'); background-size: cover; background-repeat: no-repeat; background-attachment: 
+fixed;flex:1;width: 100%;display: flex;align-items: center;height: 100vh;flex-direction: column;justify-content: center;background-position: center;">
+
+	<div class="jumbotron" style="background:  rgba(204, 204, 204, 0.6);width: 70%;margin-left: 90px;">
+	
+		<h1 style="color: #141414;"><strong>PAGAMENTI ONLINE</strong></h1>
+	
+		<p style="margin-top: 40px;">Non sei ancora un nostro cliente?&nbsp;&nbsp;<strong><a style="color: #141414;" th:href="@{/registrazione}">Registrati</a></strong></p>
+		<p>Altrimenti effettua il&nbsp;&nbsp;<strong><a style="color: #141414;" th:href="@{/login}">Login</a></strong></p>
+	</div>
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>
